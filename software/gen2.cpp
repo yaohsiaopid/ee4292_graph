@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
   fs.open("test.in", std::ios::out | std::ios::binary);
   std::vector<std::vector<int>> dist;
   int v = atoi(argv[1]);
-  int e = std::rand() % (v * (v - 1) / 2); //(8 * (v * (v - 1) / 2)) / 10;
+  int e = (8 * (v * (v - 1) / 2)) / 10; // std::rand() % (v * (v - 1) / 2);
   fs.write((char *)&v, sizeof(int));
   fs.write((char *)&e, sizeof(int));
   std::cout << "V = " << v << ", E = " << e << "\n";
@@ -39,17 +39,6 @@ int main(int argc, char *argv[]) {
     if (argc == 3)
       std::cout << "(" << src_id << "," << dst_id << ") = " << w << "\n";
   }
-  std::fstream tmpfs;
-  tmpfs.open("test2.graph", std::ios::out);
-  tmpfs << v << " " << e << "\n";
-  for (int i = 0; i < v; i++) {
-    for (int j = 0; j < v; j++) {
-      if (i != j && dist[i][j] < INF) {
-        tmpfs << j + 1 << " ";
-      }
-    }
-    tmpfs << "\n";
-  }
-  tmpfs.close();
+
   fs.close();
 }
