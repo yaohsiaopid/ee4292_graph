@@ -1,5 +1,7 @@
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <ctime>
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -9,7 +11,7 @@ int main(int argc, char *argv[]) {
   std::srand(std::time(nullptr));
   std::fstream fs;
   fs.open("test.in", std::ios::out | std::ios::binary);
-  std::vector<std::vector<int>> dist;
+  std::vector<std::vector<int> > dist;
   int v = atoi(argv[1]);
   int e = std::rand() % (v * (v - 1) / 2); //(8 * (v * (v - 1) / 2)) / 10;
   fs.write((char *)&v, sizeof(int));
