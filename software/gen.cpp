@@ -5,6 +5,8 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <ctime>
+#include <cassert>
 #define INF 1073741823
 int main(int argc, char *argv[]) {
   assert(argc >= 2);
