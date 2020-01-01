@@ -1,35 +1,35 @@
 module worker
 #(
-    parameter K = 16;
-    parameter D = 256;
-    parameter DIST_BW = 1;
-    parameter DIST_ADDR_SPACE = 16;
-    parameter LOC_BW = 5;
-    parameter LOC_ADDR_SPACE = 4;
-    parameter NEXT_BW = 4;
-    parameter NEXT_ADDR_SPACE = 4;
-    parameter PRO_BW = 8;
-    parameter PRO_ADDR_SPACE = 4;
-    parameter VID_BW = 16;  // 12???
-    parameter VID_ADDR_SPACE = 4;
-    parameter Q = 16;
+    parameter K = 16,
+    parameter D = 256,
+    parameter DIST_BW = 1,
+    parameter DIST_ADDR_SPACE = 16,
+    parameter LOC_BW = 5,
+    parameter LOC_ADDR_SPACE = 4,
+    parameter NEXT_BW = 4,
+    parameter NEXT_ADDR_SPACE = 4,
+    parameter PRO_BW = 8,
+    parameter PRO_ADDR_SPACE = 4,
+    parameter VID_BW = 16,  // TODO: 12???
+    parameter VID_ADDR_SPACE = 4,
+    parameter Q = 16,
+    parameter BATCH_BW = 8
 )
 (
     input en,
     input rst_n,
-    input [?:0] num_batch,
+    input [BATCH_BW-1:0] batch_num,
     input [Q*VID_BW-1:0] vid_rdata,
     input [D*DIST_BW-1:0] dist_rdata,
     input [D*LOC_BW-1:0] loc_rdata,
 
-    output reg [VID_ADDR_SPACE-1:0] vid_raddr,  // sub-batch num # = N/D = 4096/256 = 16
-    output reg [DIST_ADDR_SPACE-1:0] dist_raddr,
-    output reg [LOC_ADDR_SPACE-1:0] loc_raddr,
-    output reg [Q*NEXT_BW-1:0] next_rdata,
-    output reg [NEXT_ADDR_SPACE-1:0] next_raddr,
-    output reg [Q*PRO_BW-1:0] pro_rdata,
-    output reg [PRO_ADDR_SPACE-1:0] pro_raddr
-)
+    output reg [DIST_ADDR_SPACE-1:0] dist_waddr,
+    output reg [Q*NEXT_BW-1:0] next_wdata,
+    output reg [NEXT_ADDR_SPACE-1:0] next_waddr,
+    output reg [Q*PRO_BW-1:0] pro_wdata,
+    output reg [PRO_ADDR_SPACE-1:0] pro_waddr,
+    output reg ready, //  if result is ready  
+);
 
 reg [VID_BW-1:0] vid [0:Q-1];
 reg [D-1:0] dist;

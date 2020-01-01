@@ -14,6 +14,13 @@ output [7:0] reg epoch,
 
 );
 // total epoch = N(4096) / Q(16)
+always @(posedge clk) begin 
+    if(~rst_n) begin 
+        
+    end else begin 
+    
+    end 
+end 
 
 
 endmodule

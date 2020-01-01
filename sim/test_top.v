@@ -1,6 +1,6 @@
 `timescale 1ns/100ps
 module test_top;
-
+// test graph top module
 localparam K = 16;
 localparam D = 256;
 localparam DIST_BW = 1;
@@ -70,113 +70,17 @@ Graph_Top #(
 my_graph_top (
 );
 //====== sram connection =====
-//dist sram
+//dist sram groups: dist_sram0 to dist_sram15
 dist_sram_NxNb dist_sram0(
 .clk(clk),
 .wsb(1'b1),
 .wdata(256'd0), 
 .waddr(16'd0), 
 .raddr(dist_sram_raddr[0]), 
-.rdata(sram_rdata_weight)
+.rdata(dist_sram_rdata[0])
 );
-//bias sram
-sram_84x4b sram_84x4b_bias(
-.clk(clk),
-.csb(1'b0),
-.wsb(1'b1),
-.wdata(4'd0), 
-.waddr(7'd0), 
-.raddr(sram_raddr_bias), 
-.rdata(sram_rdata_bias)
-);
-//activation sram group A
-sram_36x128b sram_36x128b_a0(
-.clk(clk),
-.bytemask(sram_bytemask_a),
-.csb(1'b0),
-.wsb(sram_wen_a0),
-.wdata(sram_wdata_a), 
-.waddr(sram_waddr_a), 
-.raddr(sram_raddr_a0), 
-.rdata(sram_rdata_a0)
-);
+//  
 
-sram_36x128b sram_36x128b_a1(
-.clk(clk),
-.bytemask(sram_bytemask_a),
-.csb(1'b0),
-.wsb(sram_wen_a1),
-.wdata(sram_wdata_a), 
-.waddr(sram_waddr_a), 
-.raddr(sram_raddr_a1), 
-.rdata(sram_rdata_a1)
-);
-
-sram_36x128b sram_36x128b_a2(
-.clk(clk),
-.bytemask(sram_bytemask_a),
-.csb(1'b0),
-.wsb(sram_wen_a2),
-.wdata(sram_wdata_a), 
-.waddr(sram_waddr_a), 
-.raddr(sram_raddr_a2), 
-.rdata(sram_rdata_a2)
-);
-
-sram_36x128b sram_36x128b_a3(
-.clk(clk),
-.bytemask(sram_bytemask_a),
-.csb(1'b0),
-.wsb(sram_wen_a3),
-.wdata(sram_wdata_a), 
-.waddr(sram_waddr_a), 
-.raddr(sram_raddr_a3), 
-.rdata(sram_rdata_a3)
-);
-//activation sram group B
-sram_36x128b sram_36x128b_b0(
-.clk(clk),
-.bytemask(sram_bytemask_b),
-.csb(1'b0),
-.wsb(sram_wen_b0),
-.wdata(sram_wdata_b), 
-.waddr(sram_waddr_b), 
-.raddr(sram_raddr_b0), 
-.rdata(sram_rdata_b0)
-);
-
-sram_36x128b sram_36x128b_b1(
-.clk(clk),
-.bytemask(sram_bytemask_b),
-.csb(1'b0),
-.wsb(sram_wen_b1),
-.wdata(sram_wdata_b), 
-.waddr(sram_waddr_b), 
-.raddr(sram_raddr_b1), 
-.rdata(sram_rdata_b1)
-);
-
-sram_36x128b sram_36x128b_b2(
-.clk(clk),
-.bytemask(sram_bytemask_b),
-.csb(1'b0),
-.wsb(sram_wen_b2),
-.wdata(sram_wdata_b), 
-.waddr(sram_waddr_b), 
-.raddr(sram_raddr_b2), 
-.rdata(sram_rdata_b2)
-);
-
-sram_36x128b sram_36x128b_b3(
-.clk(clk),
-.bytemask(sram_bytemask_b),
-.csb(1'b0),
-.wsb(sram_wen_b3),
-.wdata(sram_wdata_b), 
-.waddr(sram_waddr_b), 
-.raddr(sram_raddr_b3), 
-.rdata(sram_rdata_b3)
-);
 
 //========== Dump waveform ==========//
 // initial begin
