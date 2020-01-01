@@ -1,6 +1,6 @@
 `timescale 1ns/100ps
 module test_worker;
-
+localparam N = 4096;
 localparam K = 1;
 localparam D = 256;
 localparam DIST_BW = 1;
@@ -44,27 +44,29 @@ wire [D*LOC_BW-1:0] loc_rdata;
 // wire [PRO_ADDR_SPACE-1:0] pro_sram_waddr; // internal batch # 
 // wire [Q-1:0] pro_sram_bytemask[0:K-1];
 
+
 // =================== instance sram ================================
 dist_sram_NxNb dist_sram0(
 .clk(clk),
 .wsb(1'b1),
 .wdata(256'd0), 
 .waddr(16'd0), 
+// TODO
 .raddr(dist_sram_raddr[0]), 
 .rdata(dist_sram_rdata[0])
 );
 
-worker worker_instn(
-    .clk(clk),
-    .en(enable),
-    .rst_n(rst_n),
-    .batch_num(batch),
-    .vid_rdata(vid_rdata),
-    .dist_rdata(dist_rdata),
-    .loc_rdata()
-    // output 
+// worker worker_instn(
+//     .clk(clk),
+//     .en(enable),
+//     .rst_n(rst_n),
+//     .batch_num(batch),
+//     .vid_rdata(vid_rdata),
+//     .dist_rdata(dist_rdata),
+//     .loc_rdata()
+//     // output 
 
-);
+// );
 
 // TEST worker 0 currently 
 reg [3:0] locs [0:D-1];
@@ -96,20 +98,23 @@ reg [7:0] part_gold[0:255]; // 16(K) * total sub_bat number = 16 for first batch
 always #(CYCLE/2) clk = ~clk;
 
 //// load test pattern //
-initial begin 
+// initial begin 
 
-end 
+// end 
+integer tmp;
 initial begin 
     clk = 0;
     rst_n = 0;
     enable = 1'b0;
     $readmemh("vids.dat", vid_input);
-    $readmemh("dist.dat", dist_input);
-    $readmemh("loc.dat", loc_input);
-    $readmemh("part.dat", part_gold);
-    #(cyc) rst_n = 1;
+    for(tmp = 0; tmp < 256; tmp = tmp + 1)
+        $display("%d", vid_input[tmp]);
+    // $readmemh("dist.dat", dist_input);
+    // $readmemh("loc.dat", loc_input);
+    // $readmemh("part.dat", part_gold);
+    #(CYCLE) rst_n = 1;
     // input test pattern
-    #(cyc) enable = 1'b1;
+    #(CYCLE) enable = 1'b1;
     
 end 
 
@@ -127,7 +132,7 @@ initial begin
             $write("sub-batch %d :", sub_bat);
             for(i = 0; i < K; i = i + 1) begin 
                 $write("%d ", worker_instn.part[i]);
-                if(worker_instn.part[i] != )
+                // if(worker_instn.part[i] != )
             end 
             $write("\n");
             sub_bat = sub_bat + 1;

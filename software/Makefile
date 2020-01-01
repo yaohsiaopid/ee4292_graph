@@ -5,20 +5,20 @@ CFLAGS = -O3 -lm
 TARGETS = graph gen check KaHIP
 all: graph gen check KaHIP inter_data
 
-graph: graph.cpp utility.h
+graph: ./src/graph.cpp ./src/utility.h
 	#clang-format -i graph.cpp
 	#clang-format -i utility.h
-	g++ $(CXXFLAGS) -o ./build/$@ graph.cpp
-gen: gen.cpp
+	g++ $(CXXFLAGS) -o ./build/$@ $?
+gen: ./src/gen.cpp
 	#clang-format -i $^
 	g++ $(CXXFLAGS) -o ./build/$@ $? 
-check: check.cpp
+check: ./src/check.cpp
 	#clang-format -i $^
 	g++ $(CXXFLAGS) -o ./build/$@ $? 
-KaHIP: KaHIP.cpp
+KaHIP: ./src/KaHIP.cpp
 	#clang-format -i $^
 	g++ $(CXXFLAGS) -o ./build/$@ $? 
-inter_data:	inter_data.cpp
+inter_data:	./src/inter_data.cpp
 	#clang-format -i $^
 	g++ $(CXXFLAGS) -o ./build/$@ $? 
 clean:

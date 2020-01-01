@@ -2,7 +2,7 @@
 module proposal_sram_16x128b #(    
 parameter ADDR_SPACE = 4, // 256 / 16
 parameter Q = 16,
-parameter BW = 8,
+parameter BW = 8
 )
 (
 input clk,

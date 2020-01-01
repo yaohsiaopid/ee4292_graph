@@ -13,6 +13,76 @@
 int dist[10000][10000] = {0};
 int N, E;
 const int K = 16;
+void export_vid(int worker, int vid) {
+  char filename[100];
+  sprintf(filename, "./gold/%d_vid.dat", worker);
+  FILE *fptr = fopen(filename, "a+");
+  fprintf(fptr, "%d", vid);
+  // for(int itm = 16; itm >= 0; itm--){
+  //   fprintf(fptr, "%d", (proposal >> itm) & 1);
+  // }
+  fprintf(fptr, "\n");
+  fclose(fptr);
+  if(worker == 0){
+    FILE *tmp = fopen("./gold/tmp_vid_num.dat", "a+");
+    fprintf(tmp, "%d\n", vid);
+    fclose(tmp);
+  }
+}
+void export_proposal_num(int worker, int proposal) {
+  char filename[100];
+  sprintf(filename, "./gold/%d_propsal_num.dat", worker);
+  FILE *fptr = fopen(filename, "a+");
+  for(int itm = 7; itm >= 0; itm--){
+    fprintf(fptr, "%d", (proposal >> itm) & 1);
+  }
+  fprintf(fptr, "\n");
+  fclose(fptr);
+  if(worker == 0){
+    FILE *tmp = fopen("./gold/tmp_propsal_num.dat", "a+");
+    fprintf(tmp, "%d\n", proposal);
+    fclose(tmp);
+  }
+}
+void export_part(int worker, int batch, int sub, int part[][K]) {
+  if(batch > 2) return;
+  char filename[100];
+  sprintf(filename, "./gold/%d_bat%d_part.dat", worker, batch);
+  FILE *fptr = fopen(filename, "a+");
+  for(int i = 0; i < K; i++) {
+    int p = part[worker][i];
+    for(int itm = 7; itm >= 0; itm--){
+      fprintf(fptr, "%d", (p >> itm) & 1);
+    }
+    if(i != K-1)
+    fprintf(fptr, "_");
+  }
+  fprintf(fptr, "\n");
+  fclose(fptr);
+  if(worker == 0 && batch == 0){
+    FILE *tmp = fopen("./gold/tmp_bat.dat", "a+");
+    for(int i = 0; i < K; i++) {
+    fprintf(tmp, "%3d,", part[worker][i]);
+    }
+    fprintf(tmp, "\n");
+    fclose(tmp);
+  }
+}
+void export_next(int worker, int batch, int next) {
+  char filename[100];
+  sprintf(filename, "./gold/%d_next.dat", worker);
+  FILE *fptr = fopen(filename, "a+");
+  for(int itm = 3; itm >= 0; itm--){
+    fprintf(fptr, "%d", (next >> itm) & 1);
+  }
+  fprintf(fptr, "\n");
+  fclose(fptr);
+  if(worker == 0){
+    FILE *tmp = fopen("./gold/tmp.dat", "a+");
+    fprintf(tmp, "%d\n", next);
+    fclose(tmp);
+  }
+}
 void input(char filename[]) {
   std::fstream fs;
   fs.open(filename, std::ios::in | std::ios::binary);
@@ -76,12 +146,9 @@ int main(int argc, char *argv[]) {
 
     for (int worker = 0; worker < K; worker++) {
       for (int batch = 0; batch < N / K; batch++) {
-        // std::fstream sub_part;
-        // char tmpfs[100];
-        // sprintf(tmpfs, "./gold/part_bat%d_worker%d.dat", batch, worker);
-        // sub_part.open(tmpfs, std::ios::out);
         for(int i = 0; i < K; i++) part[worker][i] = 0;
         int tmpvid = vid[worker][batch];
+        export_vid(worker, tmpvid);
         for (int sub = 0; sub < N / D; sub++) {
           for (int j = sub * D; j < (sub + 1) * D; j++) {
             assert(tmpvid < N && j < N);
@@ -91,13 +158,7 @@ int main(int argc, char *argv[]) {
               part[worker][at]++;
             }
           }
-          // if(tmpvid == 22){
-          // printf("worker %2d batch %2d sub %3d: ", worker, batch, sub);
-          // for (int i = 0; i < K; i++) {
-          //   printf("%3d,", part[worker][i]);
-          // }
-          // printf("\n");
-          // }
+          export_part(worker, batch, sub, part);
         }
         int id = worker;
         int m = part[worker][worker];
@@ -112,10 +173,12 @@ int main(int argc, char *argv[]) {
         next[worker][batch] = id;
         proposal_number[worker][batch] = proposal_cntr[worker][id];
         proposal_cntr[worker][id]++;
-        printf("%3d,%3d\n", tmpvid, next[worker][batch]);
-        // printf("batch %3d vid = %3d next = %3d proposal number %3d\n", batch,
-              //  tmpvid, next[worker][batch], proposal_number[worker][batch]);
+        export_next(worker, batch, next[worker][batch]);
+        export_proposal_num(worker, proposal_number[worker][batch]);
+        // if(worker == 0)
+        printf("%3d,%3d,%3d\n", tmpvid, next[worker][batch], proposal_number[worker][batch]);
       }
+      // export_proposal_cntr();
       // printf("proposal cntr from %d to 0 - K-1", worker);
       // for (int i = 0; i < K; i++) {
       //   printf("%3d,", proposal_cntr[worker][i]);

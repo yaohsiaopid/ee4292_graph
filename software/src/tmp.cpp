@@ -82,28 +82,39 @@ int main(int argc, char *argv[]) {
 
     for (int i = 0; i < V; i++) {
       for (int j = 0; j < V; j++) {
-        if (dist[i][j] < INF && i != j) {
+        if (dist[i][j] < INF) {
           int at = part[j][K];
           part[i][at]++;
         }
       }
-      int id = 0;
-      int m = part[i][0];
-      for (int pt = 1; pt < K; pt++) {
+      int mycurrent = part[i][K];
+      // if(i == 22)?
+      // printf("mycurrent = %d\n", mycurrent);
+      int id = mycurrent;
+      int m = part[i][mycurrent];
+      for (int pt = 0; pt < K; pt++) {
         if (part[i][pt] > m) {
           id = pt;
           m = part[i][pt];
         }
       }
-      int mycurrent = part[i][K];
+      // if(i == 22) {
+        // for(int j = 0; j < K; j++) {
+        //   printf("%3d,", part[i][j]);
+        // }
+        // printf("\n");
+      // }
       part[i][K + 1] = id;
+      part[i][K + 2] = proposals[mycurrent][id];
       if (id != mycurrent) {
-        part[i][K + 2] = proposals[mycurrent][id];
+       // part[i][K + 2] = proposals[mycurrent][id];
         proposals[mycurrent][id]++;
       }
+      // printf("%3d,%3d\n", i, part[i][K+1]);
     }
 // dump proposal
 #if DUMP == 1
+    // mij 
     dumpProposal(proposals, K);
 #endif
 
@@ -129,11 +140,11 @@ int main(int argc, char *argv[]) {
     std::cout << "cost: " << cntE << "\n";
     std::cout << "local: \t";
     for (int i = 0; i < K; i++) {
-      printf("%d,", local[i] / 2);
+      printf("%d,", local[i]);
     }
     std::cout << "\nouter: \t";
     for (int i = 0; i < K; i++) {
-      printf("%d,", outer[i] / 2);
+      printf("%d,", outer[i]);
     }
     // update
     std::cout << "\n -- moving -- \n";
@@ -164,10 +175,10 @@ int main(int argc, char *argv[]) {
       }
     }
     std::cout << "move cnt:" << movecnt << "\n";
-    if (movecnt == 0) {
-      // dump proposal
-      dumpProposal(proposals, K);
-    }
+    // if (movecnt == 0) {
+    //   // dump proposal
+    //   dumpProposal(proposals, K);
+    // }
 
     // partition count
     int *stat = new int[K];

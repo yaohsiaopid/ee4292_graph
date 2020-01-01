@@ -2,7 +2,7 @@
 module next_sram_256x4b #(    
 parameter ADDR_SPACE = 4, // 256 / 16
 parameter Q = 16,
-parameter BW = 4,
+parameter BW = 4
 )
 (
 input clk,

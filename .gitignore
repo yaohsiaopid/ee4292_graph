@@ -1,2 +1,7 @@
 software/build/
+software/gold/
+software/dump/
 */*.log
+sim/INCA_libs/
+sim/ncverilog.*
+
