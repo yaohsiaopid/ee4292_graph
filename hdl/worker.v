@@ -16,6 +16,7 @@ module worker
     parameter BATCH_BW = 8
 )
 (
+    input clk,
     input en,
     input rst_n,
     input [BATCH_BW-1:0] batch_num,
@@ -23,7 +24,6 @@ module worker
     input [D*DIST_BW-1:0] dist_rdata,
     input [D*LOC_BW-1:0] loc_rdata,
 
-    output reg [DIST_ADDR_SPACE-1:0] dist_waddr,
     output reg [Q*NEXT_BW-1:0] next_wdata,
     output reg [NEXT_ADDR_SPACE-1:0] next_waddr,
     output reg [Q*PRO_BW-1:0] pro_wdata,
