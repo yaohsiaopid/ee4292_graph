@@ -17,7 +17,7 @@ void export_vid(int worker, int vid) {
   char filename[100];
   sprintf(filename, "./gold/%d_vid.dat", worker);
   FILE *fptr = fopen(filename, "a+");
-  fprintf(fptr, "%d", vid);
+  fprintf(fptr, "%2x", vid);
   // for(int itm = 16; itm >= 0; itm--){
   //   fprintf(fptr, "%d", (proposal >> itm) & 1);
   // }
@@ -31,11 +31,12 @@ void export_vid(int worker, int vid) {
 }
 void export_proposal_num(int worker, int proposal) {
   char filename[100];
-  sprintf(filename, "./gold/%d_propsal_num.dat", worker);
+  sprintf(filename, "./gold/%d_proposal_num.dat", worker);
   FILE *fptr = fopen(filename, "a+");
-  for(int itm = 7; itm >= 0; itm--){
-    fprintf(fptr, "%d", (proposal >> itm) & 1);
-  }
+  fprintf(fptr, "%2x", proposal);
+  // for(int itm = 7; itm >= 0; itm--){
+  //   fprintf(fptr, "%d", (proposal >> itm) & 1);
+  // }
   fprintf(fptr, "\n");
   fclose(fptr);
   if(worker == 0){
@@ -51,9 +52,10 @@ void export_part(int worker, int batch, int sub, int part[][K]) {
   FILE *fptr = fopen(filename, "a+");
   for(int i = 0; i < K; i++) {
     int p = part[worker][i];
-    for(int itm = 7; itm >= 0; itm--){
-      fprintf(fptr, "%d", (p >> itm) & 1);
-    }
+    fprintf(fptr, "%02x", p);
+    // for(int itm = 7; itm >= 0; itm--){
+    //   fprintf(fptr, "%d", (p >> itm) & 1);
+    // }
     if(i != K-1)
     fprintf(fptr, "_");
   }
@@ -72,9 +74,10 @@ void export_next(int worker, int batch, int next) {
   char filename[100];
   sprintf(filename, "./gold/%d_next.dat", worker);
   FILE *fptr = fopen(filename, "a+");
-  for(int itm = 3; itm >= 0; itm--){
-    fprintf(fptr, "%d", (next >> itm) & 1);
-  }
+  fprintf(fptr, "%2x", next);
+  // for(int itm = 3; itm >= 0; itm--){
+  //   fprintf(fptr, "%d", (next >> itm) & 1);
+  // }
   fprintf(fptr, "\n");
   fclose(fptr);
   if(worker == 0){
@@ -99,17 +102,37 @@ void input(char filename[]) {
     dist[src_id][dst_id] = 1;
     dist[dst_id][src_id] = 1;
   }
-}
-void dumploc(int *loc, int dump) {
-  if (dump == 0)
-    return;
-  for(int i = 0; i < N; i++) {
-    printf("%3d at %d;", i, loc[i]);
-    if ((i + 1) % 5 == 4 && i > 0)
-      std::cout << "\n";
-    else
-      std::cout << "\t";
+  for(int i = 10; i < 11; i++) {
+    for(int j = 0; j < N; j++) {
+      if(j % 256 == 0 && j > 0) printf("\n");
+      printf("%d", dist[i][j]);
+    }
+    printf("\n");
   }
+  // export dist 
+  FILE *fptr = fopen("./gold/dist.dat", "a+");
+  
+  for(int i = 0; i < N; i++) {
+    int j = 0;
+    while(j < N) {
+    for(int tmp = 0; tmp < 64 && j < N; tmp++, j+=4) {
+      // fprintf(fptr, "%", dist[i][j]);
+      int a = dist[i][j] * 8 + dist[i][j+1] * 4 + dist[i][j+2] * 2 + dist[i][j+3];
+      fprintf(fptr, "%1x", a);
+      // if(j += 4 < N) fprintf(fptr, " ");
+    }
+    }
+    fprintf(fptr, "\n");
+  }
+  fclose(fptr);
+}
+void dumploc(int *loc) {
+  
+  FILE *fptr = fopen("./gold/loc.dat", "a+");
+  for(int i = 0; i < N; i++) {
+    fprintf(fptr, "%02x\n", loc[i]);
+  }
+  fclose(fptr);
 }
 int main(int argc, char *argv[]) {
   assert(argc == 2);
@@ -127,7 +150,7 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < N; i++) {
     loc[i] = (i / part_size >= K - 1) ? K - 1 : i / part_size;
   }
-  dumploc(loc, DUMP);
+  dumploc(loc);
   for (int i = 0; i < K; i++) {
     next[i] = new int[N / K]();
     vid[i] = new int[N / K]();

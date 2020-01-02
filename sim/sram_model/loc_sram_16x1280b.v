@@ -34,7 +34,8 @@ assign bit_mask = {
 {5{bytemask[63]}},{5{bytemask[62]}},{5{bytemask[61]}},{5{bytemask[60]}},{5{bytemask[59]}},{5{bytemask[58]}},{5{bytemask[57]}},{5{bytemask[56]}},{5{bytemask[55]}},{5{bytemask[54]}},{5{bytemask[53]}},{5{bytemask[52]}},{5{bytemask[51]}},{5{bytemask[50]}},{5{bytemask[49]}},{5{bytemask[48]}},
 {5{bytemask[47]}},{5{bytemask[46]}},{5{bytemask[45]}},{5{bytemask[44]}},{5{bytemask[43]}},{5{bytemask[42]}},{5{bytemask[41]}},{5{bytemask[40]}},{5{bytemask[39]}},{5{bytemask[38]}},{5{bytemask[37]}},{5{bytemask[36]}},{5{bytemask[35]}},{5{bytemask[34]}},{5{bytemask[33]}},{5{bytemask[32]}},
 {5{bytemask[31]}},{5{bytemask[30]}},{5{bytemask[29]}},{5{bytemask[28]}},{5{bytemask[27]}},{5{bytemask[26]}},{5{bytemask[25]}},{5{bytemask[24]}},{5{bytemask[23]}},{5{bytemask[22]}},{5{bytemask[21]}},{5{bytemask[20]}},{5{bytemask[19]}},{5{bytemask[18]}},{5{bytemask[17]}},{5{bytemask[16]}},
-{5{bytemask[15]}},{5{bytemask[14]}},{5{bytemask[13]}},{5{bytemask[12]}},{5{bytemask[11]}},{5{bytemask[10]}},{5{bytemask[9]}},{5{bytemask[8]}},{5{bytemask[7]}},{5{bytemask[6]}},{5{bytemask[5]}},{5{bytemask[4]}},{5{bytemask[3]}},{5{bytemask[2]}},{5{bytemask[1]}},{5{bytemask[0]}},
+{5{bytemask[15]}},{5{bytemask[14]}},{5{bytemask[13]}},{5{bytemask[12]}},{5{bytemask[11]}},{5{bytemask[10]}},{5{bytemask[9]}},{5{bytemask[8]}},{5{bytemask[7]}},{5{bytemask[6]}},{5{bytemask[5]}},{5{bytemask[4]}},{5{bytemask[3]}},{5{bytemask[2]}},{5{bytemask[1]}},{5{bytemask[0]}}
+};
 
 always @(posedge clk) begin
     if(~wsb)
