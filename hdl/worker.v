@@ -32,7 +32,15 @@ module worker
     output reg ready, //  if sub-batch is ready, test each cycle 
     output reg batch_finish // if a vertex is finish, test next & proposal # next cycle
 );
-
+reg [7:0] b [0:K-1] [0:K-1];
+integer i, j;
+always @* begin 
+    for(i = 0; i < K; i = i + 1) begin
+        for(j = 0; j < K; j = j + 1) begin  
+            b[i][j] = i * j;
+        end  
+    end 
+end 
 // reg [VID_BW-1:0] vid [0:Q-1];
 // reg [D-1:0] dist;
 // reg [LOC_BW-2:0] loc [0:D-1];
