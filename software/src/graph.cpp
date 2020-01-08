@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
        // part[i][K + 2] = proposals[mycurrent][id];
         proposals[mycurrent][id]++;
       // }
-      printf("%3d,%3d,%3d\n", i, part[i][K+1],part[i][K+2]);
+      // printf("%3d,%3d,%3d\n", i, part[i][K+1],part[i][K+2]);
     }
 // dump proposal
 #if DUMP == 1
@@ -146,6 +146,15 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < K; i++) {
       printf("%d,", outer[i]);
     }
+    // dump  mijs
+    printf("---=======----=====----\n");
+    for(int i = 0; i < K; i++) {
+      for(int j = 0; j < K; j++) {
+        printf("%3d,", proposals[i][j]);
+      }
+      printf("\n");
+    }
+    printf("---=======----=====----\n");
     // update
     std::cout << "\n -- moving -- \n";
     int movecnt = 0;
@@ -156,20 +165,15 @@ int main(int argc, char *argv[]) {
         int mij = proposals[current][newdst], mji = proposals[newdst][current];
         int xij = mij < mji ? mij : mji;
 // change partition randomly
-#if PROPOSAL_METRIC == 2
-        int rrr = std::rand() % mij;
-        if ((mij != xij && rrr < xij) || mij == xij) {
-#elif PROPOSAL_METRIC == 1
-        if ((mij != xij && (i / (V / mij)) < xij) || mij == xij) {
-#else
+// #if PROPOSAL_METRIC == 2
+//         int rrr = std::rand() % mij;
+//         if ((mij != xij && rrr < xij) || mij == xij) {
+// #elif PROPOSAL_METRIC == 1
+//         if ((mij != xij && (i / (V / mij)) < xij) || mij == xij) {
+// #else
         if ((mij != xij && part[i][K + 2] < xij) || mij == xij) {
-#endif
+// #endif
           part[i][K] = newdst;
-#if DUMP == 1
-          if (movecnt % 5 == 0 && movecnt > 0)
-            printf("\n");
-          printf("%3d moves from %d to %d\t", i, current, newdst);
-#endif
           movecnt++;
         }
       }
@@ -179,7 +183,10 @@ int main(int argc, char *argv[]) {
     //   // dump proposal
     //   dumpProposal(proposals, K);
     // }
-
+    // dump where they go
+    for(int i = 0; i < V; i++) {
+      printf("%3d, %3d\n", i, part[i][K]);
+    }
     // partition count
     int *stat = new int[K];
     for (int i = 0; i < V; i++) {
@@ -190,5 +197,24 @@ int main(int argc, char *argv[]) {
       std::cout << stat[i] << "\t";
     }
     std::cout << "\n";
+    for(int i = 0; i < K; i++) {
+      printf("%d: ", i);
+      for(int j = 0; j < 256; j++) {
+        if(part[j][K] == i) printf("%3d,", j);
+      }
+      printf("\n");
+    }
+
+    FILE *fpr= fopen("out_graph.csv", "w");  
+    std::vector<std::vector<int>> wdata_total(K); // K rows 
+    for(int i = 0; i < V; i++) {
+      wdata_total[part[i][K]].push_back(i);
+    }
+    for(int i = 0; i < K; i++) {
+      for(int j = 0; j < wdata_total[i].size(); j++) {
+        fprintf(fpr, "%d,", wdata_total[i][j]);
+      }
+      fprintf(fpr, "\n");
+    }
   }
 }

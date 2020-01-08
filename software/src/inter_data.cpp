@@ -102,13 +102,15 @@ void input(char filename[]) {
     dist[src_id][dst_id] = 1;
     dist[dst_id][src_id] = 1;
   }
-  for(int i = 10; i < 11; i++) {
+  printf("JJJJJJ\n");
+  for(int i = 0; i < 1; i++) {
     for(int j = 0; j < N; j++) {
       if(j % 256 == 0 && j > 0) printf("\n");
       printf("%d", dist[i][j]);
     }
     printf("\n");
   }
+  printf("JJJJJJ\n");
   // export dist 
   FILE *fptr = fopen("./gold/dist.dat", "a+");
   

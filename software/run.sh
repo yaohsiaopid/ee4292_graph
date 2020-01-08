@@ -1,5 +1,7 @@
 #!/bin/bash
 set -x
+mkdir -p gold
+mkdir -p build 
 make inter_data
 make graph
 rm gold/*

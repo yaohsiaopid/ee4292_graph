@@ -14,6 +14,7 @@
 int dist[10000][10000] = {0};
 int N, E;
 const int K = 16;
+std::vector<std::vector<int>> wdata_total(K); // K rows 
 void export_vid(int worker, int vid) {
   char filename[100];
   sprintf(filename, "./gold/%d_vid.dat", worker);
@@ -224,7 +225,8 @@ int main(int argc, char *argv[]) {
     int export_flg[K] = {0};
     int wdata[K][Q] = {0};
     int waddr[K] = {0};
-    int epoch_num = 16;//N / Q;
+    int partial_sum[Q][K];
+    int epoch_num = N / Q;
     for(int epoch = 0; epoch < epoch_num; epoch++) {
         int banknum = epoch / Q;
         int idx = epoch % Q;
@@ -257,7 +259,7 @@ int main(int argc, char *argv[]) {
             }
         }
         // printf("partial sum:\n");
-        int partial_sum[Q][K];
+        
         for(int i = 0; i < Q; i++) {
             for(int j = 0; j < K; j++) {
                 partial_sum[i][j] = 0;
@@ -296,13 +298,17 @@ int main(int argc, char *argv[]) {
         // printf("-----------------\n export ? :");
         for(int i = 0; i < K; i++) {
             if(export_flg[i] == 1) {
-                printf("$$$$ i = %d:  ", i);
+                // printf("$$$$ i = %d:  ", i);
                 for(int j = 0; j < Q; j++) {
                     wdata[i][j] = buffer[i][j];
                     buffer[i][j] = 0;
-                    printf("%3d,", wdata[i][j]);
+                    // printf("%3d,", wdata[i][j]);
                 }
-                printf("\n");
+                // export to checking 
+                for(int j = 0; j < Q; j++) {
+                  wdata_total[i].push_back(wdata[i][j]);
+                }
+                // printf("\n");
                 waddr[i]++;
             }
         }
@@ -342,6 +348,43 @@ int main(int argc, char *argv[]) {
         // if(idx == 0)
         // printf("-----------\n");
     }
+
+
+    // clean buffer 
+
+    for(int i = 0; i < K; i++) {
+        // buffaccum[i] = (accum[i] >= Q ? accum[i] - Q : accum[i]);
+        if(accum[i] >= Q) {
+            accum[i] -= Q;
+            accum[i] += partial_sum[Q-1][i];
+            export_flg[i] = 1;
+        } else {
+        //     accum[i] += partial_sum[Q-1][i];
+            export_flg[i] = 0;
+        }
+        // printf("(%3d, %3d),", accum[i], export_flg[i]);
+    }
+
+    // ------
+    // printf("-----------------\n export ? :");
+    for(int i = 0; i < K; i++) {
+        if(export_flg[i] == 1) {
+            // printf("$$$$ i = %d:  ", i);
+            for(int j = 0; j < Q; j++) {
+                wdata[i][j] = buffer[i][j];
+                buffer[i][j] = 0;
+                // printf("%3d,", wdata[i][j]);
+            }
+            // export to checking 
+            for(int j = 0; j < Q; j++) {
+              wdata_total[i].push_back(wdata[i][j]);
+            }
+            // printf("\n");
+            waddr[i]++;
+        }
+    }
+
+    // ----- 
     printf("-----------------\n waddr: ");
     for(int i = 0; i < K; i++) {
         printf("%2d, ", waddr[i]);
@@ -356,6 +399,14 @@ int main(int argc, char *argv[]) {
             printf("%3d,", buffer[buffi][buffj]);
         }
         printf("\n");
+    }
+
+    FILE *fpr= fopen("out.csv", "w");  
+    for(int i = 0; i < K; i++) {
+      for(int j = 0; j < wdata_total[i].size(); j++) {
+        fprintf(fpr, "%d,", wdata_total[i][j]);
+      }
+      fprintf(fpr, "\n");
     }
   }
 }
