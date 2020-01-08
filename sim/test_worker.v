@@ -55,6 +55,7 @@ worker worker_instn(
     .dist_rdata(dist_rdata),
     .loc_rdata(loc_rdata),
     // output 
+    .sub_bat(sub_bat),
     .vid(vid), // for indexing the Dist
     .next_wdata(next_wdata),
     .next_waddr(next_waddr),
@@ -62,7 +63,6 @@ worker worker_instn(
     .pro_waddr(pro_waddr),
     .ready(ready),
     .batch_finish(batch_finish)
-    .sub_bat(sub_bat)
 );
 
 // each worker is responsible for N/K = 4096 / 16 = 256 totaly for one round
@@ -122,7 +122,7 @@ initial begin
 end 
 
 localparam max_batch = 256;
-localparam max_sub_bat = 16;
+localparam max_sub_bat = 15;
 // TODO: check ".internal" params name  eg. line 118
 integer check_sub;
 integer check_batch;
@@ -152,6 +152,7 @@ initial begin
                 $write("%h ", worker_instn.part_reg[i]);
 //                if(worker_instn.part[i] != )
             end 
+            $write("next: %h", next_wdata);
             $write("\n");
             // $write("\n");
             check_sub = check_sub + 1;
