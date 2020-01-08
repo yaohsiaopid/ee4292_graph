@@ -15,77 +15,48 @@ int dist[10000][10000] = {0};
 int N, E;
 const int K = 16;
 std::vector<std::vector<int>> wdata_total(K); // K rows 
-void export_vid(int worker, int vid) {
-  char filename[100];
-  sprintf(filename, "./gold/%d_vid.dat", worker);
-  FILE *fptr = fopen(filename, "a+");
-  fprintf(fptr, "%2x", vid);
-  // for(int itm = 16; itm >= 0; itm--){
-  //   fprintf(fptr, "%d", (proposal >> itm) & 1);
-  // }
-  fprintf(fptr, "\n");
-  fclose(fptr);
-  if(worker == 0){
-    FILE *tmp = fopen("./gold/tmp_vid_num.dat", "a+");
-    fprintf(tmp, "%d\n", vid);
-    fclose(tmp);
+void export_inputs(int v_gidx[], int proposal_nums[], int next_arr[], int mi_j[], int mj_i[]) {
+  FILE *f_v_gids = fopen("./gold_master/v_gidx.dat", "a+");
+  FILE *f_props_num = fopen("./gold_master/proposal_nums.dat", "a+");
+  FILE *f_next_arr = fopen("./gold_master/next_arr.dat", "a+");
+  FILE *f_mi_j = fopen("./gold_master/mi_j.dat", "a+");
+  FILE *f_mj_i = fopen("./gold_master/mj_i.dat", "a+");
+  for(int i = 0; i < Q; i++) {
+    fprintf(f_v_gids, "%03x", v_gidx[i]);
+    if(i < Q - 1) fprintf(f_v_gids, "_");
+    fprintf(f_props_num, "%02x", proposal_nums[i]);
+    if(i < Q - 1) fprintf(f_props_num, "_");
+    fprintf(f_next_arr, "%1x", next_arr[i]);
+    if(i < Q - 1) fprintf(f_next_arr, "_");
   }
-}
-void export_proposal_num(int worker, int proposal) {
-  char filename[100];
-  sprintf(filename, "./gold/%d_proposal_num.dat", worker);
-  FILE *fptr = fopen(filename, "a+");
-  fprintf(fptr, "%2x", proposal);
-  // for(int itm = 7; itm >= 0; itm--){
-  //   fprintf(fptr, "%d", (proposal >> itm) & 1);
-  // }
-  fprintf(fptr, "\n");
-  fclose(fptr);
-  if(worker == 0){
-    FILE *tmp = fopen("./gold/tmp_propsal_num.dat", "a+");
-    fprintf(tmp, "%d\n", proposal);
-    fclose(tmp);
-  }
-}
-void export_part(int worker, int batch, int sub, int part[][K]) {
-  if(batch > 2) return;
-  char filename[100];
-  sprintf(filename, "./gold/%d_bat%d_part.dat", worker, batch);
-  FILE *fptr = fopen(filename, "a+");
   for(int i = 0; i < K; i++) {
-    int p = part[worker][i];
-    fprintf(fptr, "%02x", p);
-    // for(int itm = 7; itm >= 0; itm--){
-    //   fprintf(fptr, "%d", (p >> itm) & 1);
-    // }
-    if(i != K-1)
-    fprintf(fptr, "_");
+    fprintf(f_mi_j, "%02x", mi_j[i]);
+    if(i < K - 1) fprintf(f_mi_j, "_");
+    fprintf(f_mj_i, "%02x", mj_i[i]);
+    if(i < K - 1) fprintf(f_mj_i, "_");
   }
-  fprintf(fptr, "\n");
-  fclose(fptr);
-  if(worker == 0 && batch == 0){
-    FILE *tmp = fopen("./gold/tmp_bat.dat", "a+");
-    for(int i = 0; i < K; i++) {
-    fprintf(tmp, "%3d,", part[worker][i]);
-    }
-    fprintf(tmp, "\n");
-    fclose(tmp);
-  }
+  fprintf(f_v_gids, "\n");
+  fprintf(f_props_num, "\n");
+  fprintf(f_next_arr, "\n");
+  fprintf(f_mi_j, "\n");
+  fprintf(f_mj_i, "\n");
+  fclose(f_v_gids);
+  fclose(f_props_num);
+  fclose(f_next_arr);
+  fclose(f_mi_j);
+  fclose(f_mj_i);
 }
-void export_next(int worker, int batch, int next) {
-  char filename[100];
-  sprintf(filename, "./gold/%d_next.dat", worker);
-  FILE *fptr = fopen(filename, "a+");
-  fprintf(fptr, "%2x", next);
-  // for(int itm = 3; itm >= 0; itm--){
-  //   fprintf(fptr, "%d", (next >> itm) & 1);
-  // }
-  fprintf(fptr, "\n");
-  fclose(fptr);
-  if(worker == 0){
-    FILE *tmp = fopen("./gold/tmp.dat", "a+");
-    fprintf(tmp, "%d\n", next);
-    fclose(tmp);
+void export_wdata(int epoch, int wen, int wdata[][Q]) {
+  FILE *f_wdata = fopen("./gold_master/wdata.dat", "a+");
+  assert(wen < 65536);
+  fprintf(f_wdata, "%02x_%04x\n", epoch, wen);
+  for(int i = 0, bitselect = 1 << (K-1); i < K; i++, bitselect = bitselect >> 1) {
+    if(wen & bitselect) {
+      fprintf(f_wdata, "%x\n", i);
+      for(int j = 0; j < Q; j++) {  
+        fprintf(f_wdata, "%03x", wdata[i][j]);
+      }  
+    }
   }
 }
 void input(char filename[]) {
@@ -104,38 +75,6 @@ void input(char filename[]) {
     dist[src_id][dst_id] = 1;
     dist[dst_id][src_id] = 1;
   }
-//   for(int i = 10; i < 11; i++) {
-//     for(int j = 0; j < N; j++) {
-//       if(j % 256 == 0 && j > 0) printf("\n");
-//       printf("%d", dist[i][j]);
-//     }
-//     printf("\n");
-//   }
-  // export dist 
-  /*FILE *fptr = fopen("./gold/dist.dat", "a+");
-  
-  for(int i = 0; i < N; i++) {
-    int j = 0;
-    while(j < N) {
-    for(int tmp = 0; tmp < 64 && j < N; tmp++, j+=4) {
-      // fprintf(fptr, "%", dist[i][j]);
-      int a = dist[i][j] * 8 + dist[i][j+1] * 4 + dist[i][j+2] * 2 + dist[i][j+3];
-      fprintf(fptr, "%1x", a);
-      // if(j += 4 < N) fprintf(fptr, " ");
-    }
-    }
-    fprintf(fptr, "\n");
-  }
-  fclose(fptr);
-  */
-}
-void dumploc(int *loc) {
-  
-  FILE *fptr = fopen("./gold/loc.dat", "a+");
-  for(int i = 0; i < N; i++) {
-    fprintf(fptr, "%02x\n", loc[i]);
-  }
-  fclose(fptr);
 }
 int main(int argc, char *argv[]) {
   assert(argc == 2);
@@ -153,7 +92,6 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < N; i++) {
     loc[i] = (i / part_size >= K - 1) ? K - 1 : i / part_size;
   }
-//   dumploc(loc);
   for (int i = 0; i < K; i++) {
     next[i] = new int[N / K]();
     vid[i] = new int[N / K]();
@@ -199,24 +137,9 @@ int main(int argc, char *argv[]) {
         next[worker][batch] = id;
         proposal_number[worker][batch] = proposal_cntr[worker][id];
         proposal_cntr[worker][id]++;
-        // export_next(worker, batch, next[worker][batch]);
-        // export_proposal_num(worker, proposal_number[worker][batch]);
-        // if(worker == 0)
-        // printf("%3d,%3d,%3d\n", tmpvid, next[worker][batch], proposal_number[worker][batch]);
       }
-      // export_proposal_cntr();
-      // printf("proposal cntr from %d to 0 - K-1", worker);
-      // for (int i = 0; i < K; i++) {
-      //   printf("%3d,", proposal_cntr[worker][i]);
-      // }
-      // printf("\n");
     }
-    // for(int i = 0; i < K; i++) {
-    //     for(int j = 0; j < K; j++) {
-    //         printf("%3d,", proposal_cntr[i][j]);
-    //     }
-    //     printf("\n");
-    // }
+    
     // master 
     printf("---=======----=====----\n");
     int buffer[K][2*Q] = {0};
@@ -244,11 +167,9 @@ int main(int argc, char *argv[]) {
             mi_j[i] = proposal_cntr[banknum][i];
             mj_i[i] = proposal_cntr[i][banknum];
             xijs[i] = mi_j[i] < mj_i[i] ? mi_j[i] : mj_i[i];
-            if(idx == 0) {
-                // printf("%d %d, xij = %d\n", banknum, i, xijs[i]);
-                // printf("i: %d, mi_j[%d] = %d, mj_i[%d] = %d\n",banknum, i, mi_j[i], i, mj_i[i]);
-            }
         }
+        // export next_arr, mi_j, mj_i, v_gidx, proposal_nums
+        export_inputs(v_gidx, proposal_nums, next_arr, mi_j, mj_i);
         for(int i = 0; i < Q; i++) {
             real_next_arr[i] = xijs[next_arr[i]] > proposal_nums[i] ?  next_arr[i] : banknum; 
         }
@@ -296,12 +217,14 @@ int main(int argc, char *argv[]) {
 
         // ------
         // printf("-----------------\n export ? :");
+        int wen = 0;
         for(int i = 0; i < K; i++) {
             if(export_flg[i] == 1) {
                 // printf("$$$$ i = %d:  ", i);
+                wen = wen | (1 << (15-i));
                 for(int j = 0; j < Q; j++) {
                     wdata[i][j] = buffer[i][j];
-                    buffer[i][j] = 0;
+                    buffer[i][j] = -1;
                     // printf("%3d,", wdata[i][j]);
                 }
                 // export to checking 
@@ -312,6 +235,7 @@ int main(int argc, char *argv[]) {
                 waddr[i]++;
             }
         }
+        export_wdata(epoch, wen, wdata);
         // printf("\n-----------\nbuffaccum:");
         // for(int i = 0; i < K; i++) {
         //     printf("%2d, ", buffaccum[i]);
@@ -328,11 +252,12 @@ int main(int argc, char *argv[]) {
                     } else {
                         buffer[buffi][buffj] = 0;
                         for(int tmp = 0; tmp < Q; tmp++) {
-                            buffer[buffi][buffj] += (real_next_arr[tmp] == buffi) * (buffer_idx[tmp] == buffj) * v_gidx[tmp];
+                            buffer[buffi][buffj] = buffer[buffi][buffj] | ((real_next_arr[tmp] == buffi) * (buffer_idx[tmp] == buffj) * v_gidx[tmp]);
                         }
                         assert(buffer[buffi][buffj] <= vid[banknum][255]);
                     }
                 }
+                assert(buffer[buffi][buffj] >= 0);
                 // printf("%3d,", buffer[buffi][buffj]);
             }
             // printf("\n");

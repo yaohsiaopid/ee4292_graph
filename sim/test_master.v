@@ -1,7 +1,7 @@
 // `timescale 1ns/100ps
 // TEST worker 0 currently for first iteration 
 // to change worker go line 90
-module test_worker;
+module test_master;
 localparam N = 4096;
 localparam K = 16;
 localparam D = 256;
