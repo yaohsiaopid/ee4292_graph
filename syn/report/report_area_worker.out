@@ -1,0 +1,86 @@
+ 
+****************************************
+Report : area
+Design : worker
+Version: O-2018.06
+Date   : Fri Jan 10 04:19:59 2020
+****************************************
+
+Library(s) Used:
+
+    saed32hvt_ss0p95v125c (File: /usr/cadtool/SAED32_EDK/lib/stdcell_hvt/db_nldm/saed32hvt_ss0p95v125c.db)
+
+Number of ports:                         1931
+Number of nets:                         30880
+Number of cells:                        24640
+Number of combinational cells:          17755
+Number of sequential cells:              6842
+Number of macros/black boxes:               0
+Number of buf/inv:                       1541
+Number of references:                      82
+
+Combinational area:              48566.918286
+Buf/Inv area:                     1979.019337
+Noncombinational area:           45323.534052
+Macro/Black Box area:                0.000000
+Net Interconnect area:           33012.299250
+
+Total cell area:                 93890.452338
+Total area:                     126902.751588
+
+Hierarchical area distribution
+------------------------------
+
+                                  Global cell area            Local cell area
+                                  -------------------  ------------------------------ 
+Hierarchical cell                 Absolute    Percent  Combi-      Noncombi-   Black-
+                                  Total       Total    national    national    boxes   Design
+--------------------------------  ----------  -------  ----------  ----------  ------  ---------------------------------------
+worker                            93890.4523    100.0  48424.8518  45104.9702  0.0000  worker
+clk_gate_next_waddr_reg               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_0
+clk_gate_proposal_cnt_reg_0_          8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_16
+clk_gate_proposal_cnt_reg_10_         8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_6
+clk_gate_proposal_cnt_reg_11_         8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_5
+clk_gate_proposal_cnt_reg_12_         8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_4
+clk_gate_proposal_cnt_reg_13_         8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_3
+clk_gate_proposal_cnt_reg_14_         8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_2
+clk_gate_proposal_cnt_reg_15_         8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_1
+clk_gate_proposal_cnt_reg_1_          8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_15
+clk_gate_proposal_cnt_reg_2_          8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_14
+clk_gate_proposal_cnt_reg_3_          8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_13
+clk_gate_proposal_cnt_reg_4_          8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_12
+clk_gate_proposal_cnt_reg_5_          8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_11
+clk_gate_proposal_cnt_reg_6_          8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_10
+clk_gate_proposal_cnt_reg_7_          8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_9
+clk_gate_proposal_cnt_reg_8_          8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_8
+clk_gate_proposal_cnt_reg_9_          8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_7
+clk_gate_vid_reg_reg_0_               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_42
+clk_gate_vid_reg_reg_0__0             8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_41
+clk_gate_vid_reg_reg_10_              8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_26
+clk_gate_vid_reg_reg_10__0            8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_25
+clk_gate_vid_reg_reg_11_              8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_24
+clk_gate_vid_reg_reg_11__0            8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_23
+clk_gate_vid_reg_reg_12_              8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_22
+clk_gate_vid_reg_reg_13_              8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_21
+clk_gate_vid_reg_reg_13__0            8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_20
+clk_gate_vid_reg_reg_14_              8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_19
+clk_gate_vid_reg_reg_14__0            8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_18
+clk_gate_vid_reg_reg_15_              8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_17
+clk_gate_vid_reg_reg_1_               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_40
+clk_gate_vid_reg_reg_1__0             8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_39
+clk_gate_vid_reg_reg_2_               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_38
+clk_gate_vid_reg_reg_3_               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_37
+clk_gate_vid_reg_reg_3__0             8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_36
+clk_gate_vid_reg_reg_4_               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_35
+clk_gate_vid_reg_reg_5_               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_34
+clk_gate_vid_reg_reg_5__0             8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_33
+clk_gate_vid_reg_reg_6_               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_32
+clk_gate_vid_reg_reg_6__0             8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_31
+clk_gate_vid_reg_reg_7_               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_30
+clk_gate_vid_reg_reg_8_               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_29
+clk_gate_vid_reg_reg_8__0             8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_28
+clk_gate_vid_reg_reg_9_               8.3868      0.0      3.3039      5.0829  0.0000  SNPS_CLOCK_GATE_HIGH_worker_mydesign_27
+--------------------------------  ----------  -------  ----------  ----------  ------  ---------------------------------------
+Total                                                  48566.9183  45323.5341  0.0000
+
+1
