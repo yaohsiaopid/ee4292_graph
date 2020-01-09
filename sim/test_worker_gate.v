@@ -1,4 +1,4 @@
-// `timescale 1ns/100ps
+`timescale 1ns/100ps
 // TEST worker 0 currently for first iteration 
 // to change worker go line 90
 module test_worker;
@@ -42,7 +42,10 @@ wire [NEXT_ADDR_SPACE-1:0] next_waddr;
 wire [Q*PRO_BW-1:0] pro_wdata;
 wire [PRO_ADDR_SPACE-1:0] pro_waddr;
 wire ready;         // test sub-tach part[k] 
-wire batch_finish;  // test next & proposal         
+wire batch_finish;  // test next & proposal      
+wire [Q-1:0] next_bytemask, pro_bytemask;
+wire wen;   
+
 // assign vid = 0; // for testing testbench ==
 // =================== instance sram ================================
 // TODO: connect the wire and modify IO above and here 
@@ -57,15 +60,15 @@ worker worker_instn(
     // output 
     .sub_bat(sub_bat),
     .vid(vid), // for indexing the Dist
-    .next_bytemask(),
+    .next_bytemask(next_bytemask),
     .next_wdata(next_wdata),
     .next_waddr(next_waddr),
-    .pro_bytemask(),
+    .pro_bytemask(pro_bytemask),
     .pro_wdata(pro_wdata),
     .pro_waddr(pro_waddr),
     .ready(ready),
     .batch_finish(batch_finish),
-    .wen()
+    .wen(wen)
 );
 
 // each worker is responsible for N/K = 4096 / 16 = 256 totaly for one round
@@ -81,7 +84,8 @@ reg [PRO_BW*K-1:0] part_gold[0:15]; // 16(K) , total sub_bat number = 16 for fir
 always #(CYCLE/2) clk = ~clk;
 
 initial begin
-	$fsdbDumpfile("proj_presim_worker_temp.fsdb");
+    $sdf_annotate("../syn/netlist/worker_syn.sdf", worker_instn);
+	$fsdbDumpfile("proj_presim_worker_gate.fsdb");
 	$fsdbDumpvars("+mda");
 end
 
@@ -91,7 +95,7 @@ initial begin
     clk = 0;
     rst_n = 0;
     enable = 1'b0;
-    $readmemh("../software/gold/4_vid.dat", vid_input);
+    $readmemh("../software/gold/1_vid.dat", vid_input);
     $readmemh("../software/gold/dist.dat", dist_input); 
     // $write("%b\n", dist_input[4095]);
     // for(tmp = 0; tmp < 256; tmp = tmp + 1)
