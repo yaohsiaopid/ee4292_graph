@@ -12,7 +12,8 @@ module worker
     parameter PRO_ADDR_SPACE = 4,
     parameter VID_BW = 16,  // 12???
     parameter VID_ADDR_SPACE = 4,
-    parameter Q = 16
+    parameter Q = 16,
+	parameter WORK_IDX = 0
 )
 (
     input clk,
@@ -30,9 +31,10 @@ module worker
     output reg [NEXT_ADDR_SPACE-1:0] next_waddr,
 	output reg [Q-1:0] pro_bytemask,
     output reg [Q*PRO_BW-1:0] pro_wdata,
-    output reg [PRO_ADDR_SPACE-1:0] pro_waddr,
+	output reg [PRO_ADDR_SPACE-1:0] pro_waddr,
     output reg ready,       // for part_reg[0:K-1]
-    output reg batch_finish // for next / proposal number
+    output reg batch_finish, // for next / proposal number
+	output reg wen
 );
 
 // reg [15:0] vid;
@@ -48,56 +50,76 @@ reg [LOC_BW-2:0] loc_reg [0:D-1];
 
 reg [K-1:0] n_loc_oh_reg [0:D-1];
 reg [K-1:0] loc_oh_reg [0:D-1];
-reg [4:0] dsum_reg [8*K-1:0];       // 256 / 32 = 8
-reg [4:0] n_dsum_reg [8*K-1:0];       // 256 / 32 = 8
-reg [7:0] part_reg [K-1:0];
-reg [7:0] n_part_reg [K-1:0];
-reg [NEXT_BW-1:0] n_next_wdata;
+
+reg [4:0] dsum_reg [0:8*K-1];       // 256 / 32 = 8
+reg [4:0] n_dsum_reg [0:8*K-1];       // 256 / 32 = 8
+
+reg [7:0] part_reg [0:K-1];
+reg [7:0] n_part_reg [0:K-1];
+
+reg [Q*NEXT_BW-1:0] n_next_wdata;
+reg [Q-1:0] n_next_bytemask;
+reg [NEXT_ADDR_SPACE-1:0] n_next_waddr;
+
+reg [Q*PRO_BW-1:0] n_pro_wdata;
+reg [PRO_ADDR_SPACE-1:0] n_pro_waddr;
+reg [Q-1:0] n_pro_bytemask;
 
 reg [2:0] state, n_state;
 reg n_batch_finish, n_ready;
 
-reg [12:0] res0_comp [0:7];
-reg [12:0] res1_comp [0:3];
-reg [12:0] res2_comp [0:1];
-reg [12:0] res3_comp;
+reg [11:0] res0_comp [0:7];
+reg [11:0] res1_comp [0:3];
+reg [11:0] res2_comp [0:1];
+reg [11:0] res3_comp;
+reg [3:0] res4_comp;
 
-reg repart;
+reg [7:0] n_proposal_cnt [0:15];
+reg [7:0] proposal_cnt [0:15];
+
+reg part_en;
+
+reg rst_n_in, en_in, n_wen;
 
 integer i;
 
-parameter IDLE = 3'd0, SUB = 3'd1, DELAY = 3'd2, CHECK = 3'd3, FIN = 3'd4;
+parameter IDLE = 3'd0, DELAY1 = 3'd1, SUB = 3'd2, DELAY2 = 3'd3, CHECK = 3'd4, FIN = 3'd5;
 
 // batch_num, sub_bat, state, controls
 always@(posedge clk) begin
+	rst_n_in <= rst_n;
     if(~rst_n) begin
-//        next_reg <= 4'd0;
-//        next_waddr <= ?
-//        next_wdata <= ?
-//        pro_waddr <= ?
-//        pro_wdata <= ?
-        next_wdata <= 4'd0;
+        next_wdata <= 64'd0;
+        next_waddr <= 4'd0;
+		next_bytemask <= 16'b1111_1111_1111_1111;
+        pro_waddr <= 4'd0;
+        pro_wdata <= 128'd0;
+		pro_bytemask <= 16'b1111_1111_1111_1111;
         batch_num_reg <= 8'd0;
         sub_bat <= 4'd0;
         state <= 2'd0;
         batch_finish <= 1'd0;
         ready <= 1'd0;
-        vid <= 16'd0;
-		repart <= 1'b0;
+		part_en <= 1'b0;
+		res4_comp <= 4'd0;
+		wen <= 1'd0;
+		en_in <= 1'd0;
     end else begin
-//        next_reg <= res;
-//        next_waddr <= ?
-//        next_wdata <= ?
-//        pro_waddr <= ?
-//        pro_wdata <= ?
+        next_waddr <= n_next_waddr;
+		next_bytemask <= n_next_bytemask;
         next_wdata <= n_next_wdata;
+		pro_waddr <= n_pro_waddr;
+        pro_wdata <= n_pro_wdata;
+		pro_bytemask <= n_pro_bytemask;
         batch_num_reg <= batch_num;
         sub_bat <= n_sub_bat;
         state <= n_state;
         batch_finish <= n_batch_finish;
         ready <= n_ready;
-        vid <= n_vid;
-		repart <= ready;
+		part_en <= (batch_num_reg == 0 && sub_bat == 2) ? 1 : ready;
+		res4_comp <= (res3_comp[11:4] > part_reg[WORK_IDX]) ? res3_comp[3:0] : WORK_IDX;
+		wen <= n_wen;
+		en_in <= en;
     end
 end
 
@@ -110,7 +132,7 @@ always@(posedge clk) begin
         {vid_reg[12], vid_reg[13], vid_reg[14], vid_reg[15]} <= {vid_reg[12], vid_reg[13], vid_reg[14], vid_reg[15]};
         vid <= n_vid;
     end else begin
-        if(~rst_n) begin
+        if(~rst_n_in) begin
             {vid_reg[0], vid_reg[1], vid_reg[2], vid_reg[3]} <= {16'd0, 16'd0, 16'd0, 16'd0};
             {vid_reg[4], vid_reg[5], vid_reg[6], vid_reg[7]} <= {16'd0, 16'd0, 16'd0, 16'd0};
             {vid_reg[8], vid_reg[9], vid_reg[10], vid_reg[11]} <= {16'd0, 16'd0, 16'd0, 16'd0};
@@ -126,13 +148,25 @@ always@(posedge clk) begin
     end
 end
 
+always@(posedge clk) begin
+	if(~rst_n_in) begin
+		for(i = 0; i < 16; i = i + 1) begin
+			proposal_cnt[i] <= 8'd0;
+		end
+	end else begin
+		for (i = 0; i < 16; i = i + 1) begin
+			proposal_cnt[i] <= n_proposal_cnt[i];
+		end
+	end
+end
+
 always@* begin
     n_vid = vid_reg[batch_num_reg[3:0]]; // 16-1 mux
 end
 
 // dist_reg (checked)
 always@(posedge clk) begin
-    if(~rst_n) begin
+    if(~rst_n_in) begin
         dist_reg <= 256'd0;
     end else begin
         dist_reg <= dist_rdata;
@@ -141,7 +175,7 @@ end
 
 // loc_oh_reg
 always@(posedge clk) begin
-    if(~rst_n) begin
+    if(~rst_n_in) begin
         {loc_oh_reg[0], loc_oh_reg[1], loc_oh_reg[2], loc_oh_reg[3], loc_oh_reg[4], loc_oh_reg[5], loc_oh_reg[6], loc_oh_reg[7]} <= 128'd0;
         {loc_oh_reg[8], loc_oh_reg[9], loc_oh_reg[10], loc_oh_reg[11], loc_oh_reg[12], loc_oh_reg[13], loc_oh_reg[14], loc_oh_reg[15]} <= 128'd0;
         {loc_oh_reg[16], loc_oh_reg[17], loc_oh_reg[18], loc_oh_reg[19], loc_oh_reg[20], loc_oh_reg[21], loc_oh_reg[22], loc_oh_reg[23]} <= 128'd0;
@@ -212,7 +246,7 @@ end
 
 // dsum
 always@(posedge clk) begin
-    if(~rst_n) begin
+    if(~rst_n_in) begin
         {dsum_reg[0], dsum_reg[1], dsum_reg[2], dsum_reg[3], dsum_reg[4], dsum_reg[5], dsum_reg[6], dsum_reg[7]} <= 40'd0;
         {dsum_reg[8], dsum_reg[9], dsum_reg[10], dsum_reg[11], dsum_reg[12], dsum_reg[13], dsum_reg[14], dsum_reg[15]} <= 40'd0;
         {dsum_reg[16], dsum_reg[17], dsum_reg[18], dsum_reg[19], dsum_reg[20], dsum_reg[21], dsum_reg[22], dsum_reg[23]} <= 40'd0;
@@ -251,7 +285,7 @@ end
 
 // part
 always@(posedge clk) begin
-    if(~rst_n) begin
+    if(~rst_n_in) begin
         {part_reg[0], part_reg[1], part_reg[2], part_reg[3], part_reg[4], part_reg[5], part_reg[6], part_reg[7]} <= 32'd0;
         {part_reg[8], part_reg[9], part_reg[10], part_reg[11], part_reg[12], part_reg[13], part_reg[14], part_reg[15]} <= 32'd0;
     end else begin
@@ -262,7 +296,7 @@ end
 
 // loc_reg (checked)
 always@(posedge clk) begin
-    if(~rst_n) begin
+    if(~rst_n_in) begin
         {loc_reg[0], loc_reg[1], loc_reg[2], loc_reg[3], loc_reg[4], loc_reg[5], loc_reg[6], loc_reg[7]} <= 32'd0;
         {loc_reg[8], loc_reg[9], loc_reg[10], loc_reg[11], loc_reg[12], loc_reg[13], loc_reg[14], loc_reg[15]} <= 32'd0;
         {loc_reg[16], loc_reg[17], loc_reg[18], loc_reg[19], loc_reg[20], loc_reg[21], loc_reg[22], loc_reg[23]} <= 32'd0;
@@ -337,42 +371,43 @@ always@* begin
         IDLE: begin
             n_batch_finish = 0;
             n_ready = 0;
-            if(en) begin
-                n_state = SUB;
-                n_sub_bat = 1;
+            if(en_in) begin
+                n_state = DELAY1;
+                n_sub_bat = 0;
             end else begin
                 n_state = IDLE;
                 n_sub_bat = 0;
             end
         end
+		DELAY1: begin
+			n_sub_bat = 0;
+			n_batch_finish = 0;
+			n_ready = 0;								
+			n_state = SUB;
+		end
         SUB: begin
             n_batch_finish = 0;
-			n_ready = (batch_num_reg > 0 && sub_bat == 1) ? 1 : 0;
-            n_state = (sub_bat == 15) ? DELAY : SUB;
+			n_ready = ((batch_num_reg > 0 && sub_bat == 1)) ? 1 : 0;
+            n_state = (sub_bat == 15) ? DELAY2 : SUB;
 			n_sub_bat = sub_bat + 1;
         end
-		DELAY: begin
-			n_batch_finish = 0;
+		DELAY2: begin
 			n_sub_bat = 0;
-			n_ready = 0;	
+			n_batch_finish = 0;
+			n_ready = 0;								
 			n_state = CHECK;
 		end
         CHECK: begin
           	n_sub_bat = 1;
 			n_ready = 0;
-            if(batch_num_reg == 255) begin
-                n_batch_finish = 1;
-                n_state = FIN;
-            end else begin
-                n_batch_finish = 0;
-                n_state = SUB;
-            end
+            n_batch_finish = 0;
+            n_state = (batch_num_reg == 8'd0) ? FIN : SUB;
         end
         FIN: begin
-            n_sub_bat = 0;
-            n_batch_finish = 0;
-            n_ready = 0;
-            n_state = IDLE;
+            n_sub_bat = sub_bat + 1;
+            n_batch_finish = (sub_bat == 4'd4) ? 1 : 0;
+            n_ready = (sub_bat == 4'd1) ? 1 : 0;
+            n_state = (sub_bat == 4'd4) ? IDLE : FIN;
         end
         default: begin
             n_sub_bat = 0;
@@ -5144,7 +5179,7 @@ end
 
 // COMB3: get part_reg
 always@* begin
-    if(repart) begin
+    if(part_en) begin
         n_part_reg[0] = dsum_reg[0] + dsum_reg[1] + dsum_reg[2] + dsum_reg[3] + dsum_reg[4] + dsum_reg[5] + dsum_reg[6] + dsum_reg[7];
         n_part_reg[1] = dsum_reg[8] + dsum_reg[9] + dsum_reg[10] + dsum_reg[11] + dsum_reg[12] + dsum_reg[13] + dsum_reg[14] + dsum_reg[15];
         n_part_reg[2] = dsum_reg[16] + dsum_reg[17] + dsum_reg[18] + dsum_reg[19] + dsum_reg[20] + dsum_reg[21] + dsum_reg[22] + dsum_reg[23];
@@ -5184,7 +5219,7 @@ end
 // COMB4: comparator so as to get next
 always@* begin
     // for work 0
-    res0_comp[0] = {part_reg[1], 4'd0};
+    res0_comp[0] = (part_reg[1] >= part_reg[0]) ? {part_reg[1], 4'd1} : {part_reg[0], 4'd0};
     res0_comp[1] = (part_reg[2] >= part_reg[3]) ? {part_reg[2], 4'd2} : {part_reg[3], 4'd3};
     res0_comp[2] = (part_reg[4] >= part_reg[5]) ? {part_reg[4], 4'd4} : {part_reg[5], 4'd5};
     res0_comp[3] = (part_reg[6] >= part_reg[7]) ? {part_reg[6], 4'd6} : {part_reg[7], 4'd7};
@@ -5192,7 +5227,6 @@ always@* begin
     res0_comp[5] = (part_reg[10] >= part_reg[11]) ? {part_reg[10], 4'd10} : {part_reg[11], 4'd11};
     res0_comp[6] = (part_reg[12] >= part_reg[13]) ? {part_reg[12], 4'd12} : {part_reg[13], 4'd13};
     res0_comp[7] = (part_reg[14] >= part_reg[15]) ? {part_reg[14], 4'd14} : {part_reg[15], 4'd15};
-
 
     res1_comp[0] = (res0_comp[0][11:4] >= res0_comp[1][11:4]) ? res0_comp[0] : res0_comp[1];
     res1_comp[1] = (res0_comp[2][11:4] >= res0_comp[3][11:4]) ? res0_comp[2] : res0_comp[3];
@@ -5203,8 +5237,133 @@ always@* begin
     res2_comp[1] = (res1_comp[2][11:4] >= res1_comp[3][11:4]) ? res1_comp[2] : res1_comp[3];
 
     res3_comp = (res2_comp[0][11:4] >= res2_comp[1][11:4]) ? res2_comp[0] : res2_comp[1];
-
-    n_next_wdata = (res3_comp[11:4] > part_reg[0]) ? res3_comp[11:4] : part_reg[0];
 end
+
+always@* begin
+	case(batch_num_reg[3:0])
+		4'd1: n_next_wdata = {60'd0, res4_comp};
+		4'd2: n_next_wdata = {56'd0, res4_comp, 4'd0};
+		4'd3: n_next_wdata = {52'd0, res4_comp, 8'd0};
+		4'd4: n_next_wdata = {48'd0, res4_comp, 12'd0};
+		4'd5: n_next_wdata = {44'd0, res4_comp, 16'd0};
+		4'd6: n_next_wdata = {40'd0, res4_comp, 20'd0};
+		4'd7: n_next_wdata = {36'd0, res4_comp, 24'd0};
+		4'd8: n_next_wdata = {32'd0, res4_comp, 28'd0};
+		4'd9: n_next_wdata = {28'd0, res4_comp, 32'd0};
+		4'd10: n_next_wdata = {24'd0, res4_comp, 36'd0};
+		4'd11: n_next_wdata = {20'd0, res4_comp, 40'd0};
+		4'd12: n_next_wdata = {16'd0, res4_comp, 44'd0};
+		4'd13: n_next_wdata = {12'd0, res4_comp, 48'd0};
+		4'd14: n_next_wdata = {8'd0, res4_comp, 52'd0};
+		4'd15: n_next_wdata = {4'd0, res4_comp, 56'd0};
+		4'd0: n_next_wdata = {res4_comp, 60'd0};
+		default: n_next_wdata = 64'd0;
+	endcase
+end
+
+always@* begin
+	if(part_en) begin
+		case(batch_num_reg[3:0])
+			4'd1: n_next_bytemask = 16'b1111_1111_1111_1110;
+			4'd2: n_next_bytemask = 16'b1111_1111_1111_1101;
+			4'd3: n_next_bytemask = 16'b1111_1111_1111_1011;
+			4'd4: n_next_bytemask = 16'b1111_1111_1111_0111;
+			4'd5: n_next_bytemask = 16'b1111_1111_1110_1111;
+			4'd6: n_next_bytemask = 16'b1111_1111_1101_1111;
+			4'd7: n_next_bytemask = 16'b1111_1111_1011_1111;
+			4'd8: n_next_bytemask = 16'b1111_1111_0111_1111;
+			4'd9: n_next_bytemask = 16'b1111_1110_1111_1111;
+			4'd10: n_next_bytemask = 16'b1111_1101_1111_1111;
+			4'd11: n_next_bytemask = 16'b1111_1011_1111_1111;
+			4'd12: n_next_bytemask = 16'b1111_0111_1111_1111;
+			4'd13: n_next_bytemask = 16'b1110_1111_1111_1111;
+			4'd14: n_next_bytemask = 16'b1101_1111_1111_1111;
+			4'd15: n_next_bytemask = 16'b1011_1111_1111_1111;
+			4'd0: n_next_bytemask = 16'b0111_1111_1111_1111;
+			default: n_next_bytemask = 16'b1111_1111_1111_1111;
+		endcase
+			n_next_waddr = (batch_num_reg - 1) / 16;
+	end else begin
+		n_next_bytemask = 16'b1111_1111_1111_1111;
+		n_next_waddr = next_waddr;
+	end
+end
+
+// COMB5 proposal_cnt
+always@* begin
+	if(part_en) begin
+		for(i = 0; i < 16; i = i + 1) begin
+			if(res4_comp == i) begin
+				n_proposal_cnt[i] = proposal_cnt[i] + 1;
+			end else begin
+				n_proposal_cnt[i] = proposal_cnt[i];
+			end
+		end
+	end else begin
+		for(i = 0; i < 16; i = i + 1) begin
+			n_proposal_cnt[i] = proposal_cnt[i];
+		end
+	end
+end
+
+always@* begin
+	case(batch_num_reg[3:0])
+		4'd1: n_pro_wdata = {120'd0, proposal_cnt[res4_comp]};
+		4'd2: n_pro_wdata = {112'd0, proposal_cnt[res4_comp], 8'd0};
+		4'd3: n_pro_wdata = {104'd0, proposal_cnt[res4_comp], 16'd0};
+		4'd4: n_pro_wdata = {96'd0, proposal_cnt[res4_comp], 24'd0};
+		4'd5: n_pro_wdata = {88'd0, proposal_cnt[res4_comp], 32'd0};
+		4'd6: n_pro_wdata = {80'd0, proposal_cnt[res4_comp], 40'd0};
+		4'd7: n_pro_wdata = {72'd0, proposal_cnt[res4_comp], 48'd0};
+		4'd8: n_pro_wdata = {64'd0, proposal_cnt[res4_comp], 56'd0};
+		4'd9: n_pro_wdata = {56'd0, proposal_cnt[res4_comp], 64'd0};
+		4'd10: n_pro_wdata = {48'd0, proposal_cnt[res4_comp], 72'd0};
+		4'd11: n_pro_wdata = {40'd0, proposal_cnt[res4_comp], 80'd0};
+		4'd12: n_pro_wdata = {32'd0, proposal_cnt[res4_comp], 88'd0};
+		4'd13: n_pro_wdata = {24'd0, proposal_cnt[res4_comp], 96'd0};
+		4'd14: n_pro_wdata = {16'd0, proposal_cnt[res4_comp], 104'd0};
+		4'd15: n_pro_wdata = {8'd0, proposal_cnt[res4_comp], 112'd0};
+		4'd0: n_pro_wdata = {proposal_cnt[res4_comp], 120'd0};
+		default: n_pro_wdata = 128'd0;
+	endcase
+end
+
+always@* begin
+	if(part_en) begin
+		case(batch_num_reg[3:0])
+			4'd1: n_pro_bytemask = 16'b1111_1111_1111_1110;
+			4'd2: n_pro_bytemask = 16'b1111_1111_1111_1101;
+			4'd3: n_pro_bytemask = 16'b1111_1111_1111_1011;
+			4'd4: n_pro_bytemask = 16'b1111_1111_1111_0111;
+			4'd5: n_pro_bytemask = 16'b1111_1111_1110_1111;
+			4'd6: n_pro_bytemask = 16'b1111_1111_1101_1111;
+			4'd7: n_pro_bytemask = 16'b1111_1111_1011_1111;
+			4'd8: n_pro_bytemask = 16'b1111_1111_0111_1111;
+			4'd9: n_pro_bytemask = 16'b1111_1110_1111_1111;
+			4'd10: n_pro_bytemask = 16'b1111_1101_1111_1111;
+			4'd11: n_pro_bytemask = 16'b1111_1011_1111_1111;
+			4'd12: n_pro_bytemask = 16'b1111_0111_1111_1111;
+			4'd13: n_pro_bytemask = 16'b1110_1111_1111_1111;
+			4'd14: n_pro_bytemask = 16'b1101_1111_1111_1111;
+			4'd15: n_pro_bytemask = 16'b1011_1111_1111_1111;
+			4'd0: n_pro_bytemask = 16'b0111_1111_1111_1111;
+			default: n_pro_bytemask = 16'b1111_1111_1111_1111;
+		endcase
+			n_pro_waddr = (batch_num_reg - 1) / 16;
+	end else begin
+		n_pro_bytemask = 16'b1111_1111_1111_1111;
+		n_pro_waddr = pro_waddr;
+	end
+end
+
+always@* begin
+	if(part_en) n_wen = 1;
+	else n_wen = 0;
+end
+
+// TEST_CYCLE 2.0 -> slack -0.56
+// TEST_CYCLE 2.5 -> slack -0.0225
+// TEST_CYCLE 2.6 -> slack -0.1021
+// TEST_CYCLE 3.0 -> slack 0
 
 endmodule
