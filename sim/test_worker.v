@@ -30,7 +30,7 @@ wire [4-1:0] sub_bat;
 integer i; 
 integer flag;
 // input 
-reg [BATCH_BW-1:0] batch;
+reg [BATCH_BW:0] batch;
 reg [Q*VID_BW-1:0] vid_rdata;
 reg [D*DIST_BW-1:0] dist_rdata;
 reg [D*(LOC_BW-1)-1:0] loc_rdata;
@@ -50,19 +50,22 @@ worker worker_instn(
     .clk(clk),
     .en(enable),
     .rst_n(~rst_n),
-    .batch_num(batch),
+    .batch_num(batch[7:0]),
     .vid_rdata(vid_rdata),
     .dist_rdata(dist_rdata),
     .loc_rdata(loc_rdata),
     // output 
     .sub_bat(sub_bat),
     .vid(vid), // for indexing the Dist
+    .next_bytemask(),
     .next_wdata(next_wdata),
     .next_waddr(next_waddr),
+    .pro_bytemask(),
     .pro_wdata(pro_wdata),
     .pro_waddr(pro_waddr),
     .ready(ready),
-    .batch_finish(batch_finish)
+    .batch_finish(batch_finish),
+    .wen()
 );
 
 // each worker is responsible for N/K = 4096 / 16 = 256 totaly for one round
@@ -88,7 +91,7 @@ initial begin
     clk = 0;
     rst_n = 0;
     enable = 1'b0;
-    $readmemh("../software/gold/0_vid.dat", vid_input);
+    $readmemh("../software/gold/4_vid.dat", vid_input);
     $readmemh("../software/gold/dist.dat", dist_input); 
     $readmemh("../software/gold/loc.dat", loc_input);
     $write("loc %h\n", loc_input[4095]);
@@ -121,10 +124,11 @@ initial begin
     check_batch = 0;
     wait(enable == 1);
     #(CYCLE);
-    while(batch < max_batch) begin
+    while(batch_finish == 0) begin
         @(negedge clk);
         // sub_bat = sub_bat + 1;
         if(sub_bat == max_sub_bat)begin 
+            // $write("batch: %d\n", batch);
             batch = batch + 1;
             // ** if bacth == max_batch , the later data is non-sense
             // sub_bat = 0;
@@ -142,12 +146,14 @@ initial begin
                 $write("%h ", worker_instn.part_reg[i]);
 //                if(worker_instn.part[i] != )
             end 
-            $write("next: %h", next_wdata);
+        end
+        if(worker_instn.wen == 1) begin
+            $write("| next: %h with mask: %b | proposal: %h with mask: %b|", next_wdata, worker_instn.next_bytemask, pro_wdata, worker_instn.pro_bytemask);
             $write("\n");
             // $write("\n");
             check_sub = check_sub + 1;
         end 
-        if(batch_finish == 1) begin
+        //if(batch_finish == 1) begin
             // TODO: check , compare with propsal # and next
             //if(pro_gold[check_batch] !=  pro_wdata)
             //$write("proposal number fail");
@@ -155,11 +161,11 @@ initial begin
             //end 
             // 
             //
-            check_batch = check_batch + 1;
-$finish;
-        end 
+        //    check_batch = check_batch + 1;
+//$finish;
+        enable = 0;
     end 
-    $write("bat: %d\n",batch);
+//    $write("\nbat: %d\n",batch);
     $finish;
 end 
 
