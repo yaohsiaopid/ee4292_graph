@@ -92,8 +92,9 @@ worker worker_instn(
 
 // each worker is responsible for N/K = 4096 / 16 = 256 totaly for one round
 // this module test only first round currently 
-reg [NEXT_BW-1:0] next_gold[0:TOTAL_VID-1]; // 4 bit 
-reg [PRO_BW-1:0] pro_gold[0:TOTAL_VID-1]; // proposal number 
+// TODO: HARDCODE TO CHANGE
+reg [NEXT_BW*Q-1:0] next_gold[0:16-1]; // 4 bit 
+reg [PRO_BW*Q-1:0] pro_gold[0:16-1]; // proposal number 
 
 reg [VID_BW-1:0] vid_input[0:255]; // N/(K*Q) 
 reg [N-1:0] dist_input[0:N-1];
@@ -118,10 +119,10 @@ initial begin
     $write("loc %h\n", loc_input[4095]);
     $readmemh("../software/gold/4_bat_part.dat", part_gold); // only batch number 0's 16 sub-batch's part[0-K] 
     $write("part %h\n", part_gold[1]);
-    $readmemh("../software/gold/0_next.dat", next_gold);
-    $write("next 24 %d\n", next_gold[24]);
-    $readmemh("../software/gold/0_proposal_num.dat", pro_gold);
-    $write("proposal_num 30 %d\n", pro_gold[30]);
+    $readmemh("../software/gold/4_next.dat", next_gold);
+    $write("next 15 %h\n", next_gold[15]);
+    $readmemh("../software/gold/4_proposal_num.dat", pro_gold);
+    $write("proposal_num 15 %h\n", pro_gold[15]);
     #(CYCLE) rst_n = 1; 
     #(CYCLE) enable = 1'b1;
     rst_n = 0;    
@@ -141,6 +142,9 @@ localparam max_sub_bat = 15;
 integer check_sub;
 integer check_batch;
 integer sram_i;
+wire [NEXT_BW*Q-1:0] bit_mask;
+assign bit_mask = { {4{next_bytemask[15]}},{4{next_bytemask[14]}},{4{next_bytemask[13]}},{4{next_bytemask[12]}},
+{4{next_bytemask[11]}},{4{next_bytemask[10]}},{4{next_bytemask[9]}},{4{next_bytemask[8]}},{4{next_bytemask[7]}},{4{next_bytemask[6]}},{4{next_bytemask[5]}},{4{next_bytemask[4]}},{4{next_bytemask[3]}},{4{next_bytemask[2]}},{4{next_bytemask[1]}},{4{next_bytemask[0]}}};
 initial begin 
     check_sub = 0;
     check_batch = 0;
@@ -166,32 +170,31 @@ initial begin
                 worker_instn.part_reg[0],worker_instn.part_reg[1],worker_instn.part_reg[2],worker_instn.part_reg[3],worker_instn.part_reg[4],worker_instn.part_reg[5],worker_instn.part_reg[6],worker_instn.part_reg[7],worker_instn.part_reg[8],worker_instn.part_reg[9],worker_instn.part_reg[10],worker_instn.part_reg[11],worker_instn.part_reg[12],worker_instn.part_reg[13],worker_instn.part_reg[14],worker_instn.part_reg[15]
             }) begin 
                 $write("gold :: %h\n", part_gold[batch - 1]);
+            // TODO 
             // $finish;
             end 
         end
         if(worker_instn.wen == 1) begin
-            $write("| next: %h with mask: %b | proposal: %h with mask: %b|", next_wdata, worker_instn.next_bytemask, pro_wdata, worker_instn.pro_bytemask);
-            $write("\n");
-            // $write("\n");
+            $write("| next: %h with mask: %b | proposal: %h with mask: %b|\n", next_wdata, next_bytemask, pro_wdata, pro_bytemask);
+            // (next_wdata & ~(bit_mask))
             check_sub = check_sub + 1;
         end 
-        //if(batch_finish == 1) begin
-            // TODO: check , compare with propsal # and next
-            //if(pro_gold[check_batch] !=  pro_wdata)
-            //$write("proposal number fail");
-            //$finish;
-            //end 
-            // 
-            //
-        //    check_batch = check_batch + 1;
-//$finish;
+
         enable = 0;
     end 
 //    $write("\nbat: %d\n",batch);
     $write("SRAM dump:\n");
     for(sram_i = 0; sram_i < 16; sram_i = sram_i + 1) begin
-        $write("addr %d data %h\n", sram_i, w0_next_sram_256x4b.mem[sram_i]);
-        $write("addr %d pro data %h\n", sram_i, w0_proposal_sram_16x128b.mem[sram_i]);
+        if(w0_next_sram_256x4b.mem[sram_i] == next_gold[sram_i]) begin 
+            $write("FAIL next sram[%d]: %h vs gold: %h", sram_i, w0_next_sram_256x4b.mem[sram_i], next_gold[sram_i]);
+            $finish;
+        end 
+        if(w0_proposal_sram_16x128b.mem[sram_i] == pro_gold[sram_i]) begin 
+            $write("FAIL next sram[%d]: %h vs gold: %h", sram_i, w0_proposal_sram_16x128b.mem[sram_i], pro_gold[sram_i]);
+            $finish;
+        end 
+        // $write("addr %d data %h\n", sram_i, w0_next_sram_256x4b.mem[sram_i]);
+        // $write("addr %d pro data %h\n", sram_i, w0_proposal_sram_16x128b.mem[sram_i]);
     end 
     $write("\n");
     $finish;

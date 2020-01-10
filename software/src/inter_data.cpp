@@ -29,25 +29,27 @@ void export_vid(int worker, int vid) {
     fclose(tmp);
   }
 }
-void export_proposal_num(int worker, int proposal) {
+void export_proposal_num(int worker, int batch, int proposal[]) {
   char filename[100];
   sprintf(filename, "./gold/%d_proposal_num.dat", worker);
   FILE *fptr = fopen(filename, "a+");
-  fprintf(fptr, "%2x", proposal);
-  // for(int itm = 7; itm >= 0; itm--){
-  //   fprintf(fptr, "%d", (proposal >> itm) & 1);
-  // }
+  for(int i = batch, j = 0; j < K && i >= 0; j++, i--) {
+    fprintf(fptr, "%02x", proposal[i]);
+  }
   fprintf(fptr, "\n");
   fclose(fptr);
-  if(worker == 0){
-    FILE *tmp = fopen("./gold/tmp_propsal_num.dat", "a+");
-    fprintf(tmp, "%d\n", proposal);
-    fclose(tmp);
-  }
+  // if(worker == 0){
+  //   FILE *tmp = fopen("./gold/tmp_propsal_num.dat", "a+");
+  //   fprintf(tmp, "%d\n", proposal);
+  //   fclose(tmp);
+  // }
 }
-void export_part(int worker, int batch, int part[][K]) {
+void export_part(int worker, int batch, int part[][K], int end) {
   // if(batch > 2) return;
   char filename[100];
+  if(end == 0) 
+  sprintf(filename, "./gold/%d_bat_part_0sub.dat", worker);
+  else 
   sprintf(filename, "./gold/%d_bat_part.dat", worker);
   FILE *fptr = fopen(filename, "a+");
   for(int i = 0; i < K; i++) {
@@ -70,21 +72,20 @@ void export_part(int worker, int batch, int part[][K]) {
     fclose(tmp);
   }
 }
-void export_next(int worker, int batch, int next) {
+void export_next(int worker, int batch, int next[]) {
   char filename[100];
   sprintf(filename, "./gold/%d_next.dat", worker);
   FILE *fptr = fopen(filename, "a+");
-  fprintf(fptr, "%2x", next);
-  // for(int itm = 3; itm >= 0; itm--){
-  //   fprintf(fptr, "%d", (next >> itm) & 1);
-  // }
+  for(int i = batch, j = 0; j < K && i >= 0; j++, i--) {
+    fprintf(fptr, "%1x", next[i]);
+  }
   fprintf(fptr, "\n");
   fclose(fptr);
-  if(worker == 0){
-    FILE *tmp = fopen("./gold/tmp.dat", "a+");
-    fprintf(tmp, "%d\n", next);
-    fclose(tmp);
-  }
+  // if(worker == 0){
+  //   FILE *tmp = fopen("./gold/tmp.dat", "a+");
+  //   fprintf(tmp, "%d\n", next);
+  //   fclose(tmp);
+  // }
 }
 void input(char filename[]) {
   std::fstream fs;
@@ -183,9 +184,9 @@ int main(int argc, char *argv[]) {
               part[worker][at]++;
             }
           }
-          
+          if(sub == 0) export_part(worker, batch, part, 0);
         }
-        export_part(worker, batch, part);
+        export_part(worker, batch, part, 1);
         int id = worker;
         int m = part[worker][worker];
         // find max of part[worker][0-K-1];
@@ -199,10 +200,12 @@ int main(int argc, char *argv[]) {
         next[worker][batch] = id;
         proposal_number[worker][batch] = proposal_cntr[worker][id];
         proposal_cntr[worker][id]++;
-        export_next(worker, batch, next[worker][batch]);
-        export_proposal_num(worker, proposal_number[worker][batch]);
+        if(batch % 16 == 15 && batch > 0) {
+        export_next(worker, batch, next[worker]);
+        export_proposal_num(worker, batch, proposal_number[worker]);
+        }
         // if(worker == 0)
-        printf("%3d,%3d,%3d\n", tmpvid, next[worker][batch], proposal_number[worker][batch]);
+        // printf("%3d,%3d,%3d\n", tmpvid, next[worker][batch], proposal_number[worker][batch]);
       }
       // export_proposal_cntr();
       // printf("proposal cntr from %d to 0 - K-1", worker);
