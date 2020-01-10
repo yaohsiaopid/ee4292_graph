@@ -90,9 +90,6 @@ initial begin
     enable = 1'b0;
     $readmemh("../software/gold/0_vid.dat", vid_input);
     $readmemh("../software/gold/dist.dat", dist_input); 
-    // $write("%b\n", dist_input[4095]);
-    // for(tmp = 0; tmp < 256; tmp = tmp + 1)
-    //     $write("%d;",vid_input[tmp]);
     $readmemh("../software/gold/loc.dat", loc_input);
     $write("loc %h\n", loc_input[4095]);
     $readmemh("../software/gold/0_bat0_part.dat", part_gold); // only batch number 0's 16 sub-batch's part[0-K] 
@@ -101,9 +98,7 @@ initial begin
     $write("next 24 %d\n", next_gold[24]);
     $readmemh("../software/gold/0_proposal_num.dat", pro_gold);
     $write("proposal_num 30 %d\n", pro_gold[30]);
-    // $readmemh/
     #(CYCLE) rst_n = 1; 
-    // input test pattern
     #(CYCLE) enable = 1'b1;
     rst_n = 0;    
     batch = 0;
@@ -115,15 +110,10 @@ initial begin
     $write("vid_sram: %h\n", vid_rdata);
     $write("index_vid: %d dist: %b , tmpdist : %h \n", vid, dist_rdata, tmpdist);
     $write("loc: %h\n", loc_rdata);
-//    #(CYCLE) enable = 1'b1;
-//    rst_n = 0;
-    
-//    $finish;
 end 
 
 localparam max_batch = 256;
 localparam max_sub_bat = 15;
-// TODO: check ".internal" params name  eg. line 118
 integer check_sub;
 integer check_batch;
 initial begin 
@@ -171,6 +161,11 @@ $finish;
     end 
     $write("bat: %d\n",batch);
     $finish;
+end 
+
+initial begin 
+    wait(valid == 1);
+    
 end 
 initial begin 
     #(CYCLE*100000);

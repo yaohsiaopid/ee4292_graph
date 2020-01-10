@@ -49,15 +49,19 @@ void export_inputs(int v_gidx[], int proposal_nums[], int next_arr[], int mi_j[]
 void export_wdata(int epoch, int wen, int wdata[][Q]) {
   FILE *f_wdata = fopen("./gold_master/wdata.dat", "a+");
   assert(wen < 65536);
-  fprintf(f_wdata, "%02x_%04x\n", epoch, wen);
-  for(int i = 0, bitselect = 1 << (K-1); i < K; i++, bitselect = bitselect >> 1) {
+  fprintf(f_wdata, "%02x %04x\n", epoch, wen);
+  for(int i = 0, bitselect = 1; i < K; i++, bitselect = bitselect << 1) {
     if(wen & bitselect) {
       fprintf(f_wdata, "%x\n", i);
       for(int j = 0; j < Q; j++) {  
         fprintf(f_wdata, "%03x", wdata[i][j]);
-      }  
+        if(j < Q - 1) 
+        fprintf(f_wdata, "_");
+      }
+      fprintf(f_wdata, "\n");
     }
   }
+  fclose(f_wdata);
 }
 void input(char filename[]) {
   std::fstream fs;
@@ -170,16 +174,19 @@ int main(int argc, char *argv[]) {
         }
         // export next_arr, mi_j, mj_i, v_gidx, proposal_nums
         export_inputs(v_gidx, proposal_nums, next_arr, mi_j, mj_i);
+        printf("real_next_arr epoch %d: ", epoch);
         for(int i = 0; i < Q; i++) {
             real_next_arr[i] = xijs[next_arr[i]] > proposal_nums[i] ?  next_arr[i] : banknum; 
+            printf("%2d,", real_next_arr[i]);
         }
+        printf("\n");
         int onehot[Q][K];
         for(int i = 0; i < Q; i++) {
             for(int j = 0; j < Q; j++) {
                 onehot[i][j] = (real_next_arr[i] == j);
             }
         }
-        // printf("partial sum:\n");
+        printf("partial sum:\n");
         
         for(int i = 0; i < Q; i++) {
             for(int j = 0; j < K; j++) {
@@ -187,21 +194,25 @@ int main(int argc, char *argv[]) {
                 for(int r = 0; r <= i; r++) {
                     partial_sum[i][j] += onehot[r][j];
                 }
-                // printf("%2d,", partial_sum[i][j]);
+                printf("%2d", partial_sum[i][j]);
             }
-            // printf("\n");
+            printf("\n");
         }
         // printf("-----------------\n");
         //---- same 
+        printf("buffer_idx: ");
         int buffer_idx[Q];
         for(int i = 0; i < Q; i++) {
             buffer_idx[i] = (partial_sum[i][real_next_arr[i]] - 1) + 
                             (accum[real_next_arr[i]] >= Q ? accum[real_next_arr[i]] - Q : accum[real_next_arr[i]]);
+            printf("%2d,",buffer_idx[i]);
             // printf("buffer_idx[%2d] = %3d; ",i, buffer_idx[i]);
             // printf("%3d, %3d\n", v_gidx[i], real_next_arr[i]);
             assert(buffer_idx[i] < 2 * Q);
         }
-        // printf("-----------------\n");
+        printf("\n");
+        // printf("buffaccum: ");
+        printf("export: ");
         for(int i = 0; i < K; i++) {
             buffaccum[i] = (accum[i] >= Q ? accum[i] - Q : accum[i]);
             if(accum[i] >= Q) {
@@ -212,26 +223,34 @@ int main(int argc, char *argv[]) {
                 accum[i] += partial_sum[Q-1][i];
                 export_flg[i] = 0;
             }
+            // printf("%2d,", buffaccum[i]);
+            printf("%d,", export_flg[i]);
             // printf("(%3d, %3d),", accum[i], export_flg[i]);
         }
-
+        printf("\n");
+        printf("accum:");
+        for(int i = 0; i < K; i++) {
+          printf("%2d,", accum[i]);
+        }
+        printf("\n");
         // ------
         // printf("-----------------\n export ? :");
         int wen = 0;
         for(int i = 0; i < K; i++) {
             if(export_flg[i] == 1) {
+                printf("exportout %d: ", epoch);
                 // printf("$$$$ i = %d:  ", i);
-                wen = wen | (1 << (15-i));
+                wen = wen | (1 << i);
                 for(int j = 0; j < Q; j++) {
                     wdata[i][j] = buffer[i][j];
                     buffer[i][j] = -1;
-                    // printf("%3d,", wdata[i][j]);
+                    printf("%03x", wdata[i][j]);
                 }
                 // export to checking 
                 for(int j = 0; j < Q; j++) {
                   wdata_total[i].push_back(wdata[i][j]);
                 }
-                // printf("\n");
+                printf("\n");
                 waddr[i]++;
             }
         }
@@ -243,6 +262,7 @@ int main(int argc, char *argv[]) {
         // printf("-----------------\n");
         // printf("----\n");
         for(int buffi = 0; buffi < K; buffi++) {
+            printf("epoch %d buffer: ", epoch);
             for(int buffj = 0; buffj < 2*Q; buffj++) {
                 if(export_flg[buffi] == 1 && buffj < buffaccum[buffi]) {
                     buffer[buffi][buffj] = buffer[buffi][buffj + Q];
@@ -258,9 +278,9 @@ int main(int argc, char *argv[]) {
                     }
                 }
                 assert(buffer[buffi][buffj] >= 0);
-                // printf("%3d,", buffer[buffi][buffj]);
+                printf("%03x,", buffer[buffi][buffj]);
             }
-            // printf("\n");
+            printf("\n");
         }
         
         // ----
@@ -292,12 +312,14 @@ int main(int argc, char *argv[]) {
 
     // ------
     // printf("-----------------\n export ? :");
+    int wen = 0;
     for(int i = 0; i < K; i++) {
         if(export_flg[i] == 1) {
             // printf("$$$$ i = %d:  ", i);
+            wen = wen | (1 << (15-i));
             for(int j = 0; j < Q; j++) {
                 wdata[i][j] = buffer[i][j];
-                buffer[i][j] = 0;
+                buffer[i][j] = -1;
                 // printf("%3d,", wdata[i][j]);
             }
             // export to checking 
@@ -308,6 +330,7 @@ int main(int argc, char *argv[]) {
             waddr[i]++;
         }
     }
+    // export_wdata(epoch_num, wen, wdata);
 
     // ----- 
     printf("-----------------\n waddr: ");
@@ -327,11 +350,17 @@ int main(int argc, char *argv[]) {
     }
 
     FILE *fpr= fopen("out.csv", "w");  
+    int stat[4096] = {0};
     for(int i = 0; i < K; i++) {
       for(int j = 0; j < wdata_total[i].size(); j++) {
+        stat[wdata_total[i][j]]++;
         fprintf(fpr, "%d,", wdata_total[i][j]);
       }
       fprintf(fpr, "\n");
+    }
+    printf("check:jj");
+    for(int i = 0; i < 4096; i++) {
+      if(stat[i] != 1) printf("WARNNNN %d\n", i);
     }
   }
 }
