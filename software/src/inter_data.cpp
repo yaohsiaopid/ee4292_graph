@@ -45,10 +45,10 @@ void export_proposal_num(int worker, int proposal) {
     fclose(tmp);
   }
 }
-void export_part(int worker, int batch, int sub, int part[][K]) {
-  if(batch > 2) return;
+void export_part(int worker, int batch, int part[][K]) {
+  // if(batch > 2) return;
   char filename[100];
-  sprintf(filename, "./gold/%d_bat%d_part.dat", worker, batch);
+  sprintf(filename, "./gold/%d_bat_part.dat", worker);
   FILE *fptr = fopen(filename, "a+");
   for(int i = 0; i < K; i++) {
     int p = part[worker][i];
@@ -183,8 +183,9 @@ int main(int argc, char *argv[]) {
               part[worker][at]++;
             }
           }
-          export_part(worker, batch, sub, part);
+          
         }
+        export_part(worker, batch, part);
         int id = worker;
         int m = part[worker][worker];
         // find max of part[worker][0-K-1];

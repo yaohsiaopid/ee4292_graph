@@ -8,7 +8,7 @@ parameter BW = 4
 input clk,
 input wsb,  //write enable """"ACTIVE LOW""""
 input [BW*Q-1:0] wdata, //write data (master)
-input [Q-1:0] bytemask, //
+input [Q-1:0] bytemask, // """ACTIVE LOW"""
 input [ADDR_SPACE-1:0] waddr, //write address
 input [ADDR_SPACE-1:0] raddr, //read address
 output reg [BW*Q-1:0] rdata 
@@ -22,6 +22,7 @@ assign bit_mask = { {4{bytemask[15]}},{4{bytemask[14]}},{4{bytemask[13]}},{4{byt
 
 always @(posedge clk) begin
     if(~wsb) begin
+        // $write("::SRAM WRITE %h %d %h\n", wdata, waddr, bit_mask);
         mem[waddr] <= (wdata & ~(bit_mask)) | (mem[waddr] & bit_mask);
     end
 end
