@@ -20,21 +20,21 @@ module worker
     input en,
     input rst_n,
     input [7:0] batch_num,
-    input [Q*VID_BW-1:0] vid_rdata,
-    input [D*DIST_BW-1:0] dist_rdata,
+    input [Q*VID_BW-1:0] vid_rdata,					// 256
+    input [D*DIST_BW-1:0] dist_rdata,				// 256
     input [D*(LOC_BW-1)-1:0] loc_rdata,             // input 256 X 4bit valid locations selected from top module
 
-	output reg [3:0] sub_bat,
-    output reg [VID_BW-1:0] vid,
-	output reg [Q-1:0] next_bytemask,
-    output reg [Q*NEXT_BW-1:0] next_wdata,
-    output reg [NEXT_ADDR_SPACE-1:0] next_waddr,
-	output reg [Q-1:0] pro_bytemask,
-    output reg [Q*PRO_BW-1:0] pro_wdata,
-	output reg [PRO_ADDR_SPACE-1:0] pro_waddr,
-    output reg ready,       // for part_reg[0:K-1]
-    output reg batch_finish, // for next / proposal number
-	output reg wen
+	output reg [3:0] sub_bat,						// 4
+    output reg [VID_BW-1:0] vid,					// 16
+	output reg [Q-1:0] next_bytemask,				// 16
+    output reg [Q*NEXT_BW-1:0] next_wdata,			// 64
+    output reg [NEXT_ADDR_SPACE-1:0] next_waddr,	// 4
+	output reg [Q-1:0] pro_bytemask,				// 16
+    output reg [Q*PRO_BW-1:0] pro_wdata,			// 128
+	output reg [PRO_ADDR_SPACE-1:0] pro_waddr,		//4
+    output reg ready,       // for part_reg[0:K-1]	// 1
+    output reg batch_finish, // for next / proposal number	// 1
+	output reg wen									// 1
 );
 
 // reg [15:0] vid;
@@ -125,7 +125,13 @@ end
 
 // vid_reg, vid
 always@(posedge clk) begin
-    if(batch_num_reg[3:0] != 4'b0000) begin
+	if(state == IDLE) begin
+	    {vid_reg[0], vid_reg[1], vid_reg[2], vid_reg[3]} <= {vid_rdata[255:240], vid_rdata[239:224], vid_rdata[223:208], vid_rdata[207:192]};
+        {vid_reg[4], vid_reg[5], vid_reg[6], vid_reg[7]} <= {vid_rdata[191:176], vid_rdata[175:160], vid_rdata[159:144], vid_rdata[143:128]};
+        {vid_reg[8], vid_reg[9], vid_reg[10], vid_reg[11]} <= {vid_rdata[127:112], vid_rdata[111:96], vid_rdata[95:80], vid_rdata[79:64]};
+        {vid_reg[12], vid_reg[13], vid_reg[14], vid_reg[15]} <= {vid_rdata[63:48], vid_rdata[47:32], vid_rdata[31:16], vid_rdata[15:0]};
+        vid <= n_vid;
+    end else if(batch_num_reg[3:0] != 4'b1111) begin
         {vid_reg[0], vid_reg[1], vid_reg[2], vid_reg[3]} <= {vid_reg[0], vid_reg[1], vid_reg[2], vid_reg[3]};
         {vid_reg[4], vid_reg[5], vid_reg[6], vid_reg[7]} <= {vid_reg[4], vid_reg[5], vid_reg[6], vid_reg[7]};
         {vid_reg[8], vid_reg[9], vid_reg[10], vid_reg[11]} <= {vid_reg[8], vid_reg[9], vid_reg[10], vid_reg[11]};

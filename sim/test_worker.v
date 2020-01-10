@@ -171,7 +171,7 @@ initial begin
             }) begin 
                 $write("gold :: %h\n", part_gold[batch - 1]);
             // TODO 
-            // $finish;
+            $finish;
             end 
         end
         if(worker_instn.wen == 1) begin
@@ -185,11 +185,12 @@ initial begin
 //    $write("\nbat: %d\n",batch);
     $write("SRAM dump:\n");
     for(sram_i = 0; sram_i < 16; sram_i = sram_i + 1) begin
-        if(w0_next_sram_256x4b.mem[sram_i] == next_gold[sram_i]) begin 
-            $write("FAIL next sram[%d]: %h vs gold: %h", sram_i, w0_next_sram_256x4b.mem[sram_i], next_gold[sram_i]);
+        if(w0_next_sram_256x4b.mem[sram_i] !== next_gold[sram_i]) begin 
+            $write("FAIL next sram[%d]: %h vs gold: %h", sram_i, 
+            w0_next_sram_256x4b.mem[sram_i], next_gold[sram_i]);
             $finish;
         end 
-        if(w0_proposal_sram_16x128b.mem[sram_i] == pro_gold[sram_i]) begin 
+        if(w0_proposal_sram_16x128b.mem[sram_i] !== pro_gold[sram_i]) begin 
             $write("FAIL next sram[%d]: %h vs gold: %h", sram_i, w0_proposal_sram_16x128b.mem[sram_i], pro_gold[sram_i]);
             $finish;
         end 
