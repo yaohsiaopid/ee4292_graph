@@ -5225,7 +5225,7 @@ end
 // COMB4: comparator so as to get next
 always@* begin
     // for work 0
-    res0_comp[0] = (part_reg[1] >= part_reg[0]) ? {part_reg[1], 4'd1} : {part_reg[0], 4'd0};
+    res0_comp[0] = (part_reg[0] >= part_reg[1]) ? {part_reg[0], 4'd0} : {part_reg[1], 4'd1};
     res0_comp[1] = (part_reg[2] >= part_reg[3]) ? {part_reg[2], 4'd2} : {part_reg[3], 4'd3};
     res0_comp[2] = (part_reg[4] >= part_reg[5]) ? {part_reg[4], 4'd4} : {part_reg[5], 4'd5};
     res0_comp[3] = (part_reg[6] >= part_reg[7]) ? {part_reg[6], 4'd6} : {part_reg[7], 4'd7};
