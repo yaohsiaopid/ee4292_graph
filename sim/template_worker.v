@@ -46,6 +46,7 @@ wire batch_finish;  // 256 batches are finish === MODULE FINISH !!!
 wire worker_wen; // save into next_srams and proposal srams 
 wire [Q-1:0] next_bytemask;
 wire [Q-1:0] pro_bytemask;
+// assign vid = 0; // for testing testbench ==
 // =================== instance sram ================================
 next_sram_256x4b #(.ADDR_SPACE(NEXT_ADDR_SPACE), .Q(Q), .BW(NEXT_BW)) w0_next_sram_256x4b(
     .clk(clk),
@@ -66,7 +67,8 @@ proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE), .Q(Q), .BW(PRO_BW)) w0_prop
     .rdata()
 );
 // ====================================================================
-worker #(.WORK_IDX(15)) worker_instn(
+// TODO: connect the wire and modify IO above and here 
+worker #(.WORK_IDX(CHECKID)) worker_instn(
     .clk(clk),
     .en(enable),
     .rst_n(~rst_n),
@@ -111,15 +113,15 @@ initial begin
     clk = 0;
     rst_n = 0;
     enable = 1'b0;
-    $readmemh("../software/gold/15_vid.dat", vid_input);
+    $readmemh("../software/gold/CHECKID_vid.dat", vid_input);
     $readmemh("../software/gold/dist.dat", dist_input); 
     $readmemh("../software/gold/loc.dat", loc_input);
     $write("loc %h\n", loc_input[4095]);
-    $readmemh("../software/gold/15_bat_part.dat", part_gold); // only batch number 0's 16 sub-batch's part[0-K] 
+    $readmemh("../software/gold/CHECKID_bat_part.dat", part_gold); // only batch number 0's 16 sub-batch's part[0-K] 
     $write("part %h\n", part_gold[1]);
-    $readmemh("../software/gold/15_next.dat", next_gold);
+    $readmemh("../software/gold/CHECKID_next.dat", next_gold);
     $write("next 15 %h\n", next_gold[15]);
-    $readmemh("../software/gold/15_proposal_num.dat", pro_gold);
+    $readmemh("../software/gold/CHECKID_proposal_num.dat", pro_gold);
     $write("proposal_num 15 %h\n", pro_gold[15]);
     #(CYCLE) rst_n = 1; 
     #(CYCLE) enable = 1'b1;
@@ -192,11 +194,17 @@ initial begin
             $write("FAIL proposal sram[%d]: %h vs gold: %h\n", sram_i, w0_proposal_sram_16x128b.mem[sram_i], pro_gold[sram_i]);
             $finish;
         end 
+        // $write("addr %d data %h\n", sram_i, w0_next_sram_256x4b.mem[sram_i]);
+        // $write("addr %d pro data %h\n", sram_i, w0_proposal_sram_16x128b.mem[sram_i]);
     end 
     $write("\n");
     $finish;
 end 
 
+// TODO: batch_finish = 1 -> check sram 
+// initial begin 
+//     wait(valid == 1);
+// end 
 initial begin 
     #(CYCLE*100000);
     $finish;
