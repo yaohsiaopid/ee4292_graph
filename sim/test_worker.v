@@ -68,7 +68,7 @@ proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE), .Q(Q), .BW(PRO_BW)) w0_prop
 );
 // ====================================================================
 // TODO: connect the wire and modify IO above and here 
-worker worker_instn(
+worker #(.WORK_IDX(5)) worker_instn(
     .clk(clk),
     .en(enable),
     .rst_n(~rst_n),
@@ -102,10 +102,10 @@ reg [LOC_BW-1:0] loc_input[0:N-1];
 reg [PRO_BW*K-1:0] part_gold[0:255]; // 16(K) , total sub_bat number = 16 for first batch 
 always #(CYCLE/2) clk = ~clk;
 
-initial begin
-	$fsdbDumpfile("proj_presim_worker_temp.fsdb");
-	$fsdbDumpvars("+mda");
-end
+// initial begin
+// 	$fsdbDumpfile("proj_presim_worker_temp.fsdb");
+// 	$fsdbDumpvars("+mda");
+// end
 
 integer tmp;
 reg [N-1:0] tmpdist;
@@ -113,15 +113,15 @@ initial begin
     clk = 0;
     rst_n = 0;
     enable = 1'b0;
-    $readmemh("../software/gold/4_vid.dat", vid_input);
+    $readmemh("../software/gold/5_vid.dat", vid_input);
     $readmemh("../software/gold/dist.dat", dist_input); 
     $readmemh("../software/gold/loc.dat", loc_input);
     $write("loc %h\n", loc_input[4095]);
-    $readmemh("../software/gold/4_bat_part.dat", part_gold); // only batch number 0's 16 sub-batch's part[0-K] 
+    $readmemh("../software/gold/5_bat_part.dat", part_gold); // only batch number 0's 16 sub-batch's part[0-K] 
     $write("part %h\n", part_gold[1]);
-    $readmemh("../software/gold/4_next.dat", next_gold);
+    $readmemh("../software/gold/5_next.dat", next_gold);
     $write("next 15 %h\n", next_gold[15]);
-    $readmemh("../software/gold/4_proposal_num.dat", pro_gold);
+    $readmemh("../software/gold/5_proposal_num.dat", pro_gold);
     $write("proposal_num 15 %h\n", pro_gold[15]);
     #(CYCLE) rst_n = 1; 
     #(CYCLE) enable = 1'b1;
@@ -186,13 +186,13 @@ initial begin
     $write("SRAM dump:\n");
     for(sram_i = 0; sram_i < 16; sram_i = sram_i + 1) begin
         if(w0_next_sram_256x4b.mem[sram_i] !== next_gold[sram_i]) begin 
-            $write("FAIL next sram[%d]: %h vs gold: %h", sram_i, 
+            $write("FAIL next sram[%d]: %h vs gold: %h\n", sram_i, 
             w0_next_sram_256x4b.mem[sram_i], next_gold[sram_i]);
-            $finish;
+            // $finish;
         end 
         if(w0_proposal_sram_16x128b.mem[sram_i] !== pro_gold[sram_i]) begin 
-            $write("FAIL next sram[%d]: %h vs gold: %h", sram_i, w0_proposal_sram_16x128b.mem[sram_i], pro_gold[sram_i]);
-            $finish;
+            $write("FAIL proposal sram[%d]: %h vs gold: %h\n", sram_i, w0_proposal_sram_16x128b.mem[sram_i], pro_gold[sram_i]);
+            // $finish;
         end 
         // $write("addr %d data %h\n", sram_i, w0_next_sram_256x4b.mem[sram_i]);
         // $write("addr %d pro data %h\n", sram_i, w0_proposal_sram_16x128b.mem[sram_i]);
