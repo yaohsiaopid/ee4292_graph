@@ -158,61 +158,55 @@ always @* begin
     end
        
     for(accumidx = 0; accumidx < K; accumidx = accumidx + 1) begin 
-        if(~enable) n_buffaccum[accumidx] = 0;
-        else n_buffaccum[accumidx] = accum[accumidx] >= Q ? accum[accumidx] - Q : accum[accumidx]; // retain the offset that to be FIFOed
-        if(~enable) begin 
-            n_accum[accumidx] = 0; n_export[accumidx] = 0;
-        end else begin
-            if(psum_set) begin 
-                if(accum[accumidx] >= Q) begin 
-                    n_accum[accumidx] = accum[accumidx] - Q + partial_sum[Q-1][accumidx]; // partial sum !!!! ;// check_acc[accumidx] - Q;
-                    n_export[accumidx] = 1;
-                end else begin 
-                    n_accum[accumidx] = accum[accumidx] + partial_sum[Q-1][accumidx];//accum[accumidx];//check_acc[accumidx];
-                    n_export[accumidx] = 0;
-                end
+        n_buffaccum[accumidx] = accum[accumidx] >= Q ? accum[accumidx] - Q : accum[accumidx]; // retain the offset that to be FIFOed
+
+        if(psum_set) begin 
+            if(accum[accumidx] >= Q) begin 
+                n_accum[accumidx] = accum[accumidx] - Q + partial_sum[Q-1][accumidx]; // partial sum !!!! ;// check_acc[accumidx] - Q;
+                n_export[accumidx] = 1;
             end else begin 
-                n_export[accumidx] = export[accumidx];
-                n_accum[accumidx] = accum[accumidx];
-            end  
-        end 
+                n_accum[accumidx] = accum[accumidx] + partial_sum[Q-1][accumidx];//accum[accumidx];//check_acc[accumidx];
+                n_export[accumidx] = 0;
+            end
+        end else begin 
+            n_export[accumidx] = export[accumidx];
+            n_accum[accumidx] = accum[accumidx];
+        end  
+    
     end 
     // -------------------------------------------
     for(buffi = 0; buffi < K; buffi = buffi + 1) begin 
         for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
-            if(~enable) n_buffer[buffi][buffj] = 0;
-            else begin 
-                if(psum_set) begin 
-                    if(buffj < Q && export[buffi] == 1 && buffj < buffaccum[buffi]) begin 
-                        // shift 
-                        n_buffer[buffi][buffj] = buffer[buffi][buffj + Q];
-                    end else begin 
-                        // take new 
-                        if(buffj < buffaccum[buffi]) begin
-                            n_buffer[buffi][buffj] = buffer[buffi][buffj]; 
-                        end else begin 
-                            n_buffer[buffi][buffj] =
-                                                ((buff_next[0] == buffi) * (buffer_idx[0] == buffj) * v_gidx[0]) |
-                                                ((buff_next[1] == buffi) * (buffer_idx[1] == buffj) * v_gidx[1]) |
-                                                ((buff_next[2] == buffi) * (buffer_idx[2] == buffj) * v_gidx[2]) |
-                                                ((buff_next[3] == buffi) * (buffer_idx[3] == buffj) * v_gidx[3]) |
-                                                ((buff_next[4] == buffi) * (buffer_idx[4] == buffj) * v_gidx[4]) |
-                                                ((buff_next[5] == buffi) * (buffer_idx[5] == buffj) * v_gidx[5]) |
-                                                ((buff_next[6] == buffi) * (buffer_idx[6] == buffj) * v_gidx[6]) |
-                                                ((buff_next[7] == buffi) * (buffer_idx[7] == buffj) * v_gidx[7]) |
-                                                ((buff_next[8] == buffi) * (buffer_idx[8] == buffj) * v_gidx[8]) |
-                                                ((buff_next[9] == buffi) * (buffer_idx[9] == buffj) * v_gidx[9]) |
-                                                ((buff_next[10] == buffi) * (buffer_idx[10] == buffj) * v_gidx[10]) |
-                                                ((buff_next[11] == buffi) * (buffer_idx[11] == buffj) * v_gidx[11]) |
-                                                ((buff_next[12] == buffi) * (buffer_idx[12] == buffj) * v_gidx[12]) |
-                                                ((buff_next[13] == buffi) * (buffer_idx[13] == buffj) * v_gidx[13]) |
-                                                ((buff_next[14] == buffi) * (buffer_idx[14] == buffj) * v_gidx[14]) |
-                                                ((buff_next[15] == buffi) * (buffer_idx[15] == buffj) * v_gidx[15]);
-                        end 
-                    end 
+            if(psum_set) begin 
+                if(buffj < Q && export[buffi] == 1 && buffj < buffaccum[buffi]) begin 
+                    // shift 
+                    n_buffer[buffi][buffj] = buffer[buffi][buffj + Q];
                 end else begin 
-                    n_buffer[buffi][buffj] = buffer[buffi][buffj];
+                    // take new 
+                    if(buffj < buffaccum[buffi]) begin
+                        n_buffer[buffi][buffj] = buffer[buffi][buffj]; 
+                    end else begin 
+                        n_buffer[buffi][buffj] =
+                                            ((buff_next[0] == buffi) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                            ((buff_next[1] == buffi) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                            ((buff_next[2] == buffi) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                            ((buff_next[3] == buffi) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                            ((buff_next[4] == buffi) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                            ((buff_next[5] == buffi) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                            ((buff_next[6] == buffi) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                            ((buff_next[7] == buffi) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                            ((buff_next[8] == buffi) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                            ((buff_next[9] == buffi) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                            ((buff_next[10] == buffi) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                            ((buff_next[11] == buffi) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                            ((buff_next[12] == buffi) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                            ((buff_next[13] == buffi) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                            ((buff_next[14] == buffi) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                            ((buff_next[15] == buffi) * (buffer_idx[15] == buffj) * v_gidx[15]);
+                    end 
                 end 
+            end else begin 
+                n_buffer[buffi][buffj] = buffer[buffi][buffj];
             end 
         end 
     end 
@@ -550,26 +544,8 @@ always @(posedge clk) begin
         // $write("epoch: %d\n",epoch);
         delay <= n_delay;
         psum_set <= n_psum_set;
-        if(state == FINISH) 
-            finish <= 1;
-        else 
-            finish <= 0;
-        // if(epoch > 249) begin 
-        //     $write(": epoch %d, in_next_arr %h; next_arr[0:1] %d %d; real_next_arr (of prev) %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        //             epoch , in_next_arr, next_arr[0], next_arr[1], real_next_arr[0],real_next_arr[1],real_next_arr[2],real_next_arr[3],real_next_arr[4],real_next_arr[5],real_next_arr[6],real_next_arr[7],real_next_arr[8],real_next_arr[9],real_next_arr[10],real_next_arr[11],real_next_arr[12],real_next_arr[13],real_next_arr[14],real_next_arr[15]);
-        //     $write(": epoch %d, accum: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        //     epoch, accum[0],accum[1],accum[2],accum[3],accum[4],accum[5],accum[6],accum[7],accum[8],accum[9],accum[10],accum[11],accum[12],accum[13],accum[14],accum[15]);
-        //     $write(": epoch %d, buffaccum: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        //     epoch, buffaccum[0],buffaccum[1],buffaccum[2],buffaccum[3],buffaccum[4],buffaccum[5],buffaccum[6],buffaccum[7],buffaccum[8],buffaccum[9],buffaccum[10],buffaccum[11],buffaccum[12],buffaccum[13],buffaccum[14],buffaccum[15]);
-        //     $write(": epoch %d, buffer_idx: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        //     epoch, buffer_idx[0],buffer_idx[1],buffer_idx[2],buffer_idx[3],buffer_idx[4],buffer_idx[5],buffer_idx[6],buffer_idx[7],buffer_idx[8],buffer_idx[9],buffer_idx[10],buffer_idx[11],buffer_idx[12],buffer_idx[13],buffer_idx[14],buffer_idx[15]);
-        //     $write(": epoch %d, buff_next: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        //     epoch, buff_next[0],buff_next[1],buff_next[2],buff_next[3],buff_next[4],buff_next[5],buff_next[6],buff_next[7],buff_next[8],buff_next[9],buff_next[10],buff_next[11],buff_next[12],buff_next[13],buff_next[14],buff_next[15]);
-        //     $write(": epoch %d, export: %b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,\n", 
-        //     epoch, export[0],export[1],export[2],export[3],export[4],export[5],export[6],export[7],export[8],export[9],export[10],export[11],export[12],export[13],export[14],export[15]);
-        //     $write(": epoch %d, v_gidx: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        //     epoch, v_gidx[0],v_gidx[1],v_gidx[2],v_gidx[3],v_gidx[4],v_gidx[5],v_gidx[6],v_gidx[7],v_gidx[8],v_gidx[9],v_gidx[10],v_gidx[11],v_gidx[12],v_gidx[13],v_gidx[14],v_gidx[15]);
-        // end 
+        if(state == FINISH) finish <= 1;
+        else                finish <= 0;
         {next_arr[0],next_arr[1],next_arr[2],next_arr[3],next_arr[4],next_arr[5],next_arr[6],next_arr[7],
         next_arr[8],next_arr[9],next_arr[10],next_arr[11],next_arr[12],next_arr[13],next_arr[14],next_arr[15]}
             <= in_next_arr;
@@ -586,36 +562,34 @@ always @(posedge clk) begin
             buffer_idx[si] <= nbuffer_idx[si];
         end 
         for(pi = 0; pi < Q; pi = pi + 1) begin 
-            // if(epoch > 250)
-            // $write("epoch: %d partialsum:", epoch);
             for(pj = 0; pj < K; pj = pj + 1) begin
                  partial_sum[pi][pj] <= n_partial_sum[pi][pj];
-                //  if(epoch > 250)// && pi == Q-1)
-                //  $write("%d",partial_sum[pi][pj]);
             end 
-            // if(epoch > 250) //&& pi == Q-1)
-            // $write("\n");
         end 
 
         {mi_j[0],mi_j[1],mi_j[2],mi_j[3],mi_j[4],mi_j[5],mi_j[6],mi_j[7],
         mi_j[8],mi_j[9],mi_j[10],mi_j[11],mi_j[12],mi_j[13],mi_j[14],mi_j[15]} <= in_mi_j;
         {mj_i[0],mj_i[1],mj_i[2],mj_i[3],mj_i[4],mj_i[5],mj_i[6],mj_i[7],
         mj_i[8],mj_i[9],mj_i[10],mj_i[11],mj_i[12],mj_i[13],mj_i[14],mj_i[15]} <= in_mj_i;
-        if(epoch > 4)
+        if(enable && epoch > 4)
             ready <= 1;
+        else 
+            ready <= 0;
         for(sk = 0; sk < K; sk = sk + 1) begin 
-            accum[sk] <= n_accum[sk];
-            export[sk] <= n_export[sk];
-            buffaccum[sk] <= n_buffaccum[sk];
-            // $write(": epoch %d buffer: ", epoch);
-            for(sq = 0; sq < 2*Q; sq = sq + 1) begin 
-                buffer[sk][sq] <= n_buffer[sk][sq];
-                // $write("%h,", buffer[sk][sq]);
+            if(~enable) begin
+                accum[sk] <= {BUF_BW{1'b0}};
+                export[sk] <= 1'b0;
+                buffaccum[sk] <= {BUF_BW{1'b0}};
+            end else begin 
+                accum[sk] <= n_accum[sk];
+                export[sk] <= n_export[sk];
+                buffaccum[sk] <= n_buffaccum[sk];
             end 
-            // $write("\n");
+            for(sq = 0; sq < 2*Q; sq = sq + 1) begin 
+                if(~enable) buffer[sk][sq] <= 0;
+                else buffer[sk][sq] <= n_buffer[sk][sq];
+            end 
         end 
-
-
 
         // write vid sram 
         for(export_i = 0; export_i < K; export_i = export_i + 1) begin 
