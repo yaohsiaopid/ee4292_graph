@@ -8,6 +8,9 @@ localparam VID_BW = 16;
 localparam Q = 16; 
 localparam MAX_EPOCH = 256; // 4096 / 16
 localparam VID_ADDR_SPACE = 5;
+localparam D = 256;
+localparam LOC_ADDR_SPACE = 8;
+localparam LOC_BW = 5;
 real CYCLE = 10;
 integer fptr;
 //====== module I/O =====
@@ -64,6 +67,41 @@ vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW))
 w14_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[14]), .wdata(vid_sram_wdata14), .waddr(vid_sram_waddr14), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata14));
 vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
 w15_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[15]), .wdata(vid_sram_wdata15), .waddr(vid_sram_waddr15), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata15));
+// --------- loc sram ------
+wire [VID_BW*D-1:0] loc_sram_wdata0,loc_sram_wdata1,loc_sram_wdata2,loc_sram_wdata3,loc_sram_wdata4,loc_sram_wdata5,loc_sram_wdata6,loc_sram_wdata7,loc_sram_wdata8,loc_sram_wdata9,loc_sram_wdata10,loc_sram_wdata11,loc_sram_wdata12,loc_sram_wdata13,loc_sram_wdata14,loc_sram_wdata15;
+
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w0_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[0]), .wdata(loc_sram_wdata0), .waddr(loc_sram_waddr0), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w1_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[1]), .wdata(loc_sram_wdata1), .waddr(loc_sram_waddr1), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w2_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[2]), .wdata(loc_sram_wdata2), .waddr(loc_sram_waddr2), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w3_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[3]), .wdata(loc_sram_wdata3), .waddr(loc_sram_waddr3), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w4_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[4]), .wdata(loc_sram_wdata4), .waddr(loc_sram_waddr4), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w5_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[5]), .wdata(loc_sram_wdata5), .waddr(loc_sram_waddr5), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w6_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[6]), .wdata(loc_sram_wdata6), .waddr(loc_sram_waddr6), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w7_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[7]), .wdata(loc_sram_wdata7), .waddr(loc_sram_waddr7), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w8_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[8]), .wdata(loc_sram_wdata8), .waddr(loc_sram_waddr8), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w9_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[9]), .wdata(loc_sram_wdata9), .waddr(loc_sram_waddr9), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w10_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[10]), .wdata(loc_sram_wdata10), .waddr(loc_sram_waddr10), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w11_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[11]), .wdata(loc_sram_wdata11), .waddr(loc_sram_waddr11), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w12_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[12]), .wdata(loc_sram_wdata12), .waddr(loc_sram_waddr12), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w13_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[13]), .wdata(loc_sram_wdata13), .waddr(loc_sram_waddr13), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w14_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[14]), .wdata(loc_sram_wdata14), .waddr(loc_sram_waddr14), .raddr(), .rdata());
+loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
+w15_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[15]), .wdata(loc_sram_wdata15), .waddr(loc_sram_waddr15), .raddr(), .rdata());
 // ===================================================================================
 // master_top #(
 //  // 
@@ -242,7 +280,7 @@ initial begin
     rerun = 1'b1;
     $write("--------------------rerun to check---\n");
     #(CYCLE*3) enable = 1'b1;
-    #(CYCLE*2)
+    #(CYCLE*2) $write("re: epoch %d\n", epoch);
     while(epoch < MAX_EPOCH - 1) begin 
         @(negedge clk)
         in_next_arr = file_next_arr[epoch-1 >= 0 ? epoch - 1: 0];
@@ -313,57 +351,58 @@ end
 reg [K-1:0] checkbit;
 integer checki;
 reg [NEXT_BW-1:0] banknum; 
-initial begin 
-    fptr = $fopen("../software/gold_master/wdata.dat", "r");
-    check_epoch = 0;
-    wait(ready == 1);
-    wait(rerun == 1);
-    while(check_epoch < MAX_EPOCH + 1) begin 
-        @(negedge clk)
-        ccc = $fscanf(fptr, "%h %h", gold_epoch, gold_wen);
-        // $display("tbepoch: %d %h; %d", gold_epoch, gold_wen, check_epoch);
-        if(check_epoch == gold_epoch) begin 
-            if(gold_wen !== ~(vidsram_wen)) begin 
-                $display("FAILL epoch %d tbepoch: %h goldwen %h; check %h", epoch, gold_epoch, gold_wen, check_epoch);
-                $write("gold_wen %h vs vidsram_wen %h\n", gold_wen, vidsram_wen);
-                $finish;
-            end 
-            // else begin 
-                if(gold_wen > 0) begin 
-                    checkbit = 16'h8000;
-                    for(checki = 0; checki < K; checki = checki + 1) begin 
-                        if((checkbit & gold_wen) > 0) begin 
-                            ccc = $fscanf(fptr, "%h", banknum); 
-                            // $write("banknum: %d\t\t", banknum);
-                            ccc = $fscanf(fptr, "%h", gold_wdata);
-                            // $write("wdata: %h\n", gold_wdata);
-                            if(master_instn.vidsram_wdata[banknum] !== gold_wdata) begin
-                                $write("FAIL check: %h vs %h (gold)", master_instn.vidsram_wdata[banknum], gold_wdata); 
-                                $finish;
-                            end 
-                            // else begin 
-                            //     $write("good check: %h vs %h (gold)\n", master_instn.vidsram_wdata[banknum], gold_wdata); 
-                            // end 
-                        end 
-                        checkbit = checkbit >>1;
-                    end
-                    // $write("-------\n"); 
-                end 
-            // end 
-        end
-        else begin 
-            $display("fscanf fail to sync!");
-            $finish;
-        end 
-        check_epoch = check_epoch + 1;
-    end
-    if(check_epoch != MAX_EPOCH + 1) begin 
-        $write("FAILLL only check to %d\n", check_epoch);
-    end else begin 
-        $write("HOORAY\n");
-    end 
-    // $finish; 
-end 
+// initial begin 
+//     fptr = $fopen("../software/gold_master/wdata.dat", "r");
+//     check_epoch = 0;
+//     wait(rerun == 1);
+//     #(CYCLE);
+//     wait(ready == 1);
+//     while(check_epoch < MAX_EPOCH + 1) begin 
+//         @(negedge clk)
+//         ccc = $fscanf(fptr, "%h %h", gold_epoch, gold_wen);
+//         // $display("tbepoch: %d %h; %d", gold_epoch, gold_wen, check_epoch);
+//         if(check_epoch == gold_epoch) begin 
+//             if(gold_wen !== ~(vidsram_wen)) begin 
+//                 $display("FAILL epoch %d tbepoch: %h goldwen %h; check %h", epoch, gold_epoch, gold_wen, check_epoch);
+//                 $write("gold_wen %h vs vidsram_wen %h\n", gold_wen, vidsram_wen);
+//                 $finish;
+//             end 
+//             // else begin 
+//                 if(gold_wen > 0) begin 
+//                     checkbit = 16'h8000;
+//                     for(checki = 0; checki < K; checki = checki + 1) begin 
+//                         if((checkbit & gold_wen) > 0) begin 
+//                             ccc = $fscanf(fptr, "%h", banknum); 
+//                             // $write("banknum: %d\t\t", banknum);
+//                             ccc = $fscanf(fptr, "%h", gold_wdata);
+//                             // $write("wdata: %h\n", gold_wdata);
+//                             if(master_instn.vidsram_wdata[banknum] !== gold_wdata) begin
+//                                 $write("FAIL check: %h vs %h (gold)", master_instn.vidsram_wdata[banknum], gold_wdata); 
+//                                 $finish;
+//                             end 
+//                             // else begin 
+//                             //     $write("good check: %h vs %h (gold)\n", master_instn.vidsram_wdata[banknum], gold_wdata); 
+//                             // end 
+//                         end 
+//                         checkbit = checkbit >>1;
+//                     end
+//                     // $write("-------\n"); 
+//                 end 
+//             // end 
+//         end
+//         else begin 
+//             $display("fscanf fail to sync!");
+//             $finish;
+//         end 
+//         check_epoch = check_epoch + 1;
+//     end
+//     if(check_epoch != MAX_EPOCH + 1) begin 
+//         $write("FAILLL only check to %d\n", check_epoch);
+//     end else begin 
+//         $write("HOORAY\n");
+//     end 
+//     // $finish; 
+// end 
 initial begin 
     #(CYCLE*1000000);
     $finish;

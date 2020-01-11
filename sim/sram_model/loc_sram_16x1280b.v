@@ -1,5 +1,5 @@
 module loc_sram_16x1280b #(
-parameter ADDR_SPACE = 4, // 4096 / 256 = 16 
+parameter ADDR_SPACE = 8, // 2^16 / 256 = 256
 parameter BW = 5,
 parameter D = 256
 )
