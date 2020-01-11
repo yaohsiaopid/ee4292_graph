@@ -23,15 +23,19 @@ input [PRO_BW*Q-1:0] in_proposal_nums,
 // outputs 
 output reg [7:0] epoch,
 output reg [K-1:0] vidsram_wen, // 0 at MSB
-output reg ready
+output reg ready,
+output reg finish
 // vidsram writing  
 
 // loc sram writing 
 
 );
 localparam PSUM_READY = 3;
+localparam DONEII = 6;
 // localparam WDATII = 6; // WDATII = PSUM_READY + 3
 // epoch[7:4] -> i, current partition
+reg [2:0] delay, n_delay;
+reg [7:0] n_epoch;
 reg [NEXT_BW-1:0] next_arr[0:Q-1];      // register             
 reg [PRO_BW-1:0] proposal_nums[0:Q-1];  // register         
 reg [PRO_BW-1:0] mi_j[0:K-1];           // register 
@@ -66,6 +70,14 @@ integer partial_i, partial_j, check_i;
 integer buffi,buffj;
 
 always @* begin 
+    n_delay = delay;
+    if(epoch == 8'd255 && delay != DONEII) begin 
+        n_delay = delay + 1;
+    end 
+    n_epoch = epoch + 1;
+    if(epoch == 8'd255) begin 
+        n_epoch = epoch;
+    end 
     for(o_idx = 0; o_idx < Q; o_idx = o_idx + 1) begin 
         for(in_idx = 0; in_idx < K; in_idx = in_idx + 1) begin
             onehot[o_idx][in_idx] = real_next_arr[o_idx] == in_idx;
@@ -463,8 +475,14 @@ always @(posedge clk) begin
         end 
         epoch <= 0;
         ready <= 0;
+        finish <= 0;
+        delay <= 0;
     end else begin 
-        epoch <= epoch + 1;
+        epoch <= n_epoch;
+        delay <= n_delay;
+        if(delay == DONEII) 
+            finish <= 1;
+        if(epoch > 249) begin 
         $write(": epoch %d, in_next_arr %h; next_arr[0:1] %d %d; real_next_arr (of prev) %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
                 epoch , in_next_arr, next_arr[0], next_arr[1], real_next_arr[0],real_next_arr[1],real_next_arr[2],real_next_arr[3],real_next_arr[4],real_next_arr[5],real_next_arr[6],real_next_arr[7],real_next_arr[8],real_next_arr[9],real_next_arr[10],real_next_arr[11],real_next_arr[12],real_next_arr[13],real_next_arr[14],real_next_arr[15]);
         $write(": epoch %d, accum: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
@@ -479,7 +497,7 @@ always @(posedge clk) begin
         epoch, export[0],export[1],export[2],export[3],export[4],export[5],export[6],export[7],export[8],export[9],export[10],export[11],export[12],export[13],export[14],export[15]);
         $write(": epoch %d, v_gidx: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
         epoch, v_gidx[0],v_gidx[1],v_gidx[2],v_gidx[3],v_gidx[4],v_gidx[5],v_gidx[6],v_gidx[7],v_gidx[8],v_gidx[9],v_gidx[10],v_gidx[11],v_gidx[12],v_gidx[13],v_gidx[14],v_gidx[15]);
-        
+        end 
         {next_arr[0],next_arr[1],next_arr[2],next_arr[3],next_arr[4],next_arr[5],next_arr[6],next_arr[7],
         next_arr[8],next_arr[9],next_arr[10],next_arr[11],next_arr[12],next_arr[13],next_arr[14],next_arr[15]}
             <= in_next_arr;
@@ -496,13 +514,14 @@ always @(posedge clk) begin
             buffer_idx[si] <= nbuffer_idx[si];
         end 
         for(pi = 0; pi < Q; pi = pi + 1) begin 
+            if(epoch > 250)
             $write("epoch: %d partialsum:", epoch);
             for(pj = 0; pj < K; pj = pj + 1) begin
                  partial_sum[pi][pj] <= n_partial_sum[pi][pj];
-                 if(epoch > 2)// && pi == Q-1)
+                 if(epoch > 250)// && pi == Q-1)
                  $write("%d",partial_sum[pi][pj]);
             end 
-            if(epoch > 2) //&& pi == Q-1)
+            if(epoch > 250) //&& pi == Q-1)
             $write("\n");
         end 
 
@@ -516,12 +535,12 @@ always @(posedge clk) begin
             accum[sk] <= n_accum[sk];
             export[sk] <= n_export[sk];
             buffaccum[sk] <= n_buffaccum[sk];
-            $write(": epoch %d buffer: ", epoch);
+            // $write(": epoch %d buffer: ", epoch);
             for(sq = 0; sq < 2*Q; sq = sq + 1) begin 
                 buffer[sk][sq] <= n_buffer[sk][sq];
-                $write("%h,", buffer[sk][sq]);
+                // $write("%h,", buffer[sk][sq]);
             end 
-            $write("\n");
+            // $write("\n");
         end 
 
 
@@ -535,9 +554,9 @@ always @(posedge clk) begin
         end else begin 
             vidsram_wen[export_i]  <= 1'b0;
         end 
-        if(vidsram_wen[export_i] !== 0) begin 
-            $write(":epoch %d exportout target %d wen %h wdata %h\n", epoch, export_i, vidsram_wen[export_i], vidsram_wdata[export_i]);
-        end 
+        // if(vidsram_wen[export_i] !== 0) begin 
+        //     $write(":epoch %d exportout target %d wen %h wdata %h\n", epoch, export_i, vidsram_wen[export_i], vidsram_wdata[export_i]);
+        // end 
     end 
     
     

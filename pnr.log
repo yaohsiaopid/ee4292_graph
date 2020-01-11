@@ -1,0 +1,39 @@
+$ report_clock_gating
+number of clk gating ele 43
+num of gated register 388 (5.71%)
+ungated register 6409(94.29%)
+total num of register 6797
+$ report_timing
+slack (MET) worst 2.44
+$ report_power # PNS result Synthesize Power Network
+total power 16 mW (resiter 87.73%)
+dynamic 14.73
+total current from virtual pads: 15.55 mA   # TODO: fix ????
+Max IR drop 4.06mA
+Max current in worker : 0.326 mA
+
+# lab 11
+$ report power #current virtual flat placement
+9.9
+$ report power after place_opt -power
+total power 16 mW 
+dynamic power 14.61
+# lab 11 p.12 top
+$ report timing 
+slack (VIOLATED) -0.11
+
+# lab 12
+how many tie-high and tie-low cells are instantiated? 51 tie-high 1 tie-low 
+check hold_time: slack(MET) 0.18
+*** setup time violation: 
+![](setup_time_violation.png)
+
+# after route_opt
+report timing: slack(violated) -0.31
+check hold_time: slace(MET) 0.18
+power: 18.22 mW, dynamic 16
+Clock network consumes 18.31% of the total power.
+# 
+bbox
+core area {10.5 10.5} {442.028 441.876}
+die area {0 0} {452.528 452.376}

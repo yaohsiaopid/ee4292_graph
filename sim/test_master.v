@@ -22,6 +22,7 @@ reg [VID_BW*Q-1:0] in_v_gidx;
 reg [PRO_BW*Q-1:0] in_proposal_nums;
 
 // output 
+wire master_finish;
 wire [7:0] epoch;
 wire [K-1:0] vidsram_wen; // 0 at MSB  
 wire ready; // TODO: if ready == 1 , check at negedge clk     
@@ -41,7 +42,8 @@ master_top master_instn (
     // output 
     .epoch(epoch),
     .vidsram_wen(vidsram_wen),
-    .ready(ready)
+    .ready(ready),
+    .finish(master_finish)
 );
 reg [NEXT_BW*Q-1:0] file_next_arr[0:MAX_EPOCH-1];
 reg [PRO_BW*K-1:0] file_mi_j[0:MAX_EPOCH-1]; 
@@ -56,12 +58,13 @@ reg [4 - 1:0] gold_waddr;
 reg [7:0] chars[0:2];
 always #(CYCLE/2) clk = ~clk;
 integer ccc;
-integer check_epoch;
+reg [8:0] check_epoch;
+integer feed, feed_v;
 initial begin 
     clk = 0;
     rst_n = 1;
     enable = 1'b0;
-
+    
     $readmemh("../software/gold_master/next_arr.dat", file_next_arr);
     $write("file_next_arr 0: %h\n", file_next_arr[0]);
     $write("file_next_arr 1: %h\n", file_next_arr[1]);
@@ -87,7 +90,7 @@ initial begin
     enable = 1'b1;
     #(CYCLE) rst_n = 1;   
     #(CYCLE)
-    while(epoch <= MAX_EPOCH) begin 
+    while(epoch < MAX_EPOCH - 1) begin 
         @(negedge clk)
         in_next_arr = file_next_arr[epoch-1 >= 0 ? epoch - 1: 0];
         in_mi_j = file_mi_j[epoch-1 >= 0 ? epoch - 1: 0];
@@ -95,6 +98,23 @@ initial begin
         in_v_gidx = file_v_gidx[epoch-4 >= 0 ? epoch - 4: 0];
         in_proposal_nums = file_proposal_nums[epoch-1 >= 0 ? epoch - 1: 0];
     end 
+    feed = 255;
+    feed_v = 252;
+    while(feed_v < 256) begin
+        @(negedge clk)
+        $write("input epoch %d feed %d", epoch, feed);
+        in_next_arr = file_next_arr[feed];
+        in_mi_j = file_mi_j[feed];
+        in_mj_i = file_mj_i[feed];
+        in_v_gidx = file_v_gidx[feed_v];
+        in_proposal_nums = file_proposal_nums[feed];
+        $write("; vgid in %h;\n",in_v_gidx );
+        feed_v = feed_v + 1;
+        if(feed == 255) feed = 255;
+        else feed = feed + 1;
+    end 
+    wait(master_finish == 1);
+    $write("DONNEE");
     $finish;
 end 
 
@@ -108,9 +128,10 @@ initial begin
     while(check_epoch < MAX_EPOCH) begin 
         @(negedge clk)
         ccc = $fscanf(fptr, "%h %h", gold_epoch, gold_wen);
-        $display("tbepoch: %d %h; %d", gold_epoch, gold_wen, check_epoch);
+        // $display("tbepoch: %d %h; %d", gold_epoch, gold_wen, check_epoch);
         if(check_epoch == gold_epoch) begin 
             if(gold_wen !== vidsram_wen) begin 
+                $display("FAILL epoch %d tbepoch: %h goldwen %h; check %h", epoch, gold_epoch, gold_wen, check_epoch);
                 $write("gold_wen %h vs vidsram_wen %h\n", gold_wen, vidsram_wen);
                 $finish;
             end 
@@ -125,6 +146,7 @@ initial begin
                             $write("wdata: %h\n", gold_wdata);
                             if(master_instn.vidsram_wdata[banknum] !== gold_wdata) begin
                                 $write("FAIL check: %h vs %h (gold)", master_instn.vidsram_wdata[banknum], gold_wdata); 
+                                $finish;
                             end 
                         end 
                         checkbit = checkbit >>1;
@@ -135,12 +157,19 @@ initial begin
         end
         else begin 
             $display("fscanf fail to sync!");
+            $finish;
         end 
         check_epoch = check_epoch + 1;
+    end
+    if(check_epoch != MAX_EPOCH) begin 
+        $write("FAILLL only check to %d\n", check_epoch);
+    end else begin 
+        $write("HOORAY\n");
     end 
+    $finish; 
 end 
 initial begin 
-    #(CYCLE*1000000);
+    #(CYCLE*10000000);
     $finish;
 end 
 initial begin 
@@ -148,7 +177,7 @@ initial begin
     // $finish;
 end 
 // initial begin
-// 	$fsdbDumpfile("test_master.fsdb");q
+// 	$fsdbDumpfile("test_master.fsdb");
 // 	$fsdbDumpvars("+mda");
 // end
 endmodule
