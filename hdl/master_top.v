@@ -12,7 +12,7 @@ parameter D = 256,
 parameter LOC_ADDR_SPACE = 4
 ) (
 input clk,
-input rst_n,
+input rst_n_in, 
 input enable,
 // inputs 
 input [NEXT_BW*Q-1:0] in_next_arr,
@@ -32,6 +32,7 @@ output reg finish
 );
 localparam PSUM_READY = 3;
 localparam DONEII = 6;
+reg rst_n;
 // localparam WDATII = 6; // WDATII = PSUM_READY + 3
 // epoch[7:4] -> i, current partition
 reg [2:0] delay, n_delay;
@@ -448,6 +449,7 @@ integer loci;
 integer export_i;
 integer ri, rk, rj, si, sk, sq, pi, pj;
 always @(posedge clk) begin 
+    rst_n <= rst_n_in;
     if(~rst_n) begin 
         for(ri = 0; ri < Q; ri = ri + 1) begin 
             next_arr[ri] <= {NEXT_BW{1'b0}};
@@ -482,22 +484,22 @@ always @(posedge clk) begin
         delay <= n_delay;
         if(delay == DONEII) 
             finish <= 1;
-        if(epoch > 249) begin 
-        $write(": epoch %d, in_next_arr %h; next_arr[0:1] %d %d; real_next_arr (of prev) %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-                epoch , in_next_arr, next_arr[0], next_arr[1], real_next_arr[0],real_next_arr[1],real_next_arr[2],real_next_arr[3],real_next_arr[4],real_next_arr[5],real_next_arr[6],real_next_arr[7],real_next_arr[8],real_next_arr[9],real_next_arr[10],real_next_arr[11],real_next_arr[12],real_next_arr[13],real_next_arr[14],real_next_arr[15]);
-        $write(": epoch %d, accum: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        epoch, accum[0],accum[1],accum[2],accum[3],accum[4],accum[5],accum[6],accum[7],accum[8],accum[9],accum[10],accum[11],accum[12],accum[13],accum[14],accum[15]);
-        $write(": epoch %d, buffaccum: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        epoch, buffaccum[0],buffaccum[1],buffaccum[2],buffaccum[3],buffaccum[4],buffaccum[5],buffaccum[6],buffaccum[7],buffaccum[8],buffaccum[9],buffaccum[10],buffaccum[11],buffaccum[12],buffaccum[13],buffaccum[14],buffaccum[15]);
-        $write(": epoch %d, buffer_idx: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        epoch, buffer_idx[0],buffer_idx[1],buffer_idx[2],buffer_idx[3],buffer_idx[4],buffer_idx[5],buffer_idx[6],buffer_idx[7],buffer_idx[8],buffer_idx[9],buffer_idx[10],buffer_idx[11],buffer_idx[12],buffer_idx[13],buffer_idx[14],buffer_idx[15]);
-        $write(": epoch %d, buff_next: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        epoch, buff_next[0],buff_next[1],buff_next[2],buff_next[3],buff_next[4],buff_next[5],buff_next[6],buff_next[7],buff_next[8],buff_next[9],buff_next[10],buff_next[11],buff_next[12],buff_next[13],buff_next[14],buff_next[15]);
-        $write(": epoch %d, export: %b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,\n", 
-        epoch, export[0],export[1],export[2],export[3],export[4],export[5],export[6],export[7],export[8],export[9],export[10],export[11],export[12],export[13],export[14],export[15]);
-        $write(": epoch %d, v_gidx: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
-        epoch, v_gidx[0],v_gidx[1],v_gidx[2],v_gidx[3],v_gidx[4],v_gidx[5],v_gidx[6],v_gidx[7],v_gidx[8],v_gidx[9],v_gidx[10],v_gidx[11],v_gidx[12],v_gidx[13],v_gidx[14],v_gidx[15]);
-        end 
+        // if(epoch > 249) begin 
+        //     $write(": epoch %d, in_next_arr %h; next_arr[0:1] %d %d; real_next_arr (of prev) %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
+        //             epoch , in_next_arr, next_arr[0], next_arr[1], real_next_arr[0],real_next_arr[1],real_next_arr[2],real_next_arr[3],real_next_arr[4],real_next_arr[5],real_next_arr[6],real_next_arr[7],real_next_arr[8],real_next_arr[9],real_next_arr[10],real_next_arr[11],real_next_arr[12],real_next_arr[13],real_next_arr[14],real_next_arr[15]);
+        //     $write(": epoch %d, accum: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
+        //     epoch, accum[0],accum[1],accum[2],accum[3],accum[4],accum[5],accum[6],accum[7],accum[8],accum[9],accum[10],accum[11],accum[12],accum[13],accum[14],accum[15]);
+        //     $write(": epoch %d, buffaccum: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
+        //     epoch, buffaccum[0],buffaccum[1],buffaccum[2],buffaccum[3],buffaccum[4],buffaccum[5],buffaccum[6],buffaccum[7],buffaccum[8],buffaccum[9],buffaccum[10],buffaccum[11],buffaccum[12],buffaccum[13],buffaccum[14],buffaccum[15]);
+        //     $write(": epoch %d, buffer_idx: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
+        //     epoch, buffer_idx[0],buffer_idx[1],buffer_idx[2],buffer_idx[3],buffer_idx[4],buffer_idx[5],buffer_idx[6],buffer_idx[7],buffer_idx[8],buffer_idx[9],buffer_idx[10],buffer_idx[11],buffer_idx[12],buffer_idx[13],buffer_idx[14],buffer_idx[15]);
+        //     $write(": epoch %d, buff_next: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
+        //     epoch, buff_next[0],buff_next[1],buff_next[2],buff_next[3],buff_next[4],buff_next[5],buff_next[6],buff_next[7],buff_next[8],buff_next[9],buff_next[10],buff_next[11],buff_next[12],buff_next[13],buff_next[14],buff_next[15]);
+        //     $write(": epoch %d, export: %b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,%b,\n", 
+        //     epoch, export[0],export[1],export[2],export[3],export[4],export[5],export[6],export[7],export[8],export[9],export[10],export[11],export[12],export[13],export[14],export[15]);
+        //     $write(": epoch %d, v_gidx: %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
+        //     epoch, v_gidx[0],v_gidx[1],v_gidx[2],v_gidx[3],v_gidx[4],v_gidx[5],v_gidx[6],v_gidx[7],v_gidx[8],v_gidx[9],v_gidx[10],v_gidx[11],v_gidx[12],v_gidx[13],v_gidx[14],v_gidx[15]);
+        // end 
         {next_arr[0],next_arr[1],next_arr[2],next_arr[3],next_arr[4],next_arr[5],next_arr[6],next_arr[7],
         next_arr[8],next_arr[9],next_arr[10],next_arr[11],next_arr[12],next_arr[13],next_arr[14],next_arr[15]}
             <= in_next_arr;
@@ -514,15 +516,15 @@ always @(posedge clk) begin
             buffer_idx[si] <= nbuffer_idx[si];
         end 
         for(pi = 0; pi < Q; pi = pi + 1) begin 
-            if(epoch > 250)
-            $write("epoch: %d partialsum:", epoch);
+            // if(epoch > 250)
+            // $write("epoch: %d partialsum:", epoch);
             for(pj = 0; pj < K; pj = pj + 1) begin
                  partial_sum[pi][pj] <= n_partial_sum[pi][pj];
-                 if(epoch > 250)// && pi == Q-1)
-                 $write("%d",partial_sum[pi][pj]);
+                //  if(epoch > 250)// && pi == Q-1)
+                //  $write("%d",partial_sum[pi][pj]);
             end 
-            if(epoch > 250) //&& pi == Q-1)
-            $write("\n");
+            // if(epoch > 250) //&& pi == Q-1)
+            // $write("\n");
         end 
 
         {mi_j[0],mi_j[1],mi_j[2],mi_j[3],mi_j[4],mi_j[5],mi_j[6],mi_j[7],
@@ -545,33 +547,33 @@ always @(posedge clk) begin
 
 
 
-    // write vid sram 
-    for(export_i = 0; export_i < K; export_i = export_i + 1) begin 
-        if(export[export_i] == 1) begin 
-            vidsram_wdata[export_i]  <= {buffer[export_i][0],buffer[export_i][1],buffer[export_i][2],buffer[export_i][3],buffer[export_i][4],buffer[export_i][5],buffer[export_i][6],buffer[export_i][7],buffer[export_i][8],buffer[export_i][9],buffer[export_i][10],buffer[export_i][11],buffer[export_i][12],buffer[export_i][13],buffer[export_i][14],buffer[export_i][15]};
-            vidsram_wen[export_i]  <= 1'b1;
-            vidsram_waddr[export_i]  <= vidsram_waddr[export_i] + 1;
-        end else begin 
-            vidsram_wen[export_i]  <= 1'b0;
+        // write vid sram 
+        for(export_i = 0; export_i < K; export_i = export_i + 1) begin 
+            if(export[export_i] == 1) begin 
+                vidsram_wdata[export_i]  <= {buffer[export_i][0],buffer[export_i][1],buffer[export_i][2],buffer[export_i][3],buffer[export_i][4],buffer[export_i][5],buffer[export_i][6],buffer[export_i][7],buffer[export_i][8],buffer[export_i][9],buffer[export_i][10],buffer[export_i][11],buffer[export_i][12],buffer[export_i][13],buffer[export_i][14],buffer[export_i][15]};
+                vidsram_wen[export_i]  <= 1'b1;
+                vidsram_waddr[export_i]  <= vidsram_waddr[export_i] + 1;
+            end else begin 
+                vidsram_wen[export_i]  <= 1'b0;
+            end 
+            // if(vidsram_wen[export_i] !== 0) begin 
+            //     $write(":epoch %d exportout target %d wen %h wdata %h\n", epoch, export_i, vidsram_wen[export_i], vidsram_wdata[export_i]);
+            // end 
         end 
-        // if(vidsram_wen[export_i] !== 0) begin 
-        //     $write(":epoch %d exportout target %d wen %h wdata %h\n", epoch, export_i, vidsram_wen[export_i], vidsram_wdata[export_i]);
-        // end 
-    end 
     
     
 
-    // write loc sram
-    if(epoch > 3) begin 
-        // next_arr -> next_real_arr -> buff_next 
-        for(loci = 0; loci < Q; loci = loci + 1) begin 
-            locsram_wdata[loci] <= {D{1'b1, buff_next[loci]}};
-            locsram_wbytemask[loci] <= n_locsram_wbytemask[loci];
-            locsram_wen[loci] <= 1;
-            // locsram_addr[loci] <= v_gidx[mask_i][D+3:D];  // TO MODIFIED
+        // write loc sram
+        if(epoch > 3) begin 
+            // next_arr -> next_real_arr -> buff_next 
+            for(loci = 0; loci < Q; loci = loci + 1) begin 
+                locsram_wdata[loci] <= {D{1'b1, buff_next[loci]}};
+                locsram_wbytemask[loci] <= n_locsram_wbytemask[loci];
+                locsram_wen[loci] <= 1;
+                // locsram_addr[loci] <= v_gidx[mask_i][D+3:D];  // TO MODIFIED
+            end
+            // TODO: start update read_waddr of vid ! 
         end
-        // TODO: start update read_waddr of vid ! 
-    end
 
     end 
 end 

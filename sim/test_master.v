@@ -33,7 +33,7 @@ wire ready; // TODO: if ready == 1 , check at negedge clk
 master_top master_instn (
     .clk(clk),
     .enable(enable),
-    .rst_n(rst_n),
+    .rst_n_in(rst_n),
     .in_next_arr(in_next_arr),
     .in_mi_j(in_mi_j),
     .in_mj_i(in_mj_i),
@@ -89,7 +89,7 @@ initial begin
     in_proposal_nums = file_proposal_nums[epoch];
     enable = 1'b1;
     #(CYCLE) rst_n = 1;   
-    #(CYCLE)
+    #(CYCLE*2)
     while(epoch < MAX_EPOCH - 1) begin 
         @(negedge clk)
         in_next_arr = file_next_arr[epoch-1 >= 0 ? epoch - 1: 0];
@@ -102,13 +102,13 @@ initial begin
     feed_v = 252;
     while(feed_v < 256) begin
         @(negedge clk)
-        $write("input epoch %d feed %d", epoch, feed);
+        // $write("input epoch %d feed %d", epoch, feed);
         in_next_arr = file_next_arr[feed];
         in_mi_j = file_mi_j[feed];
         in_mj_i = file_mj_i[feed];
         in_v_gidx = file_v_gidx[feed_v];
         in_proposal_nums = file_proposal_nums[feed];
-        $write("; vgid in %h;\n",in_v_gidx );
+        // $write("; vgid in %h;\n",in_v_gidx );
         feed_v = feed_v + 1;
         if(feed == 255) feed = 255;
         else feed = feed + 1;
@@ -141,9 +141,9 @@ initial begin
                     for(checki = 0; checki < K; checki = checki + 1) begin 
                         if((checkbit & gold_wen) > 0) begin 
                             ccc = $fscanf(fptr, "%h", banknum); 
-                            $write("banknum: %d\t\t", banknum);
+                            // $write("banknum: %d\t\t", banknum);
                             ccc = $fscanf(fptr, "%h", gold_wdata);
-                            $write("wdata: %h\n", gold_wdata);
+                            // $write("wdata: %h\n", gold_wdata);
                             if(master_instn.vidsram_wdata[banknum] !== gold_wdata) begin
                                 $write("FAIL check: %h vs %h (gold)", master_instn.vidsram_wdata[banknum], gold_wdata); 
                                 $finish;
@@ -151,7 +151,7 @@ initial begin
                         end 
                         checkbit = checkbit >>1;
                     end
-                    $write("-------\n"); 
+                    // $write("-------\n"); 
                 end 
             // end 
         end
