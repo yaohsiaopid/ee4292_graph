@@ -3,7 +3,7 @@ parameter Q = 16,
 parameter PRO_BW = 8,
 parameter NEXT_BW = 4,
 parameter K = 16,
-parameter VID_BW = 12,
+parameter VID_BW = 16,
 parameter BUF_BW = 5, // log(2*Q)
 parameter OFFSET_BW = 5, // 0-16 partial sum
 parameter ADDR_SPACE = 4,
@@ -12,7 +12,7 @@ parameter D = 256,
 parameter LOC_ADDR_SPACE = 4
 ) (
 input clk,
-input rst_n_in, 
+input rst_n, 
 input enable,
 // inputs 
 input [NEXT_BW*Q-1:0] in_next_arr,
@@ -30,9 +30,11 @@ output reg finish
 // loc sram writing 
 
 );
+localparam IDLE=2'd0, RUNS=2'd1, DELAY=2'd2, FINISH=2'd3;
 localparam PSUM_READY = 3;
 localparam DONEII = 6;
-reg rst_n;
+reg [1:0] nstate, state;
+// reg rst_n, enable;
 // localparam WDATII = 6; // WDATII = PSUM_READY + 3
 // epoch[7:4] -> i, current partition
 reg [2:0] delay, n_delay;
@@ -65,20 +67,29 @@ reg export[0:K-1], n_export[0:K-1];
 reg [BUF_BW-1:0] buffaccum[0:K-1], n_buffaccum[0:K-1]; // for buffer indexing's accum
 reg [K-1:0] onehot[0:Q-1];
 reg [OFFSET_BW-1:0] partial_sum[0:Q-1][0:K-1],n_partial_sum[0:Q-1][0:K-1];
+reg psum_set, n_psum_set;
 integer o_idx, in_idx;
 integer accumidx;
 integer partial_i, partial_j, check_i;
 integer buffi,buffj;
 
 always @* begin 
-    n_delay = delay;
-    if(epoch == 8'd255 && delay != DONEII) begin 
-        n_delay = delay + 1;
+    if(~enable) n_psum_set = 0;
+    else begin 
+        if(state == RUNS && epoch == PSUM_READY) n_psum_set = 1;
+        else n_psum_set = psum_set;
     end 
-    n_epoch = epoch + 1;
-    if(epoch == 8'd255) begin 
-        n_epoch = epoch;
+    if(~enable) n_delay = 0;
+    else begin 
+        if(state == DELAY)  n_delay = delay + 1;
+        else                n_delay = delay;
     end 
+    if(~enable) n_epoch = 0;
+    else begin 
+        if(state == RUNS && epoch < 8'd255) n_epoch = epoch + 1;
+        else              n_epoch = epoch; 
+    end 
+
     for(o_idx = 0; o_idx < Q; o_idx = o_idx + 1) begin 
         for(in_idx = 0; in_idx < K; in_idx = in_idx + 1) begin
             onehot[o_idx][in_idx] = real_next_arr[o_idx] == in_idx;
@@ -106,7 +117,7 @@ always @* begin
     end 
     // ----------- same time to write into ----------------
     for(partial_i = 0; partial_i < Q; partial_i = partial_i + 1) begin
-        if(epoch > PSUM_READY) 
+        if(psum_set) 
         nbuffer_idx[partial_i] = (partial_sum[partial_i][buff_1_next[partial_i]] - 1) + (accum[buff_1_next[partial_i]] >= Q ? accum[buff_1_next[partial_i]] - Q : accum[buff_1_next[partial_i]]) ;
         else 
         nbuffer_idx[partial_i] = buffer_idx[partial_i];
@@ -115,7 +126,7 @@ always @* begin
        
     for(accumidx = 0; accumidx < K; accumidx = accumidx + 1) begin 
         n_buffaccum[accumidx] = accum[accumidx] >= Q ? accum[accumidx] - Q : accum[accumidx]; // retain the offset that to be FIFOed
-        if(epoch > PSUM_READY) begin 
+        if(psum_set) begin 
             if(accum[accumidx] >= Q) begin 
                 n_accum[accumidx] = accum[accumidx] - Q + partial_sum[Q-1][accumidx]; // partial sum !!!! ;// check_acc[accumidx] - Q;
                 n_export[accumidx] = 1;
@@ -131,7 +142,7 @@ always @* begin
     // -------------------------------------------
     for(buffi = 0; buffi < K; buffi = buffi + 1) begin 
         for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
-            if(epoch > PSUM_READY) begin 
+            if(psum_set) begin 
                 if(buffj < Q && export[buffi] == 1 && buffj < buffaccum[buffi]) begin 
                     // shift 
                     n_buffer[buffi][buffj] = buffer[buffi][buffj + Q];
@@ -448,9 +459,22 @@ end
 integer loci;
 integer export_i;
 integer ri, rk, rj, si, sk, sq, pi, pj;
+always @* begin 
+    if(~enable) begin 
+        nstate = IDLE;
+    end else begin 
+        case(state) 
+            IDLE: nstate = RUNS;
+            RUNS: nstate = (epoch == 8'd255) ? DELAY : RUNS;
+            DELAY: nstate = (delay == DONEII) ? FINISH : DELAY;
+            FINISH: nstate = FINISH;
+        endcase 
+    end 
+end 
 always @(posedge clk) begin 
-    rst_n <= rst_n_in;
     if(~rst_n) begin 
+        state <= IDLE;
+        psum_set <= 0;
         for(ri = 0; ri < Q; ri = ri + 1) begin 
             next_arr[ri] <= {NEXT_BW{1'b0}};
             proposal_nums[ri] <= {PRO_BW{1'b0}};
@@ -479,11 +503,16 @@ always @(posedge clk) begin
         ready <= 0;
         finish <= 0;
         delay <= 0;
-    end else begin 
+    end else begin
+        state <= nstate; 
         epoch <= n_epoch;
+        $write("epoch: %d\n",epoch);
         delay <= n_delay;
-        if(delay == DONEII) 
+        psum_set <= n_psum_set;
+        if(state == FINISH) 
             finish <= 1;
+        else 
+            finish <= 0;
         // if(epoch > 249) begin 
         //     $write(": epoch %d, in_next_arr %h; next_arr[0:1] %d %d; real_next_arr (of prev) %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
         //             epoch , in_next_arr, next_arr[0], next_arr[1], real_next_arr[0],real_next_arr[1],real_next_arr[2],real_next_arr[3],real_next_arr[4],real_next_arr[5],real_next_arr[6],real_next_arr[7],real_next_arr[8],real_next_arr[9],real_next_arr[10],real_next_arr[11],real_next_arr[12],real_next_arr[13],real_next_arr[14],real_next_arr[15]);
@@ -549,10 +578,14 @@ always @(posedge clk) begin
 
         // write vid sram 
         for(export_i = 0; export_i < K; export_i = export_i + 1) begin 
-            if(export[export_i] == 1) begin 
-                vidsram_wdata[export_i]  <= {buffer[export_i][0],buffer[export_i][1],buffer[export_i][2],buffer[export_i][3],buffer[export_i][4],buffer[export_i][5],buffer[export_i][6],buffer[export_i][7],buffer[export_i][8],buffer[export_i][9],buffer[export_i][10],buffer[export_i][11],buffer[export_i][12],buffer[export_i][13],buffer[export_i][14],buffer[export_i][15]};
-                vidsram_wen[export_i]  <= 1'b1;
-                vidsram_waddr[export_i]  <= vidsram_waddr[export_i] + 1;
+            if(enable) begin 
+                if(export[export_i] == 1) begin 
+                    vidsram_wdata[export_i]  <= {buffer[export_i][0],buffer[export_i][1],buffer[export_i][2],buffer[export_i][3],buffer[export_i][4],buffer[export_i][5],buffer[export_i][6],buffer[export_i][7],buffer[export_i][8],buffer[export_i][9],buffer[export_i][10],buffer[export_i][11],buffer[export_i][12],buffer[export_i][13],buffer[export_i][14],buffer[export_i][15]};
+                    vidsram_wen[export_i]  <= 1'b1;
+                    vidsram_waddr[export_i]  <= vidsram_waddr[export_i] + 1;
+                end else begin 
+                    vidsram_wen[export_i]  <= 1'b0;
+                end 
             end else begin 
                 vidsram_wen[export_i]  <= 1'b0;
             end 

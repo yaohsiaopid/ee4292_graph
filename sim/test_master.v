@@ -4,7 +4,7 @@ localparam N = 4096;
 localparam K = 16;
 localparam NEXT_BW = 4;
 localparam PRO_BW = 8;
-localparam VID_BW = 12;
+localparam VID_BW = 16;
 localparam Q = 16; 
 localparam MAX_EPOCH = 256; // 4096 / 16
 real CYCLE = 10;
@@ -33,7 +33,7 @@ wire ready; // TODO: if ready == 1 , check at negedge clk
 master_top master_instn (
     .clk(clk),
     .enable(enable),
-    .rst_n_in(rst_n),
+    .rst_n(rst_n),
     .in_next_arr(in_next_arr),
     .in_mi_j(in_mi_j),
     .in_mj_i(in_mj_i),
@@ -51,7 +51,7 @@ reg [PRO_BW*K-1:0] file_mj_i[0:MAX_EPOCH-1];
 reg [VID_BW*Q-1:0] file_v_gidx[0:MAX_EPOCH-1]; 
 reg [PRO_BW*Q-1:0] file_proposal_nums[0:MAX_EPOCH-1];
 
-reg [7:0] gold_epoch;
+reg [8:0] gold_epoch;
 reg [K-1:0] gold_wen;
 reg [Q * VID_BW - 1:0] gold_wdata; 
 reg [4 - 1:0] gold_waddr;
@@ -87,8 +87,7 @@ initial begin
     in_mj_i = file_mj_i[epoch];
     in_v_gidx = file_v_gidx[epoch];
     in_proposal_nums = file_proposal_nums[epoch];
-    enable = 1'b1;
-    #(CYCLE) rst_n = 1;   
+    #(CYCLE) rst_n = 1;   enable = 1'b1;
     #(CYCLE*2)
     while(epoch < MAX_EPOCH - 1) begin 
         @(negedge clk)
@@ -114,6 +113,7 @@ initial begin
         else feed = feed + 1;
     end 
     wait(master_finish == 1);
+    enable = 1'b0;
     $write("DONNEE");
     $finish;
 end 
@@ -125,7 +125,7 @@ initial begin
     fptr = $fopen("../software/gold_master/wdata.dat", "r");
     check_epoch = 0;
     wait(ready == 1);
-    while(check_epoch < MAX_EPOCH) begin 
+    while(check_epoch < MAX_EPOCH + 1) begin 
         @(negedge clk)
         ccc = $fscanf(fptr, "%h %h", gold_epoch, gold_wen);
         // $display("tbepoch: %d %h; %d", gold_epoch, gold_wen, check_epoch);
@@ -147,6 +147,8 @@ initial begin
                             if(master_instn.vidsram_wdata[banknum] !== gold_wdata) begin
                                 $write("FAIL check: %h vs %h (gold)", master_instn.vidsram_wdata[banknum], gold_wdata); 
                                 $finish;
+                            end else begin 
+                                $write("good check: %h vs %h (gold)\n", master_instn.vidsram_wdata[banknum], gold_wdata); 
                             end 
                         end 
                         checkbit = checkbit >>1;
@@ -161,12 +163,12 @@ initial begin
         end 
         check_epoch = check_epoch + 1;
     end
-    if(check_epoch != MAX_EPOCH) begin 
+    if(check_epoch != MAX_EPOCH + 1) begin 
         $write("FAILLL only check to %d\n", check_epoch);
     end else begin 
         $write("HOORAY\n");
     end 
-    $finish; 
+    // $finish; 
 end 
 initial begin 
     #(CYCLE*10000000);
