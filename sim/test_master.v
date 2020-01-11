@@ -4,9 +4,10 @@ localparam N = 4096;
 localparam K = 16;
 localparam NEXT_BW = 4;
 localparam PRO_BW = 8;
-localparam VID_BW = 12;
+localparam VID_BW = 16;
 localparam Q = 16; 
 localparam MAX_EPOCH = 256; // 4096 / 16
+localparam VID_ADDR_SPACE = 4;
 real CYCLE = 10;
 integer fptr;
 //====== module I/O =====
@@ -27,6 +28,43 @@ wire [7:0] epoch;
 wire [K-1:0] vidsram_wen; // 0 at MSB  
 wire ready; // TODO: if ready == 1 , check at negedge clk     
 // =================== instance sram ================================
+// graph.py to gen
+wire [VID_BW*Q-1:0] vid_sram_wdata0,vid_sram_wdata1,vid_sram_wdata2,vid_sram_wdata3,vid_sram_wdata4,vid_sram_wdata5,vid_sram_wdata6,vid_sram_wdata7,vid_sram_wdata8,vid_sram_wdata9,vid_sram_wdata10,vid_sram_wdata11,vid_sram_wdata12,vid_sram_wdata13,vid_sram_wdata14,vid_sram_wdata15;
+wire [VID_ADDR_SPACE-1:0] vid_sram_raddr, vid_sram_waddr0,vid_sram_waddr1,vid_sram_waddr2,vid_sram_waddr3,vid_sram_waddr4,vid_sram_waddr5,vid_sram_waddr6,vid_sram_waddr7,vid_sram_waddr8,vid_sram_waddr9,vid_sram_waddr10,vid_sram_waddr11,vid_sram_waddr12,vid_sram_waddr13,vid_sram_waddr14,vid_sram_waddr15;
+wire [VID_BW*Q-1:0] vid_sram_rdata0,vid_sram_rdata1,vid_sram_rdata2,vid_sram_rdata3,vid_sram_rdata4,vid_sram_rdata5,vid_sram_rdata6,vid_sram_rdata7,vid_sram_rdata8,vid_sram_rdata9,vid_sram_rdata10,vid_sram_rdata11,vid_sram_rdata12,vid_sram_rdata13,vid_sram_rdata14,vid_sram_rdata15;
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w0_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[0]), .wdata(vid_sram_wdata0), .waddr(vid_sram_waddr0), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata0));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w1_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[1]), .wdata(vid_sram_wdata1), .waddr(vid_sram_waddr1), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata1));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w2_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[2]), .wdata(vid_sram_wdata2), .waddr(vid_sram_waddr2), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata2));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w3_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[3]), .wdata(vid_sram_wdata3), .waddr(vid_sram_waddr3), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata3));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w4_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[4]), .wdata(vid_sram_wdata4), .waddr(vid_sram_waddr4), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata4));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w5_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[5]), .wdata(vid_sram_wdata5), .waddr(vid_sram_waddr5), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata5));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w6_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[6]), .wdata(vid_sram_wdata6), .waddr(vid_sram_waddr6), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata6));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w7_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[7]), .wdata(vid_sram_wdata7), .waddr(vid_sram_waddr7), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata7));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w8_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[8]), .wdata(vid_sram_wdata8), .waddr(vid_sram_waddr8), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata8));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w9_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[9]), .wdata(vid_sram_wdata9), .waddr(vid_sram_waddr9), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata9));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w10_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[10]), .wdata(vid_sram_wdata10), .waddr(vid_sram_waddr10), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata10));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w11_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[11]), .wdata(vid_sram_wdata11), .waddr(vid_sram_waddr11), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata11));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w12_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[12]), .wdata(vid_sram_wdata12), .waddr(vid_sram_waddr12), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata12));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w13_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[13]), .wdata(vid_sram_wdata13), .waddr(vid_sram_waddr13), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata13));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w14_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[14]), .wdata(vid_sram_wdata14), .waddr(vid_sram_waddr14), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata14));
+vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW)) 
+w15_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[15]), .wdata(vid_sram_wdata15), .waddr(vid_sram_waddr15), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata15));
+// ===================================================================================
 // master_top #(
 //  // 
 // )
@@ -51,7 +89,7 @@ reg [PRO_BW*K-1:0] file_mj_i[0:MAX_EPOCH-1];
 reg [VID_BW*Q-1:0] file_v_gidx[0:MAX_EPOCH-1]; 
 reg [PRO_BW*Q-1:0] file_proposal_nums[0:MAX_EPOCH-1];
 
-reg [7:0] gold_epoch;
+reg [8:0] gold_epoch;
 reg [K-1:0] gold_wen;
 reg [Q * VID_BW - 1:0] gold_wdata; 
 reg [4 - 1:0] gold_waddr;
@@ -125,10 +163,10 @@ initial begin
     fptr = $fopen("../software/gold_master/wdata.dat", "r");
     check_epoch = 0;
     wait(ready == 1);
-    while(check_epoch < MAX_EPOCH) begin 
+    while(check_epoch <= MAX_EPOCH) begin 
         @(negedge clk)
         ccc = $fscanf(fptr, "%h %h", gold_epoch, gold_wen);
-        // $display("tbepoch: %d %h; %d", gold_epoch, gold_wen, check_epoch);
+        $display("tbepoch: %d %h; %d", gold_epoch, gold_wen, check_epoch);
         if(check_epoch == gold_epoch) begin 
             if(gold_wen !== vidsram_wen) begin 
                 $display("FAILL epoch %d tbepoch: %h goldwen %h; check %h", epoch, gold_epoch, gold_wen, check_epoch);
@@ -161,7 +199,7 @@ initial begin
         end 
         check_epoch = check_epoch + 1;
     end
-    if(check_epoch != MAX_EPOCH) begin 
+    if(check_epoch != MAX_EPOCH+1) begin 
         $write("FAILLL only check to %d\n", check_epoch);
     end else begin 
         $write("HOORAY\n");

@@ -22,7 +22,7 @@ void export_inputs(int v_gidx[], int proposal_nums[], int next_arr[], int mi_j[]
   FILE *f_mi_j = fopen("./gold_master/mi_j.dat", "a+");
   FILE *f_mj_i = fopen("./gold_master/mj_i.dat", "a+");
   for(int i = 0; i < Q; i++) {
-    fprintf(f_v_gids, "%03x", v_gidx[i]);
+    fprintf(f_v_gids, "%04x", v_gidx[i]);
     if(i < Q - 1) fprintf(f_v_gids, "_");
     fprintf(f_props_num, "%02x", proposal_nums[i]);
     if(i < Q - 1) fprintf(f_props_num, "_");
@@ -54,7 +54,7 @@ void export_wdata(int epoch, int wen, int wdata[][Q]) {
     if(wen & bitselect) {
       fprintf(f_wdata, "%x\n", i);
       for(int j = 0; j < Q; j++) {  
-        fprintf(f_wdata, "%03x", wdata[i][j]);
+        fprintf(f_wdata, "%04x", wdata[i][j]);
         if(j < Q - 1) 
         fprintf(f_wdata, "_");
       }
@@ -244,7 +244,7 @@ int main(int argc, char *argv[]) {
                 for(int j = 0; j < Q; j++) {
                     wdata[i][j] = buffer[i][j];
                     buffer[i][j] = -1;
-                    printf("%03x", wdata[i][j]);
+                    printf("%04x", wdata[i][j]);
                 }
                 // export to checking 
                 for(int j = 0; j < Q; j++) {
@@ -278,7 +278,7 @@ int main(int argc, char *argv[]) {
                     }
                 }
                 assert(buffer[buffi][buffj] >= 0);
-                printf("%03x,", buffer[buffi][buffj]);
+                printf("%04x,", buffer[buffi][buffj]);
             }
             printf("\n");
         }
@@ -315,12 +315,13 @@ int main(int argc, char *argv[]) {
     int wen = 0;
     for(int i = 0; i < K; i++) {
         if(export_flg[i] == 1) {
+          // printf("exportout %d: ", epoch);
             // printf("$$$$ i = %d:  ", i);
-            wen = wen | (1 << (15-i));
+            wen = wen | (1 << i);
             for(int j = 0; j < Q; j++) {
                 wdata[i][j] = buffer[i][j];
                 buffer[i][j] = -1;
-                // printf("%3d,", wdata[i][j]);
+                // printf("%04x", wdata[i][j]);
             }
             // export to checking 
             for(int j = 0; j < Q; j++) {
@@ -330,7 +331,7 @@ int main(int argc, char *argv[]) {
             waddr[i]++;
         }
     }
-    // export_wdata(epoch_num, wen, wdata);
+    export_wdata(epoch_num, wen, wdata);
 
     // ----- 
     printf("-----------------\n waddr: ");
