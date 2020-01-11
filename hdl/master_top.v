@@ -45,6 +45,7 @@ output [VID_BW*Q-1:0] vid_sram_wdata15, output [VID_ADDR_SPACE-1:0] vid_sram_wad
 // loc sram writing 
 
 );
+wire pingpong = 0;
 localparam IDLE=2'd0, RUNS=2'd1, DELAY=2'd2, FINISH=2'd3;
 localparam PSUM_READY = 3;
 localparam DONEII = 6;
@@ -157,53 +158,61 @@ always @* begin
     end
        
     for(accumidx = 0; accumidx < K; accumidx = accumidx + 1) begin 
-        n_buffaccum[accumidx] = accum[accumidx] >= Q ? accum[accumidx] - Q : accum[accumidx]; // retain the offset that to be FIFOed
-        if(psum_set) begin 
-            if(accum[accumidx] >= Q) begin 
-                n_accum[accumidx] = accum[accumidx] - Q + partial_sum[Q-1][accumidx]; // partial sum !!!! ;// check_acc[accumidx] - Q;
-                n_export[accumidx] = 1;
+        if(~enable) n_buffaccum[accumidx] = 0;
+        else n_buffaccum[accumidx] = accum[accumidx] >= Q ? accum[accumidx] - Q : accum[accumidx]; // retain the offset that to be FIFOed
+        if(~enable) begin 
+            n_accum[accumidx] = 0; n_export[accumidx] = 0;
+        end else begin
+            if(psum_set) begin 
+                if(accum[accumidx] >= Q) begin 
+                    n_accum[accumidx] = accum[accumidx] - Q + partial_sum[Q-1][accumidx]; // partial sum !!!! ;// check_acc[accumidx] - Q;
+                    n_export[accumidx] = 1;
+                end else begin 
+                    n_accum[accumidx] = accum[accumidx] + partial_sum[Q-1][accumidx];//accum[accumidx];//check_acc[accumidx];
+                    n_export[accumidx] = 0;
+                end
             end else begin 
-                n_accum[accumidx] = accum[accumidx] + partial_sum[Q-1][accumidx];//accum[accumidx];//check_acc[accumidx];
-                n_export[accumidx] = 0;
-            end
-        end else begin 
-            n_export[accumidx] = export[accumidx];
-            n_accum[accumidx] = accum[accumidx];
-        end  
+                n_export[accumidx] = export[accumidx];
+                n_accum[accumidx] = accum[accumidx];
+            end  
+        end 
     end 
     // -------------------------------------------
     for(buffi = 0; buffi < K; buffi = buffi + 1) begin 
         for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
-            if(psum_set) begin 
-                if(buffj < Q && export[buffi] == 1 && buffj < buffaccum[buffi]) begin 
-                    // shift 
-                    n_buffer[buffi][buffj] = buffer[buffi][buffj + Q];
-                end else begin 
-                    // take new 
-                    if(buffj < buffaccum[buffi]) begin
-                        n_buffer[buffi][buffj] = buffer[buffi][buffj]; 
+            if(~enable) n_buffer[buffi][buffj] = 0;
+            else begin 
+                if(psum_set) begin 
+                    if(buffj < Q && export[buffi] == 1 && buffj < buffaccum[buffi]) begin 
+                        // shift 
+                        n_buffer[buffi][buffj] = buffer[buffi][buffj + Q];
                     end else begin 
-                        n_buffer[buffi][buffj] =
-                                            ((buff_next[0] == buffi) * (buffer_idx[0] == buffj) * v_gidx[0]) |
-                                            ((buff_next[1] == buffi) * (buffer_idx[1] == buffj) * v_gidx[1]) |
-                                            ((buff_next[2] == buffi) * (buffer_idx[2] == buffj) * v_gidx[2]) |
-                                            ((buff_next[3] == buffi) * (buffer_idx[3] == buffj) * v_gidx[3]) |
-                                            ((buff_next[4] == buffi) * (buffer_idx[4] == buffj) * v_gidx[4]) |
-                                            ((buff_next[5] == buffi) * (buffer_idx[5] == buffj) * v_gidx[5]) |
-                                            ((buff_next[6] == buffi) * (buffer_idx[6] == buffj) * v_gidx[6]) |
-                                            ((buff_next[7] == buffi) * (buffer_idx[7] == buffj) * v_gidx[7]) |
-                                            ((buff_next[8] == buffi) * (buffer_idx[8] == buffj) * v_gidx[8]) |
-                                            ((buff_next[9] == buffi) * (buffer_idx[9] == buffj) * v_gidx[9]) |
-                                            ((buff_next[10] == buffi) * (buffer_idx[10] == buffj) * v_gidx[10]) |
-                                            ((buff_next[11] == buffi) * (buffer_idx[11] == buffj) * v_gidx[11]) |
-                                            ((buff_next[12] == buffi) * (buffer_idx[12] == buffj) * v_gidx[12]) |
-                                            ((buff_next[13] == buffi) * (buffer_idx[13] == buffj) * v_gidx[13]) |
-                                            ((buff_next[14] == buffi) * (buffer_idx[14] == buffj) * v_gidx[14]) |
-                                            ((buff_next[15] == buffi) * (buffer_idx[15] == buffj) * v_gidx[15]);
+                        // take new 
+                        if(buffj < buffaccum[buffi]) begin
+                            n_buffer[buffi][buffj] = buffer[buffi][buffj]; 
+                        end else begin 
+                            n_buffer[buffi][buffj] =
+                                                ((buff_next[0] == buffi) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                                ((buff_next[1] == buffi) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                                ((buff_next[2] == buffi) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                                ((buff_next[3] == buffi) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                                ((buff_next[4] == buffi) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                                ((buff_next[5] == buffi) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                                ((buff_next[6] == buffi) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                                ((buff_next[7] == buffi) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                                ((buff_next[8] == buffi) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                                ((buff_next[9] == buffi) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                                ((buff_next[10] == buffi) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                                ((buff_next[11] == buffi) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                                ((buff_next[12] == buffi) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                                ((buff_next[13] == buffi) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                                ((buff_next[14] == buffi) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                                ((buff_next[15] == buffi) * (buffer_idx[15] == buffj) * v_gidx[15]);
+                        end 
                     end 
+                end else begin 
+                    n_buffer[buffi][buffj] = buffer[buffi][buffj];
                 end 
-            end else begin 
-                n_buffer[buffi][buffj] = buffer[buffi][buffj];
             end 
         end 
     end 
@@ -538,7 +547,7 @@ always @(posedge clk) begin
     end else begin
         state <= nstate; 
         epoch <= n_epoch;
-        $write("epoch: %d\n",epoch);
+        // $write("epoch: %d\n",epoch);
         delay <= n_delay;
         psum_set <= n_psum_set;
         if(state == FINISH) 
@@ -610,16 +619,18 @@ always @(posedge clk) begin
 
         // write vid sram 
         for(export_i = 0; export_i < K; export_i = export_i + 1) begin 
-            if(enable) begin 
+            if(enable && state >= RUNS) begin 
+                if(vidsram_wen[export_i] == 1'b0)  
+                    vidsram_waddr[export_i]  <= vidsram_waddr[export_i] + 1;
                 if(export[export_i] == 1) begin 
                     vidsram_wdata[export_i]  <= {buffer[export_i][0],buffer[export_i][1],buffer[export_i][2],buffer[export_i][3],buffer[export_i][4],buffer[export_i][5],buffer[export_i][6],buffer[export_i][7],buffer[export_i][8],buffer[export_i][9],buffer[export_i][10],buffer[export_i][11],buffer[export_i][12],buffer[export_i][13],buffer[export_i][14],buffer[export_i][15]};
-                    vidsram_wen[export_i]  <= 1'b1;
-                    vidsram_waddr[export_i]  <= vidsram_waddr[export_i] + 1;
-                end else begin 
                     vidsram_wen[export_i]  <= 1'b0;
+                end else begin 
+                    vidsram_wen[export_i]  <= 1'b1;
                 end 
             end else begin 
                 vidsram_wen[export_i]  <= 1'b1;
+                vidsram_waddr[export_i] <= 5'd16 & {5{pingpong}};
             end 
             // if(vidsram_wen[export_i] !== 0) begin 
             //     $write(":epoch %d exportout target %d wen %h wdata %h\n", epoch, export_i, vidsram_wen[export_i], vidsram_wdata[export_i]);

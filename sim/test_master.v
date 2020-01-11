@@ -7,7 +7,7 @@ localparam PRO_BW = 8;
 localparam VID_BW = 16;
 localparam Q = 16; 
 localparam MAX_EPOCH = 256; // 4096 / 16
-localparam VID_ADDR_SPACE = 4;
+localparam VID_ADDR_SPACE = 5;
 real CYCLE = 10;
 integer fptr;
 //====== module I/O =====
@@ -81,14 +81,46 @@ master_top master_instn (
     .epoch(epoch),
     .vidsram_wen(vidsram_wen),
     .ready(ready),
-    .finish(master_finish)
+    .finish(master_finish),
+    .vid_sram_wdata0(vid_sram_wdata0),     .vid_sram_waddr0(vid_sram_waddr0),
+    .vid_sram_wdata1(vid_sram_wdata1),     .vid_sram_waddr1(vid_sram_waddr1),
+    .vid_sram_wdata2(vid_sram_wdata2),     .vid_sram_waddr2(vid_sram_waddr2),
+    .vid_sram_wdata3(vid_sram_wdata3),     .vid_sram_waddr3(vid_sram_waddr3),
+    .vid_sram_wdata4(vid_sram_wdata4),     .vid_sram_waddr4(vid_sram_waddr4),
+    .vid_sram_wdata5(vid_sram_wdata5),     .vid_sram_waddr5(vid_sram_waddr5),
+    .vid_sram_wdata6(vid_sram_wdata6),     .vid_sram_waddr6(vid_sram_waddr6),
+    .vid_sram_wdata7(vid_sram_wdata7),     .vid_sram_waddr7(vid_sram_waddr7),
+    .vid_sram_wdata8(vid_sram_wdata8),     .vid_sram_waddr8(vid_sram_waddr8),
+    .vid_sram_wdata9(vid_sram_wdata9),     .vid_sram_waddr9(vid_sram_waddr9),
+    .vid_sram_wdata10(vid_sram_wdata10),   .vid_sram_waddr10(vid_sram_waddr10),    
+    .vid_sram_wdata11(vid_sram_wdata11),   .vid_sram_waddr11(vid_sram_waddr11),    
+    .vid_sram_wdata12(vid_sram_wdata12),   .vid_sram_waddr12(vid_sram_waddr12),    
+    .vid_sram_wdata13(vid_sram_wdata13),   .vid_sram_waddr13(vid_sram_waddr13),    
+    .vid_sram_wdata14(vid_sram_wdata14),   .vid_sram_waddr14(vid_sram_waddr14),    
+    .vid_sram_wdata15(vid_sram_wdata15),   .vid_sram_waddr15(vid_sram_waddr15)   
 );
 reg [NEXT_BW*Q-1:0] file_next_arr[0:MAX_EPOCH-1];
 reg [PRO_BW*K-1:0] file_mi_j[0:MAX_EPOCH-1]; 
 reg [PRO_BW*K-1:0] file_mj_i[0:MAX_EPOCH-1]; 
 reg [VID_BW*Q-1:0] file_v_gidx[0:MAX_EPOCH-1]; 
 reg [PRO_BW*Q-1:0] file_proposal_nums[0:MAX_EPOCH-1];
-
+reg [VID_BW*Q-1:0] w0_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w1_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w2_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w3_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w4_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w5_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w6_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w7_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w8_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w9_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w10_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w11_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w12_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w13_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w14_vid_sram_gold[0:16-1];
+reg [VID_BW*Q-1:0] w15_vid_sram_gold[0:16-1];
+  
 reg [8:0] gold_epoch;
 reg [K-1:0] gold_wen;
 reg [Q * VID_BW - 1:0] gold_wdata; 
@@ -98,11 +130,29 @@ always #(CYCLE/2) clk = ~clk;
 integer ccc;
 reg [8:0] check_epoch;
 integer feed, feed_v;
+reg [4:0] srami;
+reg rerun;
 initial begin 
     clk = 0;
     rst_n = 1;
     enable = 1'b0;
-    
+    rerun = 1'b0;
+    $readmemh("../software/gold_master/vid_sram_w0.dat", w0_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w1.dat", w1_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w2.dat", w2_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w3.dat", w3_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w4.dat", w4_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w5.dat", w5_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w6.dat", w6_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w7.dat", w7_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w8.dat", w8_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w9.dat", w9_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w10.dat", w10_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w11.dat", w11_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w12.dat", w12_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w13.dat", w13_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w14.dat", w14_vid_sram_gold);
+    $readmemh("../software/gold_master/vid_sram_w15.dat", w15_vid_sram_gold);
     $readmemh("../software/gold_master/next_arr.dat", file_next_arr);
     $write("file_next_arr 0: %h\n", file_next_arr[0]);
     $write("file_next_arr 1: %h\n", file_next_arr[1]);
@@ -152,7 +202,111 @@ initial begin
     end 
     wait(master_finish == 1);
     enable = 1'b0;
-    $write("DONNEE");
+    $write("DONNEE\n");
+    for(srami = 0; srami < 16; srami = srami + 1) begin 
+        if(w0_vid_sram_gold[srami] !== w0_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 0 at %d \n", srami); $finish; end 
+        else $write("0_%02d,", srami);
+        if(w1_vid_sram_gold[srami] !== w1_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 1 at %d \n", srami); $finish; end 
+        else $write("1_%02d,", srami);
+        if(w2_vid_sram_gold[srami] !== w2_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 2 at %d \n", srami); $finish; end 
+        else $write("2_%02d,", srami);
+        if(w3_vid_sram_gold[srami] !== w3_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 3 at %d \n", srami); $finish; end 
+        else $write("3_%02d,", srami);
+        if(w4_vid_sram_gold[srami] !== w4_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 4 at %d \n", srami); $finish; end 
+        else $write("4_%02d,", srami);
+        if(w5_vid_sram_gold[srami] !== w5_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 5 at %d \n", srami); $finish; end 
+        else $write("5_%02d,", srami);
+        if(w6_vid_sram_gold[srami] !== w6_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 6 at %d \n", srami); $finish; end 
+        else $write("6_%02d,", srami);
+        if(w7_vid_sram_gold[srami] !== w7_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 7 at %d \n", srami); $finish; end 
+        else $write("7_%02d,", srami);
+        if(w8_vid_sram_gold[srami] !== w8_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 8 at %d \n", srami); $finish; end 
+        else $write("8_%02d,", srami);
+        if(w9_vid_sram_gold[srami] !== w9_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 9 at %d \n", srami); $finish; end 
+        else $write("9_%02d,", srami);
+        if(w10_vid_sram_gold[srami] !== w10_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 10  at %d\n", srami); $finish; end 
+        else $write("10_%02d,", srami);
+        if(w11_vid_sram_gold[srami] !== w11_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 11  at %d\n", srami); $finish; end 
+        else $write("11_%02d,", srami);
+        if(w12_vid_sram_gold[srami] !== w12_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 12  at %d\n", srami); $finish; end 
+        else $write("12_%02d,", srami);
+        if(w13_vid_sram_gold[srami] !== w13_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 13  at %d\n", srami); $finish; end 
+        else $write("13_%02d,", srami);
+        if(w14_vid_sram_gold[srami] !== w14_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 14  at %d\n", srami); $finish; end 
+        else $write("14_%02d,", srami);
+        if(w15_vid_sram_gold[srami] !== w15_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 15  at %d\n", srami); $finish; end 
+        else $write("15_%02d,", srami);
+        $write("\n");
+    end 
+
+    rerun = 1'b1;
+    $write("--------------------rerun to check---\n");
+    #(CYCLE*3) enable = 1'b1;
+    #(CYCLE*2)
+    while(epoch < MAX_EPOCH - 1) begin 
+        @(negedge clk)
+        in_next_arr = file_next_arr[epoch-1 >= 0 ? epoch - 1: 0];
+        in_mi_j = file_mi_j[epoch-1 >= 0 ? epoch - 1: 0];
+        in_mj_i = file_mj_i[epoch-1 >= 0 ? epoch - 1: 0];
+        in_v_gidx = file_v_gidx[epoch-4 >= 0 ? epoch - 4: 0];
+        in_proposal_nums = file_proposal_nums[epoch-1 >= 0 ? epoch - 1: 0];
+    end 
+    feed = 255;
+    feed_v = 252;
+    while(feed_v < 256) begin
+        @(negedge clk)
+        // $write("input epoch %d feed %d", epoch, feed);
+        in_next_arr = file_next_arr[feed];
+        in_mi_j = file_mi_j[feed];
+        in_mj_i = file_mj_i[feed];
+        in_v_gidx = file_v_gidx[feed_v];
+        in_proposal_nums = file_proposal_nums[feed];
+        // $write("; vgid in %h;\n",in_v_gidx );
+        feed_v = feed_v + 1;
+        if(feed == 255) feed = 255;
+        else feed = feed + 1;
+    end 
+    wait(master_finish == 1);
+    enable = 1'b0;
+    $write("DONNEE\n");
+    for(srami = 0; srami < 16; srami = srami + 1) begin 
+        if(w0_vid_sram_gold[srami] !== w0_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 0 at %d \n", srami); $finish; end 
+        else $write("0_%02d,", srami);
+        if(w1_vid_sram_gold[srami] !== w1_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 1 at %d \n", srami); $finish; end 
+        else $write("1_%02d,", srami);
+        if(w2_vid_sram_gold[srami] !== w2_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 2 at %d \n", srami); $finish; end 
+        else $write("2_%02d,", srami);
+        if(w3_vid_sram_gold[srami] !== w3_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 3 at %d \n", srami); $finish; end 
+        else $write("3_%02d,", srami);
+        if(w4_vid_sram_gold[srami] !== w4_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 4 at %d \n", srami); $finish; end 
+        else $write("4_%02d,", srami);
+        if(w5_vid_sram_gold[srami] !== w5_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 5 at %d \n", srami); $finish; end 
+        else $write("5_%02d,", srami);
+        if(w6_vid_sram_gold[srami] !== w6_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 6 at %d \n", srami); $finish; end 
+        else $write("6_%02d,", srami);
+        if(w7_vid_sram_gold[srami] !== w7_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 7 at %d \n", srami); $finish; end 
+        else $write("7_%02d,", srami);
+        if(w8_vid_sram_gold[srami] !== w8_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 8 at %d \n", srami); $finish; end 
+        else $write("8_%02d,", srami);
+        if(w9_vid_sram_gold[srami] !== w9_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 9 at %d \n", srami); $finish; end 
+        else $write("9_%02d,", srami);
+        if(w10_vid_sram_gold[srami] !== w10_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 10  at %d\n", srami); $finish; end 
+        else $write("10_%02d,", srami);
+        if(w11_vid_sram_gold[srami] !== w11_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 11  at %d\n", srami); $finish; end 
+        else $write("11_%02d,", srami);
+        if(w12_vid_sram_gold[srami] !== w12_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 12  at %d\n", srami); $finish; end 
+        else $write("12_%02d,", srami);
+        if(w13_vid_sram_gold[srami] !== w13_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 13  at %d\n", srami); $finish; end 
+        else $write("13_%02d,", srami);
+        if(w14_vid_sram_gold[srami] !== w14_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 14  at %d\n", srami); $finish; end 
+        else $write("14_%02d,", srami);
+        if(w15_vid_sram_gold[srami] !== w15_vid_sram_16x256b.mem[srami]) begin  $write("FAIL vidsram 15  at %d\n", srami); $finish; end 
+        else $write("15_%02d,", srami);
+        $write("\n");
+    end 
+
+    
+
     $finish;
 end 
 
@@ -163,12 +317,13 @@ initial begin
     fptr = $fopen("../software/gold_master/wdata.dat", "r");
     check_epoch = 0;
     wait(ready == 1);
+    wait(rerun == 1);
     while(check_epoch < MAX_EPOCH + 1) begin 
         @(negedge clk)
         ccc = $fscanf(fptr, "%h %h", gold_epoch, gold_wen);
-        $display("tbepoch: %d %h; %d", gold_epoch, gold_wen, check_epoch);
+        // $display("tbepoch: %d %h; %d", gold_epoch, gold_wen, check_epoch);
         if(check_epoch == gold_epoch) begin 
-            if(gold_wen !== vidsram_wen) begin 
+            if(gold_wen !== ~(vidsram_wen)) begin 
                 $display("FAILL epoch %d tbepoch: %h goldwen %h; check %h", epoch, gold_epoch, gold_wen, check_epoch);
                 $write("gold_wen %h vs vidsram_wen %h\n", gold_wen, vidsram_wen);
                 $finish;
@@ -185,9 +340,10 @@ initial begin
                             if(master_instn.vidsram_wdata[banknum] !== gold_wdata) begin
                                 $write("FAIL check: %h vs %h (gold)", master_instn.vidsram_wdata[banknum], gold_wdata); 
                                 $finish;
-                            end else begin 
-                                $write("good check: %h vs %h (gold)\n", master_instn.vidsram_wdata[banknum], gold_wdata); 
                             end 
+                            // else begin 
+                            //     $write("good check: %h vs %h (gold)\n", master_instn.vidsram_wdata[banknum], gold_wdata); 
+                            // end 
                         end 
                         checkbit = checkbit >>1;
                     end
@@ -209,7 +365,7 @@ initial begin
     // $finish; 
 end 
 initial begin 
-    #(CYCLE*10000000);
+    #(CYCLE*1000000);
     $finish;
 end 
 initial begin 

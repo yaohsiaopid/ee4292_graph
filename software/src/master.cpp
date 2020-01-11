@@ -348,7 +348,17 @@ int main(int argc, char *argv[]) {
         }
         printf("\n");
     }
-
+    for(int i = 0; i < K; i++) {
+      char flnm[100];
+      sprintf(flnm, "./gold_master/vid_sram_w%d.dat", i);
+      FILE *fsram = fopen(flnm, "w");
+      for(int j = 0; j < wdata_total[i].size(); j += 16) {
+        for(int tmp = 0; tmp < 16; tmp++) 
+          fprintf(fsram, "%04x", wdata_total[i][j+tmp]);
+        fprintf(fsram, "\n");
+      }
+      fclose(fsram);
+    }
     FILE *fpr= fopen("out.csv", "w");  
     int stat[4096] = {0};
     for(int i = 0; i < K; i++) {
@@ -358,6 +368,7 @@ int main(int argc, char *argv[]) {
       }
       fprintf(fpr, "\n");
     }
+    fclose(fpr);
     printf("check:jj");
     for(int i = 0; i < 4096; i++) {
       if(stat[i] != 1) printf("WARNNNN %d\n", i);
