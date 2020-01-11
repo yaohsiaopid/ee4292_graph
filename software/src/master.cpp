@@ -315,12 +315,13 @@ int main(int argc, char *argv[]) {
     int wen = 0;
     for(int i = 0; i < K; i++) {
         if(export_flg[i] == 1) {
+          // printf("exportout %d: ", epoch);
             // printf("$$$$ i = %d:  ", i);
             wen = wen | (1 << i);
             for(int j = 0; j < Q; j++) {
                 wdata[i][j] = buffer[i][j];
                 buffer[i][j] = -1;
-                printf("%04x", wdata[i][j]);
+                // printf("%04x", wdata[i][j]);
             }
             // export to checking 
             for(int j = 0; j < Q; j++) {

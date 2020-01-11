@@ -6,7 +6,7 @@ parameter K = 16,
 parameter VID_BW = 16,
 parameter BUF_BW = 5, // log(2*Q)
 parameter OFFSET_BW = 5, // 0-16 partial sum
-parameter ADDR_SPACE = 4,
+parameter VID_ADDR_SPACE = 5,
 parameter LOC_BW = 5,
 parameter D = 256,
 parameter LOC_ADDR_SPACE = 4
@@ -24,9 +24,24 @@ input [PRO_BW*Q-1:0] in_proposal_nums,
 output reg [7:0] epoch,
 output reg [K-1:0] vidsram_wen, // 0 at MSB
 output reg ready,
-output reg finish
+output reg finish,
 // vidsram writing  
-
+output [VID_BW*Q-1:0] vid_sram_wdata0,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr0,
+output [VID_BW*Q-1:0] vid_sram_wdata1,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr1,
+output [VID_BW*Q-1:0] vid_sram_wdata2,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr2,
+output [VID_BW*Q-1:0] vid_sram_wdata3,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr3,
+output [VID_BW*Q-1:0] vid_sram_wdata4,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr4,
+output [VID_BW*Q-1:0] vid_sram_wdata5,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr5,
+output [VID_BW*Q-1:0] vid_sram_wdata6,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr6,
+output [VID_BW*Q-1:0] vid_sram_wdata7,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr7,
+output [VID_BW*Q-1:0] vid_sram_wdata8,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr8,
+output [VID_BW*Q-1:0] vid_sram_wdata9,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr9,
+output [VID_BW*Q-1:0] vid_sram_wdata10, output [VID_ADDR_SPACE-1:0] vid_sram_waddr10,
+output [VID_BW*Q-1:0] vid_sram_wdata11, output [VID_ADDR_SPACE-1:0] vid_sram_waddr11,
+output [VID_BW*Q-1:0] vid_sram_wdata12, output [VID_ADDR_SPACE-1:0] vid_sram_waddr12,
+output [VID_BW*Q-1:0] vid_sram_wdata13, output [VID_ADDR_SPACE-1:0] vid_sram_waddr13,
+output [VID_BW*Q-1:0] vid_sram_wdata14, output [VID_ADDR_SPACE-1:0] vid_sram_waddr14,
+output [VID_BW*Q-1:0] vid_sram_wdata15, output [VID_ADDR_SPACE-1:0] vid_sram_waddr15
 // loc sram writing 
 
 );
@@ -47,13 +62,30 @@ reg [NEXT_BW-1:0] real_next_arr[0:Q-1], nreal_next_arr[0:Q-1], buff_1_next[0:Q-1
 
 // vid sram
 reg [Q*VID_BW-1:0] vidsram_wdata[0:K-1];
-reg [ADDR_SPACE-1:0] vidsram_waddr[0:K-1];
+reg [VID_ADDR_SPACE-1:0] vidsram_waddr[0:K-1];
 // loc sram
 reg [D*LOC_BW-1:0] locsram_wdata[0:Q-1];
 reg locsram_wen[0:Q-1];
 reg [D-1:0] locsram_wbytemask[0:Q-1], n_locsram_wbytemask[0:Q-1];
 reg [LOC_ADDR_SPACE-1:0] locsram_addr[0:Q-1];
 
+// sram wire connect
+assign vid_sram_wdata0 = vidsram_wdata[0];    assign vid_sram_waddr0 =   vidsram_waddr[0];   
+assign vid_sram_wdata1 = vidsram_wdata[1];    assign vid_sram_waddr1 =   vidsram_waddr[1];   
+assign vid_sram_wdata2 = vidsram_wdata[2];    assign vid_sram_waddr2 =   vidsram_waddr[2];   
+assign vid_sram_wdata3 = vidsram_wdata[3];    assign vid_sram_waddr3 =   vidsram_waddr[3];   
+assign vid_sram_wdata4 = vidsram_wdata[4];    assign vid_sram_waddr4 =   vidsram_waddr[4];   
+assign vid_sram_wdata5 = vidsram_wdata[5];    assign vid_sram_waddr5 =   vidsram_waddr[5];   
+assign vid_sram_wdata6 = vidsram_wdata[6];    assign vid_sram_waddr6 =   vidsram_waddr[6];   
+assign vid_sram_wdata7 = vidsram_wdata[7];    assign vid_sram_waddr7 =   vidsram_waddr[7];   
+assign vid_sram_wdata8 = vidsram_wdata[8];    assign vid_sram_waddr8 =   vidsram_waddr[8];   
+assign vid_sram_wdata9 = vidsram_wdata[9];    assign vid_sram_waddr9 =   vidsram_waddr[9];   
+assign vid_sram_wdata10 = vidsram_wdata[10];  assign vid_sram_waddr10 =  vidsram_waddr[10];       
+assign vid_sram_wdata11 = vidsram_wdata[11];  assign vid_sram_waddr11 =  vidsram_waddr[11];       
+assign vid_sram_wdata12 = vidsram_wdata[12];  assign vid_sram_waddr12 =  vidsram_waddr[12];       
+assign vid_sram_wdata13 = vidsram_wdata[13];  assign vid_sram_waddr13 =  vidsram_waddr[13];       
+assign vid_sram_wdata14 = vidsram_wdata[14];  assign vid_sram_waddr14 =  vidsram_waddr[14];       
+assign vid_sram_wdata15 = vidsram_wdata[15];  assign vid_sram_waddr15 =  vidsram_waddr[15];       
 // ================================================
 // TOOD: prepare: next_arr, mi_j, mj_i, v_gidx , proposal_nums
 
@@ -489,12 +521,12 @@ always @(posedge clk) begin
             end 
             buffer_idx[ri] <= {BUF_BW{1'b0}};
         end 
+        vidsram_wen <= {K{1'b1}};
         for(rk = 0; rk < K; rk = rk + 1) begin 
             mi_j[rk] <= {PRO_BW{1'b0}};
             mj_i[rk] <= {PRO_BW{1'b0}};
             vidsram_wdata[rk] <= {Q*VID_BW-1{1'b0}};
-            vidsram_wen[rk] <= 1'b0;
-            vidsram_waddr[rk] <= {ADDR_SPACE{1'b0}};
+            vidsram_waddr[rk] <= {VID_ADDR_SPACE{1'b0}};
             accum[rk] <= {BUF_BW{1'b0}};
             export[rk] <= 1'b0;
             buffaccum[rk] <= {BUF_BW{1'b0}};
@@ -587,7 +619,7 @@ always @(posedge clk) begin
                     vidsram_wen[export_i]  <= 1'b0;
                 end 
             end else begin 
-                vidsram_wen[export_i]  <= 1'b0;
+                vidsram_wen[export_i]  <= 1'b1;
             end 
             // if(vidsram_wen[export_i] !== 0) begin 
             //     $write(":epoch %d exportout target %d wen %h wdata %h\n", epoch, export_i, vidsram_wen[export_i], vidsram_wdata[export_i]);
