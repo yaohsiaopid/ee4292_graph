@@ -23,5 +23,7 @@ inter_data:	./src/inter_data.cpp
 	g++ $(CXXFLAGS) -o ./build/$@ $? 
 master: ./src/master.cpp
 	g++ $(CXXFLAGS) -o ./build/$@ $? 
+graph_hw: ./src/graph_hw.cpp
+	g++ $(CXXFLAGS) -o ./build/$@ $? 
 clean:
 	rm -f $(TARGETS)

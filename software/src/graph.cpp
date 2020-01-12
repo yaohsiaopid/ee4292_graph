@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     proposals[i] = new int[K];
   }
   std::cout << "\n";
-  for (int iter = 0; iter < 1; iter++) {
+  for (int iter = 0; iter < 10; iter++) {
     std::cout << "------------- " << iter << " -------------\n";
     for (int i = 0; i < K; i++) {
       for (int j = 0; j < K; j++)
@@ -204,8 +204,9 @@ int main(int argc, char *argv[]) {
       }
       printf("\n");
     }
-
-    FILE *fpr= fopen("out_graph.csv", "w");  
+    char iterflnm[100];
+    sprintf(iterflnm, "./logs/iter%d", iter);
+    FILE *fpr= fopen(iterflnm, "w");  
     std::vector<std::vector<int>> wdata_total(K); // K rows 
     for(int i = 0; i < V; i++) {
       wdata_total[part[i][K]].push_back(i);
