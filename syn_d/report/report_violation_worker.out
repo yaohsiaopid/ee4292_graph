@@ -1,0 +1,20 @@
+ 
+****************************************
+Report : constraint
+        -all_violators
+Design : worker
+Version: O-2018.06
+Date   : Sun Jan 12 21:07:07 2020
+****************************************
+
+
+   max_area
+
+                             Required        Actual
+   Design                      Area           Area           Slack
+   -----------------------------------------------------------------
+   worker                       0.00       127484.77      -127484.77
+                                                                    (VIOLATED)
+
+
+1
