@@ -1,0 +1,84 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : worker
+Version: O-2018.06
+Date   : Sun Jan 12 21:17:40 2020
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: ss0p95v125c   Library: saed32hvt_ss0p95v125c
+Wire Load Model Mode: enclosed
+
+  Startpoint: part_reg_reg_10__7_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: res4_comp_reg_3_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  worker             140000                saed32hvt_ss0p95v125c
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                  0.0000     0.0000
+  clock network delay (ideal)            0.0000     0.0000
+  part_reg_reg_10__7_/CLK (DFFX1_HVT)    0.0000 #   0.0000 r
+  part_reg_reg_10__7_/Q (DFFX1_HVT)      0.2238     0.2238 f
+  U11084/Y (NAND2X0_HVT)                 0.0787     0.3026 r
+  U11087/Y (INVX0_HVT)                   0.0434     0.3460 f
+  U11088/Y (OA22X1_HVT)                  0.0852     0.4312 f
+  U10640/Y (AND2X1_HVT)                  0.0669     0.4982 f
+  U10636/Y (NAND2X0_HVT)                 0.0398     0.5379 r
+  U10635/Y (AO21X1_HVT)                  0.0813     0.6193 r
+  U10316/Y (NAND2X2_HVT)                 0.1382     0.7575 f
+  U10387/Y (MUX21X1_HVT)                 0.1400     0.8975 r
+  U11108/Y (NAND2X0_HVT)                 0.0554     0.9529 f
+  U11113/Y (AND3X1_HVT)                  0.0990     1.0519 f
+  U10518/Y (AOI21X1_HVT)                 0.1291     1.1810 r
+  U11133/Y (AND3X1_HVT)                  0.1001     1.2810 r
+  U10308/Y (INVX2_HVT)                   0.0702     1.3513 f
+  U10366/Y (INVX0_HVT)                   0.0427     1.3939 r
+  U10350/Y (AO22X1_HVT)                  0.0959     1.4898 r
+  U10362/Y (NAND3X0_HVT)                 0.0832     1.5730 f
+  U10361/Y (AND3X1_HVT)                  0.1079     1.6810 f
+  U10360/Y (NAND2X0_HVT)                 0.0641     1.7450 r
+  U10359/Y (OA22X1_HVT)                  0.1043     1.8493 r
+  U11161/Y (NAND2X4_HVT)                 0.1296     1.9789 f
+  U10651/Y (MUX21X1_HVT)                 0.1467     2.1256 f
+  U10343/Y (NAND2X0_HVT)                 0.0617     2.1873 r
+  U10341/Y (NAND2X0_HVT)                 0.0535     2.2408 f
+  U10340/Y (NAND2X0_HVT)                 0.0526     2.2934 r
+  U10227/Y (NAND3X0_HVT)                 0.0787     2.3721 f
+  U10226/Y (NAND2X0_HVT)                 0.0634     2.4355 r
+  U10293/Y (NAND2X4_HVT)                 0.1282     2.5638 f
+  U10587/Y (NAND2X0_HVT)                 0.0480     2.6118 r
+  U10586/Y (NAND2X0_HVT)                 0.0535     2.6653 f
+  U10585/Y (NAND2X0_HVT)                 0.0517     2.7171 r
+  U10348/Y (AND3X1_HVT)                  0.1066     2.8237 r
+  U10347/Y (NAND2X0_HVT)                 0.0511     2.8748 f
+  U10298/Y (OR2X1_HVT)                   0.1004     2.9752 f
+  U10228/Y (INVX1_HVT)                   0.0313     3.0065 r
+  U11021/Y (OA21X1_HVT)                  0.0926     3.0992 r
+  res4_comp_reg_3_/D (DFFX1_HVT)         0.0000     3.0992 r
+  data arrival time                                 3.0992
+
+  clock clk (rise edge)                  3.2000     3.2000
+  clock network delay (ideal)            0.0000     3.2000
+  res4_comp_reg_3_/CLK (DFFX1_HVT)       0.0000     3.2000 r
+  library setup time                    -0.0934     3.1066
+  data required time                                3.1066
+  -----------------------------------------------------------
+  data required time                                3.1066
+  data arrival time                                -3.0992
+  -----------------------------------------------------------
+  slack (MET)                                       0.0074
+
+
+1
