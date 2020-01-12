@@ -1,0 +1,87 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : worker
+Version: O-2018.06
+Date   : Sun Jan 12 19:51:45 2020
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: ss0p95v125c   Library: saed32hvt_ss0p95v125c
+Wire Load Model Mode: enclosed
+
+  Startpoint: part_reg_reg_3__0_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: res4_comp_reg_1_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  worker             140000                saed32hvt_ss0p95v125c
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                  0.0000     0.0000
+  clock network delay (ideal)            0.0000     0.0000
+  part_reg_reg_3__0_/CLK (DFFX1_HVT)     0.0000 #   0.0000 r
+  part_reg_reg_3__0_/Q (DFFX1_HVT)       0.2151     0.2151 f
+  U15102/Y (NAND2X0_HVT)                 0.0538     0.2689 r
+  U15103/Y (AO22X1_HVT)                  0.1002     0.3691 r
+  U15105/Y (AO22X1_HVT)                  0.0911     0.4602 r
+  U15107/Y (AO22X1_HVT)                  0.0910     0.5512 r
+  U15109/Y (AO22X1_HVT)                  0.0910     0.6423 r
+  U15111/Y (AO22X1_HVT)                  0.0911     0.7334 r
+  U15114/Y (AOI22X1_HVT)                 0.1273     0.8607 f
+  U15116/Y (INVX0_HVT)                   0.0295     0.8902 r
+  U15117/Y (AO21X1_HVT)                  0.0595     0.9497 r
+  U10221/Y (NAND2X1_HVT)                 0.1677     1.1174 f
+  U10290/Y (MUX21X1_HVT)                 0.1684     1.2858 f
+  U15123/Y (NAND2X0_HVT)                 0.0723     1.3581 r
+  U15124/CO (FADDX1_HVT)                 0.1292     1.4873 r
+  U15126/Y (NAND2X0_HVT)                 0.0570     1.5442 f
+  U15134/Y (NAND3X0_HVT)                 0.0498     1.5940 r
+  U15142/Y (NAND4X0_HVT)                 0.1081     1.7022 f
+  U15143/CO (FADDX1_HVT)                 0.1436     1.8457 f
+  U10257/Y (AND2X1_HVT)                  0.1421     1.9878 f
+  U15148/Y (MUX21X1_HVT)                 0.1751     2.1629 f
+  U15151/Y (NAND2X0_HVT)                 0.0719     2.2348 r
+  U15152/CO (FADDX1_HVT)                 0.1431     2.3779 r
+  U15153/CO (FADDX1_HVT)                 0.1277     2.5056 r
+  U15157/Y (NAND2X0_HVT)                 0.0553     2.5610 f
+  U15179/Y (AO21X1_HVT)                  0.1053     2.6663 f
+  U10219/Y (NAND2X2_HVT)                 0.1288     2.7951 r
+  U10218/Y (MUX21X1_HVT)                 0.1476     2.9427 f
+  U15199/Y (NAND2X0_HVT)                 0.0695     3.0122 r
+  U15202/Y (AO21X1_HVT)                  0.1138     3.1259 r
+  U15203/Y (AND2X1_HVT)                  0.0793     3.2052 r
+  U15220/Y (AND2X1_HVT)                  0.0674     3.2727 r
+  U15221/Y (OA22X1_HVT)                  0.0933     3.3660 r
+  U10216/Y (NAND2X2_HVT)                 0.1214     3.4874 f
+  U10210/Y (INVX2_HVT)                   0.0325     3.5199 r
+  U15227/Y (NAND3X0_HVT)                 0.0649     3.5848 f
+  U15248/Y (NAND3X0_HVT)                 0.0666     3.6514 r
+  U15251/Y (AND2X1_HVT)                  0.0885     3.7400 r
+  U15252/Y (AND2X1_HVT)                  0.0787     3.8187 r
+  U15259/Y (AO22X1_HVT)                  0.0875     3.9062 r
+  res4_comp_reg_1_/D (DFFX1_HVT)         0.0000     3.9062 r
+  data arrival time                                 3.9062
+
+  clock clk (rise edge)                  4.0000     4.0000
+  clock network delay (ideal)            0.0000     4.0000
+  res4_comp_reg_1_/CLK (DFFX1_HVT)       0.0000     4.0000 r
+  library setup time                    -0.0903     3.9097
+  data required time                                3.9097
+  -----------------------------------------------------------
+  data required time                                3.9097
+  data arrival time                                -3.9062
+  -----------------------------------------------------------
+  slack (MET)                                       0.0035
+
+
+1
