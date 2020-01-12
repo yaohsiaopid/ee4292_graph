@@ -1,0 +1,30 @@
+ 
+****************************************
+Report : constraint
+        -all_violators
+Design : worker
+Version: O-2018.06
+Date   : Sun Jan 12 19:24:28 2020
+****************************************
+
+
+   max_capacitance
+
+                             Required        Actual
+   Net                      Capacitance    Capacitance       Slack
+   -----------------------------------------------------------------
+   n13258                       8.00           8.00           0.00  (VIOLATED: increase significant digits)
+
+   -----------------------------------------------------------------
+   Total                      1                  -0.00  
+
+   max_area
+
+                             Required        Actual
+   Design                      Area           Area           Slack
+   -----------------------------------------------------------------
+   worker                       0.00       127651.50      -127651.50
+                                                                    (VIOLATED)
+
+
+1
