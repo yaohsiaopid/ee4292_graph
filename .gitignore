@@ -4,4 +4,12 @@ software/dump/
 */*.log
 sim/INCA_libs/
 sim/ncverilog.*
+sim/nWaveLog/
+sim/novas.conf
+sim/novas.rc
+sim/*.fsdb
+
+
+software/gold_master/
+software/*.csv
 

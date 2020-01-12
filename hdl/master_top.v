@@ -23,6 +23,7 @@ input [PRO_BW*Q-1:0] in_proposal_nums,
 // outputs 
 output reg [7:0] epoch,
 output reg [K-1:0] vidsram_wen, // 0 at MSB
+output reg [Q-1:0] locsram_wen,
 output reg ready,
 output reg finish,
 // vidsram writing  
@@ -41,24 +42,24 @@ output [VID_BW*Q-1:0] vid_sram_wdata11, output [VID_ADDR_SPACE-1:0] vid_sram_wad
 output [VID_BW*Q-1:0] vid_sram_wdata12, output [VID_ADDR_SPACE-1:0] vid_sram_waddr12,
 output [VID_BW*Q-1:0] vid_sram_wdata13, output [VID_ADDR_SPACE-1:0] vid_sram_waddr13,
 output [VID_BW*Q-1:0] vid_sram_wdata14, output [VID_ADDR_SPACE-1:0] vid_sram_waddr14,
-output [VID_BW*Q-1:0] vid_sram_wdata15, output [VID_ADDR_SPACE-1:0] vid_sram_waddr15
+output [VID_BW*Q-1:0] vid_sram_wdata15, output [VID_ADDR_SPACE-1:0] vid_sram_waddr15,
 // loc sram writing 
-output [D*LOC_BW-1:0] loc_sram_wdata0,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr0,
-output [D*LOC_BW-1:0] loc_sram_wdata1,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr1,
-output [D*LOC_BW-1:0] loc_sram_wdata2,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr2,
-output [D*LOC_BW-1:0] loc_sram_wdata3,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr3,
-output [D*LOC_BW-1:0] loc_sram_wdata4,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr4,
-output [D*LOC_BW-1:0] loc_sram_wdata5,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr5,
-output [D*LOC_BW-1:0] loc_sram_wdata6,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr6,
-output [D*LOC_BW-1:0] loc_sram_wdata7,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr7,
-output [D*LOC_BW-1:0] loc_sram_wdata8,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr8,
-output [D*LOC_BW-1:0] loc_sram_wdata9,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr9,
-output [D*LOC_BW-1:0] loc_sram_wdata10, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr10,
-output [D*LOC_BW-1:0] loc_sram_wdata11, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr11,
-output [D*LOC_BW-1:0] loc_sram_wdata12, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr12,
-output [D*LOC_BW-1:0] loc_sram_wdata13, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr13,
-output [D*LOC_BW-1:0] loc_sram_wdata14, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr14,
-output [D*LOC_BW-1:0] loc_sram_wdata15, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr15,
+output [D*LOC_BW-1:0] loc_sram_wdata0,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr0,    output [D-1:0] locsram_wbytemask0,
+output [D*LOC_BW-1:0] loc_sram_wdata1,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr1,    output [D-1:0] locsram_wbytemask1,
+output [D*LOC_BW-1:0] loc_sram_wdata2,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr2,    output [D-1:0] locsram_wbytemask2,
+output [D*LOC_BW-1:0] loc_sram_wdata3,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr3,    output [D-1:0] locsram_wbytemask3,
+output [D*LOC_BW-1:0] loc_sram_wdata4,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr4,    output [D-1:0] locsram_wbytemask4,
+output [D*LOC_BW-1:0] loc_sram_wdata5,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr5,    output [D-1:0] locsram_wbytemask5,
+output [D*LOC_BW-1:0] loc_sram_wdata6,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr6,    output [D-1:0] locsram_wbytemask6,
+output [D*LOC_BW-1:0] loc_sram_wdata7,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr7,    output [D-1:0] locsram_wbytemask7,
+output [D*LOC_BW-1:0] loc_sram_wdata8,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr8,    output [D-1:0] locsram_wbytemask8,
+output [D*LOC_BW-1:0] loc_sram_wdata9,  output [LOC_ADDR_SPACE-1:0] loc_sram_waddr9,    output [D-1:0] locsram_wbytemask9,
+output [D*LOC_BW-1:0] loc_sram_wdata10, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr10,   output [D-1:0] locsram_wbytemask10,
+output [D*LOC_BW-1:0] loc_sram_wdata11, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr11,   output [D-1:0] locsram_wbytemask11,
+output [D*LOC_BW-1:0] loc_sram_wdata12, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr12,   output [D-1:0] locsram_wbytemask12,
+output [D*LOC_BW-1:0] loc_sram_wdata13, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr13,   output [D-1:0] locsram_wbytemask13,
+output [D*LOC_BW-1:0] loc_sram_wdata14, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr14,   output [D-1:0] locsram_wbytemask14,
+output [D*LOC_BW-1:0] loc_sram_wdata15, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr15,   output [D-1:0] locsram_wbytemask15
 );
 wire pingpong = 0;
 localparam IDLE=2'd0, RUNS=2'd1, DELAY=2'd2, FINISH=2'd3;
@@ -81,7 +82,6 @@ reg [Q*VID_BW-1:0] vidsram_wdata[0:K-1];
 reg [VID_ADDR_SPACE-1:0] vidsram_waddr[0:K-1];
 // loc sram
 reg [D*LOC_BW-1:0] locsram_wdata[0:Q-1];
-reg [Q-1:0] locsram_wen;
 reg [D-1:0] locsram_wbytemask[0:Q-1], n_locsram_wbytemask[0:Q-1];
 reg [LOC_ADDR_SPACE-1:0] locsram_addr[0:Q-1];
 
@@ -102,6 +102,39 @@ assign vid_sram_wdata12 = vidsram_wdata[12];  assign vid_sram_waddr12 =  vidsram
 assign vid_sram_wdata13 = vidsram_wdata[13];  assign vid_sram_waddr13 =  vidsram_waddr[13];       
 assign vid_sram_wdata14 = vidsram_wdata[14];  assign vid_sram_waddr14 =  vidsram_waddr[14];       
 assign vid_sram_wdata15 = vidsram_wdata[15];  assign vid_sram_waddr15 =  vidsram_waddr[15];       
+
+assign loc_sram_wdata0 = locsram_wdata[0]  ;  assign loc_sram_waddr0 = locsram_addr[0];
+assign loc_sram_wdata1 = locsram_wdata[1]  ;  assign loc_sram_waddr1 = locsram_addr[1];
+assign loc_sram_wdata2 = locsram_wdata[2]  ;  assign loc_sram_waddr2 = locsram_addr[2];
+assign loc_sram_wdata3 = locsram_wdata[3]  ;  assign loc_sram_waddr3 = locsram_addr[3];
+assign loc_sram_wdata4 = locsram_wdata[4]  ;  assign loc_sram_waddr4 = locsram_addr[4];
+assign loc_sram_wdata5 = locsram_wdata[5]  ;  assign loc_sram_waddr5 = locsram_addr[5];
+assign loc_sram_wdata6 = locsram_wdata[6]  ;  assign loc_sram_waddr6 = locsram_addr[6];
+assign loc_sram_wdata7 = locsram_wdata[7]  ;  assign loc_sram_waddr7 = locsram_addr[7];
+assign loc_sram_wdata8 = locsram_wdata[8]  ;  assign loc_sram_waddr8 = locsram_addr[8];
+assign loc_sram_wdata9 = locsram_wdata[9]  ;  assign loc_sram_waddr9 = locsram_addr[9];
+assign loc_sram_wdata10 = locsram_wdata[10];  assign loc_sram_waddr10 = locsram_addr[10];
+assign loc_sram_wdata11 = locsram_wdata[11];  assign loc_sram_waddr11 = locsram_addr[11];
+assign loc_sram_wdata12 = locsram_wdata[12];  assign loc_sram_waddr12 = locsram_addr[12];
+assign loc_sram_wdata13 = locsram_wdata[13];  assign loc_sram_waddr13 = locsram_addr[13];
+assign loc_sram_wdata14 = locsram_wdata[14];  assign loc_sram_waddr14 = locsram_addr[14];
+assign loc_sram_wdata15 = locsram_wdata[15];  assign loc_sram_waddr15 = locsram_addr[15];
+assign locsram_wbytemask0 = locsram_wbytemask[0];
+assign locsram_wbytemask1 = locsram_wbytemask[1];
+assign locsram_wbytemask2 = locsram_wbytemask[2];
+assign locsram_wbytemask3 = locsram_wbytemask[3];
+assign locsram_wbytemask4 = locsram_wbytemask[4];
+assign locsram_wbytemask5 = locsram_wbytemask[5];
+assign locsram_wbytemask6 = locsram_wbytemask[6];
+assign locsram_wbytemask7 = locsram_wbytemask[7];
+assign locsram_wbytemask8 = locsram_wbytemask[8];
+assign locsram_wbytemask9 = locsram_wbytemask[9];
+assign locsram_wbytemask10 = locsram_wbytemask[10];
+assign locsram_wbytemask11 = locsram_wbytemask[11];
+assign locsram_wbytemask12 = locsram_wbytemask[12];
+assign locsram_wbytemask13 = locsram_wbytemask[13];
+assign locsram_wbytemask14 = locsram_wbytemask[14];
+assign locsram_wbytemask15 = locsram_wbytemask[15];
 // ================================================
 // TOOD: prepare: next_arr, mi_j, mj_i, v_gidx , proposal_nums
 

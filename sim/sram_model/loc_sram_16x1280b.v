@@ -15,7 +15,7 @@ output reg [D*BW-1:0] rdata //read data 36 bits
 // TODO: after read , reset valid bit
 // TODO: write only one element of D   
 // vid = 0 at bytemask[255] ..... 
-reg [D*BW-1:0] mem [0:15];
+reg [D*BW-1:0] mem [0:255];
 reg [D*BW-1:0] _rdata;
 wire [D*BW-1:0] bit_mask;
 assign bit_mask = {

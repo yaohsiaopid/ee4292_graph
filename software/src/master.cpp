@@ -153,7 +153,9 @@ int main(int argc, char *argv[]) {
     int wdata[K][Q] = {0};
     int waddr[K] = {0};
     int partial_sum[Q][K];
+    int locs_total[N];
     int epoch_num = N / Q;
+    int locsram[16][16][256][2] = {0}; // 16 srams, 16 addr , 256 itesm per addr, 2: gidx & valid bit
     for(int epoch = 0; epoch < epoch_num; epoch++) {
         int banknum = epoch / Q;
         int idx = epoch % Q;
@@ -174,19 +176,22 @@ int main(int argc, char *argv[]) {
         }
         // export next_arr, mi_j, mj_i, v_gidx, proposal_nums
         export_inputs(v_gidx, proposal_nums, next_arr, mi_j, mj_i);
-        printf("real_next_arr epoch %d: ", epoch);
+        // printf("real_next_arr epoch %d: ", epoch);
         for(int i = 0; i < Q; i++) {
             real_next_arr[i] = xijs[next_arr[i]] > proposal_nums[i] ?  next_arr[i] : banknum; 
-            printf("%2d,", real_next_arr[i]);
+            // printf("%2d,", real_next_arr[i]);
+            locsram[i][(v_gidx[i]/256)][(v_gidx[i]%256)][0] = real_next_arr[i];//v_gidx[i];
+            locsram[i][(v_gidx[i]/256)][(v_gidx[i]%256)][1] = 1;
+            locs_total[v_gidx[i]] = real_next_arr[i];
         }
-        printf("\n");
+        // printf("\n");
         int onehot[Q][K];
         for(int i = 0; i < Q; i++) {
             for(int j = 0; j < Q; j++) {
                 onehot[i][j] = (real_next_arr[i] == j);
             }
         }
-        printf("partial sum:\n");
+        // printf("partial sum:\n");
         
         for(int i = 0; i < Q; i++) {
             for(int j = 0; j < K; j++) {
@@ -194,25 +199,25 @@ int main(int argc, char *argv[]) {
                 for(int r = 0; r <= i; r++) {
                     partial_sum[i][j] += onehot[r][j];
                 }
-                printf("%2d", partial_sum[i][j]);
+                // printf("%2d", partial_sum[i][j]);
             }
-            printf("\n");
+            // printf("\n");
         }
         // printf("-----------------\n");
         //---- same 
-        printf("buffer_idx: ");
+        // printf("buffer_idx: ");
         int buffer_idx[Q];
         for(int i = 0; i < Q; i++) {
             buffer_idx[i] = (partial_sum[i][real_next_arr[i]] - 1) + 
                             (accum[real_next_arr[i]] >= Q ? accum[real_next_arr[i]] - Q : accum[real_next_arr[i]]);
-            printf("%2d,",buffer_idx[i]);
+            // printf("%2d,",buffer_idx[i]);
             // printf("buffer_idx[%2d] = %3d; ",i, buffer_idx[i]);
             // printf("%3d, %3d\n", v_gidx[i], real_next_arr[i]);
             assert(buffer_idx[i] < 2 * Q);
         }
-        printf("\n");
+        // printf("\n");
         // printf("buffaccum: ");
-        printf("export: ");
+        // printf("export: ");
         for(int i = 0; i < K; i++) {
             buffaccum[i] = (accum[i] >= Q ? accum[i] - Q : accum[i]);
             if(accum[i] >= Q) {
@@ -224,33 +229,33 @@ int main(int argc, char *argv[]) {
                 export_flg[i] = 0;
             }
             // printf("%2d,", buffaccum[i]);
-            printf("%d,", export_flg[i]);
+            // printf("%d,", export_flg[i]);
             // printf("(%3d, %3d),", accum[i], export_flg[i]);
         }
-        printf("\n");
-        printf("accum:");
-        for(int i = 0; i < K; i++) {
-          printf("%2d,", accum[i]);
-        }
-        printf("\n");
+        // printf("\n");
+        // printf("accum:");
+        // for(int i = 0; i < K; i++) {
+        //   printf("%2d,", accum[i]);
+        // }
+        // printf("\n");
         // ------
         // printf("-----------------\n export ? :");
         int wen = 0;
         for(int i = 0; i < K; i++) {
             if(export_flg[i] == 1) {
-                printf("exportout %d: ", epoch);
+                // printf("exportout %d: ", epoch);
                 // printf("$$$$ i = %d:  ", i);
                 wen = wen | (1 << i);
                 for(int j = 0; j < Q; j++) {
                     wdata[i][j] = buffer[i][j];
                     buffer[i][j] = -1;
-                    printf("%04x", wdata[i][j]);
+                    // printf("%04x", wdata[i][j]);
                 }
                 // export to checking 
                 for(int j = 0; j < Q; j++) {
                   wdata_total[i].push_back(wdata[i][j]);
                 }
-                printf("\n");
+                // printf("\n");
                 waddr[i]++;
             }
         }
@@ -262,7 +267,7 @@ int main(int argc, char *argv[]) {
         // printf("-----------------\n");
         // printf("----\n");
         for(int buffi = 0; buffi < K; buffi++) {
-            printf("epoch %d buffer: ", epoch);
+            // printf("epoch %d buffer: ", epoch);
             for(int buffj = 0; buffj < 2*Q; buffj++) {
                 if(export_flg[buffi] == 1 && buffj < buffaccum[buffi]) {
                     buffer[buffi][buffj] = buffer[buffi][buffj + Q];
@@ -278,9 +283,9 @@ int main(int argc, char *argv[]) {
                     }
                 }
                 assert(buffer[buffi][buffj] >= 0);
-                printf("%04x,", buffer[buffi][buffj]);
+                // printf("%04x,", buffer[buffi][buffj]);
             }
-            printf("\n");
+            // printf("\n");
         }
         
         // ----
@@ -359,8 +364,34 @@ int main(int argc, char *argv[]) {
       }
       fclose(fsram);
     }
-    FILE *fpr= fopen("out.csv", "w");  
-    int stat[4096] = {0};
+    FILE *fpr= fopen("out.csv", "w");
+    int stat[4096] = {0}, stat2[4096] = {0};
+    for(int i = 0; i < K; i++) {
+      char flnm[100]; 
+      sprintf(flnm, "./gold_master/locsram_w%d.dat", i);
+      FILE *fptr_loc = fopen(flnm, "w");
+      for(int j = 0; j < K; j++) {
+        for(int q = 255; q >= 0; q--) {
+        // for(int q = 0; q < 256; q++) {
+          fprintf(fptr_loc, "%d", locsram[i][j][q][1]);// locsram[i][j][q][0]);
+          for(int itm = 3; itm >= 0; itm--) fprintf(fptr_loc, "%d", (locsram[i][j][q][0] >> itm) & 1);
+          if(q > 0)fprintf(fptr_loc, "_");
+        }
+        fprintf(fptr_loc, "\n");
+      }
+      fclose(fptr_loc);
+    } 
+    for(int q = 0; q < 256; q++) {
+      for(int j = 0; j < K; j++) {
+        int r = 0;
+        for(int i = 0; i < K; i++) {
+          r += locsram[i][j][q][1];
+          if(locsram[i][j][q][1] == 1 && locsram[i][j][q][0] != locs_total[j*256+q]) 
+            printf("wrong location %d vs %d(gold) idx %d\n", locsram[i][j][q][0],locs_total[j*256+q],  j*256+q); 
+        }
+        if(r != 1) printf("FAIL more or no one %d %d %d\n", r, q, j);
+      }
+    }
     for(int i = 0; i < K; i++) {
       for(int j = 0; j < wdata_total[i].size(); j++) {
         stat[wdata_total[i][j]]++;
@@ -372,6 +403,7 @@ int main(int argc, char *argv[]) {
     printf("check:jj");
     for(int i = 0; i < 4096; i++) {
       if(stat[i] != 1) printf("WARNNNN %d\n", i);
+      // if(stat2[i] != 1)printf("LOCSRAM WARNNNN %d\n", i);
     }
   }
 }
