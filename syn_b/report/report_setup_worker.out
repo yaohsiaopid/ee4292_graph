@@ -1,0 +1,272 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 4
+Design : worker
+Version: O-2018.06
+Date   : Sun Jan 12 20:51:37 2020
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: ss0p95v125c   Library: saed32hvt_ss0p95v125c
+Wire Load Model Mode: enclosed
+
+  Startpoint: part_reg_reg_6__1_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: res4_comp_reg_1_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  worker             140000                saed32hvt_ss0p95v125c
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  part_reg_reg_6__1_/CLK (DFFX1_HVT)       0.00 #     0.00 r
+  part_reg_reg_6__1_/Q (DFFX1_HVT)         0.22       0.22 f
+  U10859/Y (OA22X1_HVT)                    0.10       0.33 f
+  U10860/Y (NAND2X0_HVT)                   0.05       0.37 r
+  U10862/Y (AO22X1_HVT)                    0.09       0.46 r
+  U10864/Y (AO22X1_HVT)                    0.10       0.56 r
+  U10867/Y (NAND2X0_HVT)                   0.05       0.61 f
+  U10868/Y (NAND2X0_HVT)                   0.05       0.66 r
+  U10870/Y (NAND2X0_HVT)                   0.05       0.71 f
+  U10350/Y (AND2X1_HVT)                    0.13       0.84 f
+  U10306/Y (MUX21X1_HVT)                   0.17       1.01 f
+  U10902/Y (INVX0_HVT)                     0.05       1.06 r
+  U10906/Y (OA21X1_HVT)                    0.10       1.16 r
+  U10907/Y (OA22X1_HVT)                    0.09       1.25 r
+  U10911/Y (NAND2X0_HVT)                   0.05       1.30 f
+  U10912/Y (NAND2X0_HVT)                   0.05       1.35 r
+  U10918/Y (NAND2X0_HVT)                   0.05       1.40 f
+  U10233/Y (AO21X2_HVT)                    0.12       1.52 f
+  U10232/Y (MUX21X2_HVT)                   0.15       1.67 f
+  U10237/Y (INVX0_HVT)                     0.05       1.72 r
+  U10965/Y (AO21X1_HVT)                    0.11       1.82 r
+  U10966/Y (AO22X1_HVT)                    0.09       1.91 r
+  U10967/Y (NAND2X0_HVT)                   0.05       1.96 f
+  U10236/Y (AND3X2_HVT)                    0.16       2.12 f
+  U11150/Y (MUX21X1_HVT)                   0.16       2.28 f
+  U10223/Y (INVX1_HVT)                     0.04       2.32 r
+  U11169/Y (OA22X1_HVT)                    0.12       2.43 r
+  U11170/Y (NAND3X0_HVT)                   0.11       2.54 f
+  U10292/Y (NAND3X0_HVT)                   0.07       2.60 r
+  U10290/Y (AO22X1_HVT)                    0.14       2.75 r
+  U10289/Y (AND2X1_HVT)                    0.10       2.85 r
+  U10288/Y (MUX21X1_HVT)                   0.13       2.98 r
+  U10220/Y (NAND3X0_HVT)                   0.07       3.05 f
+  U10219/Y (AND2X1_HVT)                    0.09       3.13 f
+  res4_comp_reg_1_/D (DFFX1_HVT)           0.00       3.13 f
+  data arrival time                                   3.13
+
+  clock clk (rise edge)                    3.20       3.20
+  clock network delay (ideal)              0.00       3.20
+  res4_comp_reg_1_/CLK (DFFX1_HVT)         0.00       3.20 r
+  library setup time                      -0.07       3.13
+  data required time                                  3.13
+  -----------------------------------------------------------
+  data required time                                  3.13
+  data arrival time                                  -3.13
+  -----------------------------------------------------------
+  slack (MET)                                         0.00
+
+
+  Startpoint: part_reg_reg_6__1_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: res4_comp_reg_0_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  worker             140000                saed32hvt_ss0p95v125c
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  part_reg_reg_6__1_/CLK (DFFX1_HVT)       0.00 #     0.00 r
+  part_reg_reg_6__1_/Q (DFFX1_HVT)         0.22       0.22 f
+  U10859/Y (OA22X1_HVT)                    0.10       0.33 f
+  U10860/Y (NAND2X0_HVT)                   0.05       0.37 r
+  U10862/Y (AO22X1_HVT)                    0.09       0.46 r
+  U10864/Y (AO22X1_HVT)                    0.10       0.56 r
+  U10867/Y (NAND2X0_HVT)                   0.05       0.61 f
+  U10868/Y (NAND2X0_HVT)                   0.05       0.66 r
+  U10870/Y (NAND2X0_HVT)                   0.05       0.71 f
+  U10350/Y (AND2X1_HVT)                    0.13       0.84 f
+  U10306/Y (MUX21X1_HVT)                   0.17       1.01 f
+  U10902/Y (INVX0_HVT)                     0.05       1.06 r
+  U10906/Y (OA21X1_HVT)                    0.10       1.16 r
+  U10907/Y (OA22X1_HVT)                    0.09       1.25 r
+  U10911/Y (NAND2X0_HVT)                   0.05       1.30 f
+  U10912/Y (NAND2X0_HVT)                   0.05       1.35 r
+  U10918/Y (NAND2X0_HVT)                   0.05       1.40 f
+  U10233/Y (AO21X2_HVT)                    0.12       1.52 f
+  U10232/Y (MUX21X2_HVT)                   0.15       1.67 f
+  U10237/Y (INVX0_HVT)                     0.05       1.72 r
+  U10965/Y (AO21X1_HVT)                    0.11       1.82 r
+  U10966/Y (AO22X1_HVT)                    0.09       1.91 r
+  U10967/Y (NAND2X0_HVT)                   0.05       1.96 f
+  U10236/Y (AND3X2_HVT)                    0.16       2.12 f
+  U11150/Y (MUX21X1_HVT)                   0.16       2.28 f
+  U10223/Y (INVX1_HVT)                     0.04       2.32 r
+  U11169/Y (OA22X1_HVT)                    0.12       2.43 r
+  U11170/Y (NAND3X0_HVT)                   0.11       2.54 f
+  U10292/Y (NAND3X0_HVT)                   0.07       2.60 r
+  U10290/Y (AO22X1_HVT)                    0.14       2.75 r
+  U10289/Y (AND2X1_HVT)                    0.10       2.85 r
+  U10372/Y (MUX21X1_HVT)                   0.13       2.98 r
+  U10222/Y (NAND3X0_HVT)                   0.07       3.05 f
+  U10221/Y (AND2X1_HVT)                    0.09       3.13 f
+  res4_comp_reg_0_/D (DFFX1_HVT)           0.00       3.13 f
+  data arrival time                                   3.13
+
+  clock clk (rise edge)                    3.20       3.20
+  clock network delay (ideal)              0.00       3.20
+  res4_comp_reg_0_/CLK (DFFX1_HVT)         0.00       3.20 r
+  library setup time                      -0.07       3.13
+  data required time                                  3.13
+  -----------------------------------------------------------
+  data required time                                  3.13
+  data arrival time                                  -3.13
+  -----------------------------------------------------------
+  slack (MET)                                         0.00
+
+
+  Startpoint: part_reg_reg_6__1_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: res4_comp_reg_3_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  worker             140000                saed32hvt_ss0p95v125c
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  part_reg_reg_6__1_/CLK (DFFX1_HVT)       0.00 #     0.00 r
+  part_reg_reg_6__1_/Q (DFFX1_HVT)         0.22       0.22 f
+  U10859/Y (OA22X1_HVT)                    0.10       0.33 f
+  U10860/Y (NAND2X0_HVT)                   0.05       0.37 r
+  U10862/Y (AO22X1_HVT)                    0.09       0.46 r
+  U10864/Y (AO22X1_HVT)                    0.10       0.56 r
+  U10867/Y (NAND2X0_HVT)                   0.05       0.61 f
+  U10868/Y (NAND2X0_HVT)                   0.05       0.66 r
+  U10870/Y (NAND2X0_HVT)                   0.05       0.71 f
+  U10350/Y (AND2X1_HVT)                    0.13       0.84 f
+  U10306/Y (MUX21X1_HVT)                   0.17       1.01 f
+  U10902/Y (INVX0_HVT)                     0.05       1.06 r
+  U10906/Y (OA21X1_HVT)                    0.10       1.16 r
+  U10907/Y (OA22X1_HVT)                    0.09       1.25 r
+  U10911/Y (NAND2X0_HVT)                   0.05       1.30 f
+  U10912/Y (NAND2X0_HVT)                   0.05       1.35 r
+  U10918/Y (NAND2X0_HVT)                   0.05       1.40 f
+  U10233/Y (AO21X2_HVT)                    0.12       1.52 f
+  U10232/Y (MUX21X2_HVT)                   0.15       1.67 f
+  U10237/Y (INVX0_HVT)                     0.05       1.72 r
+  U10965/Y (AO21X1_HVT)                    0.11       1.82 r
+  U10966/Y (AO22X1_HVT)                    0.09       1.91 r
+  U10967/Y (NAND2X0_HVT)                   0.05       1.96 f
+  U10236/Y (AND3X2_HVT)                    0.16       2.12 f
+  U11150/Y (MUX21X1_HVT)                   0.16       2.28 f
+  U10223/Y (INVX1_HVT)                     0.04       2.32 r
+  U11169/Y (OA22X1_HVT)                    0.12       2.43 r
+  U11170/Y (NAND3X0_HVT)                   0.11       2.54 f
+  U10292/Y (NAND3X0_HVT)                   0.07       2.60 r
+  U10290/Y (AO22X1_HVT)                    0.14       2.75 r
+  U10371/Y (OA21X1_HVT)                    0.11       2.85 r
+  U10368/Y (NAND2X0_HVT)                   0.09       2.94 f
+  U15288/Y (INVX0_HVT)                     0.05       2.99 r
+  U15289/Y (OA21X1_HVT)                    0.10       3.09 r
+  res4_comp_reg_3_/D (DFFX1_HVT)           0.00       3.09 r
+  data arrival time                                   3.09
+
+  clock clk (rise edge)                    3.20       3.20
+  clock network delay (ideal)              0.00       3.20
+  res4_comp_reg_3_/CLK (DFFX1_HVT)         0.00       3.20 r
+  library setup time                      -0.09       3.11
+  data required time                                  3.11
+  -----------------------------------------------------------
+  data required time                                  3.11
+  data arrival time                                  -3.09
+  -----------------------------------------------------------
+  slack (MET)                                         0.02
+
+
+  Startpoint: part_reg_reg_6__1_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: res4_comp_reg_2_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  worker             140000                saed32hvt_ss0p95v125c
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  part_reg_reg_6__1_/CLK (DFFX1_HVT)       0.00 #     0.00 r
+  part_reg_reg_6__1_/Q (DFFX1_HVT)         0.22       0.22 f
+  U10859/Y (OA22X1_HVT)                    0.10       0.33 f
+  U10860/Y (NAND2X0_HVT)                   0.05       0.37 r
+  U10862/Y (AO22X1_HVT)                    0.09       0.46 r
+  U10864/Y (AO22X1_HVT)                    0.10       0.56 r
+  U10867/Y (NAND2X0_HVT)                   0.05       0.61 f
+  U10868/Y (NAND2X0_HVT)                   0.05       0.66 r
+  U10870/Y (NAND2X0_HVT)                   0.05       0.71 f
+  U10350/Y (AND2X1_HVT)                    0.13       0.84 f
+  U10306/Y (MUX21X1_HVT)                   0.17       1.01 f
+  U10902/Y (INVX0_HVT)                     0.05       1.06 r
+  U10906/Y (OA21X1_HVT)                    0.10       1.16 r
+  U10907/Y (OA22X1_HVT)                    0.09       1.25 r
+  U10911/Y (NAND2X0_HVT)                   0.05       1.30 f
+  U10912/Y (NAND2X0_HVT)                   0.05       1.35 r
+  U10918/Y (NAND2X0_HVT)                   0.05       1.40 f
+  U10233/Y (AO21X2_HVT)                    0.12       1.52 f
+  U10232/Y (MUX21X2_HVT)                   0.15       1.67 f
+  U10237/Y (INVX0_HVT)                     0.05       1.72 r
+  U10965/Y (AO21X1_HVT)                    0.11       1.82 r
+  U10966/Y (AO22X1_HVT)                    0.09       1.91 r
+  U10967/Y (NAND2X0_HVT)                   0.05       1.96 f
+  U10236/Y (AND3X2_HVT)                    0.16       2.12 f
+  U11162/Y (MUX21X1_HVT)                   0.16       2.28 f
+  U11172/Y (NAND2X0_HVT)                   0.08       2.36 r
+  U11173/CO (FADDX1_HVT)                   0.14       2.50 r
+  U10291/Y (NAND4X0_HVT)                   0.12       2.61 f
+  U10290/Y (AO22X1_HVT)                    0.11       2.73 f
+  U10289/Y (AND2X1_HVT)                    0.10       2.83 f
+  U10349/Y (INVX0_HVT)                     0.04       2.86 r
+  U15079/Y (AO21X1_HVT)                    0.11       2.97 r
+  U15082/Y (AND3X1_HVT)                    0.09       3.06 r
+  res4_comp_reg_2_/D (DFFX1_HVT)           0.00       3.06 r
+  data arrival time                                   3.06
+
+  clock clk (rise edge)                    3.20       3.20
+  clock network delay (ideal)              0.00       3.20
+  res4_comp_reg_2_/CLK (DFFX1_HVT)         0.00       3.20 r
+  library setup time                      -0.09       3.11
+  data required time                                  3.11
+  -----------------------------------------------------------
+  data required time                                  3.11
+  data arrival time                                  -3.06
+  -----------------------------------------------------------
+  slack (MET)                                         0.05
+
+
+1
