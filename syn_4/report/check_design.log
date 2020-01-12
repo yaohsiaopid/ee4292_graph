@@ -1,0 +1,37 @@
+ 
+****************************************
+check_design summary:
+Version:     O-2018.06
+Date:        Sun Jan 12 19:46:01 2020
+****************************************
+
+                   Name                                            Total
+--------------------------------------------------------------------------------
+Cells                                                              23
+    Cells do not drive (LINT-1)                                    23
+--------------------------------------------------------------------------------
+
+Warning: In design 'worker', cell 'B_4229' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'B_4230' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'B_4231' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'B_4232' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'B_4233' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'B_4234' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62656' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62659' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62662' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62665' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62668' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62671' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62674' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62677' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62680' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62683' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62686' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62689' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62692' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62695' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62698' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'C62701' does not drive any nets. (LINT-1)
+Warning: In design 'worker', cell 'B_4236' does not drive any nets. (LINT-1)
+1
