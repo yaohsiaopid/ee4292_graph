@@ -13,7 +13,7 @@ module worker
     parameter VID_BW = 16,  // 12???
     parameter VID_ADDR_SPACE = 4,
     parameter Q = 16,
-	parameter WORK_IDX = 0
+	parameter WORK_IDX = 11
 )
 (
     input clk,
@@ -81,6 +81,8 @@ reg part_en;
 
 reg rst_n_in, en_in, n_wen;
 
+// wire [3:0] tmp_res3_comp = (res3_comp[11:4] > part_reg[7]) ? res3_comp[3:0] : 4'd7;
+
 integer i;
 
 parameter IDLE = 3'd0, DELAY1 = 3'd1, SUB = 3'd2, DELAY2 = 3'd3, CHECK = 3'd4, FIN = 3'd5;
@@ -88,7 +90,7 @@ parameter IDLE = 3'd0, DELAY1 = 3'd1, SUB = 3'd2, DELAY2 = 3'd3, CHECK = 3'd4, F
 // batch_num, sub_bat, state, controls
 always@(posedge clk) begin
 	rst_n_in <= rst_n;
-    if(~rst_n) begin
+    if(~rst_n_in) begin
         next_wdata <= 64'd0;
         next_waddr <= 4'd0;
 		next_bytemask <= 16'b1111_1111_1111_1111;
@@ -5297,7 +5299,7 @@ end
 
 // COMB5 proposal_cnt
 always@* begin
-	if(part_en) begin
+	if(part_en&& (batch_num_reg != 0)) begin
 		for(i = 0; i < 16; i = i + 1) begin
 			if(res4_comp == i) begin
 				n_proposal_cnt[i] = proposal_cnt[i] + 1;
