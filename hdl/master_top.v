@@ -20,6 +20,7 @@ input [PRO_BW*K-1:0] in_mi_j,
 input [PRO_BW*K-1:0] in_mj_i, 
 input [VID_BW*Q-1:0] in_v_gidx, 
 input [PRO_BW*Q-1:0] in_proposal_nums,
+input pingpong,
 // outputs 
 output reg [7:0] epoch,
 output reg [K-1:0] vidsram_wen, // 0 at MSB
@@ -61,7 +62,7 @@ output [D*LOC_BW-1:0] loc_sram_wdata13, output [LOC_ADDR_SPACE-1:0] loc_sram_wad
 output [D*LOC_BW-1:0] loc_sram_wdata14, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr14,   output [D-1:0] locsram_wbytemask14,
 output [D*LOC_BW-1:0] loc_sram_wdata15, output [LOC_ADDR_SPACE-1:0] loc_sram_waddr15,   output [D-1:0] locsram_wbytemask15
 );
-wire pingpong = 0;
+// wire pingpong = 0;
 localparam IDLE=2'd0, RUNS=2'd1, DELAY=2'd2, FINISH=2'd3;
 localparam PSUM_READY = 3;
 localparam DONEII = 6;
@@ -78,47 +79,54 @@ reg [PRO_BW-1:0] mj_i[0:K-1];           // register
 reg [NEXT_BW-1:0] real_next_arr[0:Q-1], nreal_next_arr[0:Q-1], buff_1_next[0:Q-1], buff_next[0:Q-1];
 
 // vid sram
-reg [Q*VID_BW-1:0] vidsram_wdata[0:K-1];
+// reg [Q*VID_BW-1:0] vidsram_wdata[0:K-1];
+
+reg [Q*VID_BW-1:0] vidsram_wdata_0,vidsram_wdata_1,vidsram_wdata_2,vidsram_wdata_3,vidsram_wdata_4,vidsram_wdata_5,vidsram_wdata_6,vidsram_wdata_7,vidsram_wdata_8,vidsram_wdata_9,vidsram_wdata_10,vidsram_wdata_11,vidsram_wdata_12,vidsram_wdata_13,vidsram_wdata_14,vidsram_wdata_15;
+
 reg [VID_ADDR_SPACE-1:0] vidsram_waddr[0:K-1];
 // loc sram
-reg [D*LOC_BW-1:0] locsram_wdata[0:Q-1];
+// reg [D*LOC_BW-1:0] locsram_wdata[0:Q-1];
+reg [D*LOC_BW-1:0] locsram_wdata0,locsram_wdata1,locsram_wdata2,locsram_wdata3,locsram_wdata4;
+reg [D*LOC_BW-1:0] locsram_wdata5,locsram_wdata6,locsram_wdata7,locsram_wdata8,locsram_wdata9;
+reg [D*LOC_BW-1:0] locsram_wdata10,locsram_wdata11,locsram_wdata12,locsram_wdata13,locsram_wdata14,locsram_wdata15;
 reg [D-1:0] locsram_wbytemask[0:Q-1], n_locsram_wbytemask[0:Q-1];
 reg [LOC_ADDR_SPACE-1:0] locsram_addr[0:Q-1];
 
 // sram wire connect
-assign vid_sram_wdata0 = vidsram_wdata[0];    assign vid_sram_waddr0 =   vidsram_waddr[0];   
-assign vid_sram_wdata1 = vidsram_wdata[1];    assign vid_sram_waddr1 =   vidsram_waddr[1];   
-assign vid_sram_wdata2 = vidsram_wdata[2];    assign vid_sram_waddr2 =   vidsram_waddr[2];   
-assign vid_sram_wdata3 = vidsram_wdata[3];    assign vid_sram_waddr3 =   vidsram_waddr[3];   
-assign vid_sram_wdata4 = vidsram_wdata[4];    assign vid_sram_waddr4 =   vidsram_waddr[4];   
-assign vid_sram_wdata5 = vidsram_wdata[5];    assign vid_sram_waddr5 =   vidsram_waddr[5];   
-assign vid_sram_wdata6 = vidsram_wdata[6];    assign vid_sram_waddr6 =   vidsram_waddr[6];   
-assign vid_sram_wdata7 = vidsram_wdata[7];    assign vid_sram_waddr7 =   vidsram_waddr[7];   
-assign vid_sram_wdata8 = vidsram_wdata[8];    assign vid_sram_waddr8 =   vidsram_waddr[8];   
-assign vid_sram_wdata9 = vidsram_wdata[9];    assign vid_sram_waddr9 =   vidsram_waddr[9];   
-assign vid_sram_wdata10 = vidsram_wdata[10];  assign vid_sram_waddr10 =  vidsram_waddr[10];       
-assign vid_sram_wdata11 = vidsram_wdata[11];  assign vid_sram_waddr11 =  vidsram_waddr[11];       
-assign vid_sram_wdata12 = vidsram_wdata[12];  assign vid_sram_waddr12 =  vidsram_waddr[12];       
-assign vid_sram_wdata13 = vidsram_wdata[13];  assign vid_sram_waddr13 =  vidsram_waddr[13];       
-assign vid_sram_wdata14 = vidsram_wdata[14];  assign vid_sram_waddr14 =  vidsram_waddr[14];       
-assign vid_sram_wdata15 = vidsram_wdata[15];  assign vid_sram_waddr15 =  vidsram_waddr[15];       
+assign vid_sram_wdata0 = vidsram_wdata_0;    assign vid_sram_waddr0 =   vidsram_waddr[0];   
+assign vid_sram_wdata1 = vidsram_wdata_1;    assign vid_sram_waddr1 =   vidsram_waddr[1];   
+assign vid_sram_wdata2 = vidsram_wdata_2;    assign vid_sram_waddr2 =   vidsram_waddr[2];   
+assign vid_sram_wdata3 = vidsram_wdata_3;    assign vid_sram_waddr3 =   vidsram_waddr[3];   
+assign vid_sram_wdata4 = vidsram_wdata_4;    assign vid_sram_waddr4 =   vidsram_waddr[4];   
+assign vid_sram_wdata5 = vidsram_wdata_5;    assign vid_sram_waddr5 =   vidsram_waddr[5];   
+assign vid_sram_wdata6 = vidsram_wdata_6;    assign vid_sram_waddr6 =   vidsram_waddr[6];   
+assign vid_sram_wdata7 = vidsram_wdata_7;    assign vid_sram_waddr7 =   vidsram_waddr[7];   
+assign vid_sram_wdata8 = vidsram_wdata_8;    assign vid_sram_waddr8 =   vidsram_waddr[8];   
+assign vid_sram_wdata9 = vidsram_wdata_9;    assign vid_sram_waddr9 =   vidsram_waddr[9];   
+assign vid_sram_wdata10 = vidsram_wdata_10;  assign vid_sram_waddr10 =  vidsram_waddr[10];       
+assign vid_sram_wdata11 = vidsram_wdata_11;  assign vid_sram_waddr11 =  vidsram_waddr[11];       
+assign vid_sram_wdata12 = vidsram_wdata_12;  assign vid_sram_waddr12 =  vidsram_waddr[12];       
+assign vid_sram_wdata13 = vidsram_wdata_13;  assign vid_sram_waddr13 =  vidsram_waddr[13];       
+assign vid_sram_wdata14 = vidsram_wdata_14;  assign vid_sram_waddr14 =  vidsram_waddr[14];       
+assign vid_sram_wdata15 = vidsram_wdata_15;  assign vid_sram_waddr15 =  vidsram_waddr[15];       
 
-assign loc_sram_wdata0 = locsram_wdata[0]  ;  assign loc_sram_waddr0 = locsram_addr[0];
-assign loc_sram_wdata1 = locsram_wdata[1]  ;  assign loc_sram_waddr1 = locsram_addr[1];
-assign loc_sram_wdata2 = locsram_wdata[2]  ;  assign loc_sram_waddr2 = locsram_addr[2];
-assign loc_sram_wdata3 = locsram_wdata[3]  ;  assign loc_sram_waddr3 = locsram_addr[3];
-assign loc_sram_wdata4 = locsram_wdata[4]  ;  assign loc_sram_waddr4 = locsram_addr[4];
-assign loc_sram_wdata5 = locsram_wdata[5]  ;  assign loc_sram_waddr5 = locsram_addr[5];
-assign loc_sram_wdata6 = locsram_wdata[6]  ;  assign loc_sram_waddr6 = locsram_addr[6];
-assign loc_sram_wdata7 = locsram_wdata[7]  ;  assign loc_sram_waddr7 = locsram_addr[7];
-assign loc_sram_wdata8 = locsram_wdata[8]  ;  assign loc_sram_waddr8 = locsram_addr[8];
-assign loc_sram_wdata9 = locsram_wdata[9]  ;  assign loc_sram_waddr9 = locsram_addr[9];
-assign loc_sram_wdata10 = locsram_wdata[10];  assign loc_sram_waddr10 = locsram_addr[10];
-assign loc_sram_wdata11 = locsram_wdata[11];  assign loc_sram_waddr11 = locsram_addr[11];
-assign loc_sram_wdata12 = locsram_wdata[12];  assign loc_sram_waddr12 = locsram_addr[12];
-assign loc_sram_wdata13 = locsram_wdata[13];  assign loc_sram_waddr13 = locsram_addr[13];
-assign loc_sram_wdata14 = locsram_wdata[14];  assign loc_sram_waddr14 = locsram_addr[14];
-assign loc_sram_wdata15 = locsram_wdata[15];  assign loc_sram_waddr15 = locsram_addr[15];
+assign loc_sram_wdata0 = locsram_wdata0  ;  assign loc_sram_waddr0 = locsram_addr[0];
+assign loc_sram_wdata1 = locsram_wdata1  ;  assign loc_sram_waddr1 = locsram_addr[1];
+assign loc_sram_wdata2 = locsram_wdata2  ;  assign loc_sram_waddr2 = locsram_addr[2];
+assign loc_sram_wdata3 = locsram_wdata3  ;  assign loc_sram_waddr3 = locsram_addr[3];
+assign loc_sram_wdata4 = locsram_wdata4  ;  assign loc_sram_waddr4 = locsram_addr[4];
+assign loc_sram_wdata5 = locsram_wdata5  ;  assign loc_sram_waddr5 = locsram_addr[5];
+assign loc_sram_wdata6 = locsram_wdata6  ;  assign loc_sram_waddr6 = locsram_addr[6];
+assign loc_sram_wdata7 = locsram_wdata7  ;  assign loc_sram_waddr7 = locsram_addr[7];
+assign loc_sram_wdata8 = locsram_wdata8  ;  assign loc_sram_waddr8 = locsram_addr[8];
+assign loc_sram_wdata9 = locsram_wdata9  ;  assign loc_sram_waddr9 = locsram_addr[9];
+assign loc_sram_wdata10 = locsram_wdata10;  assign loc_sram_waddr10 = locsram_addr[10];
+assign loc_sram_wdata11 = locsram_wdata11;  assign loc_sram_waddr11 = locsram_addr[11];
+assign loc_sram_wdata12 = locsram_wdata12;  assign loc_sram_waddr12 = locsram_addr[12];
+assign loc_sram_wdata13 = locsram_wdata13;  assign loc_sram_waddr13 = locsram_addr[13];
+assign loc_sram_wdata14 = locsram_wdata14;  assign loc_sram_waddr14 = locsram_addr[14];
+assign loc_sram_wdata15 = locsram_wdata15;  assign loc_sram_waddr15 = locsram_addr[15];
+
 assign locsram_wbytemask0 = locsram_wbytemask[0];
 assign locsram_wbytemask1 = locsram_wbytemask[1];
 assign locsram_wbytemask2 = locsram_wbytemask[2];
@@ -141,7 +149,16 @@ assign locsram_wbytemask15 = locsram_wbytemask[15];
 // ================================================
 reg [VID_BW-1:0] v_gidx[0:Q-1]; // registers, from vid sram
 // K buffers, each of Q 
-reg [VID_BW-1:0] buffer [0:K-1] [0:2*Q-1], n_buffer[0:K-1][0:2*Q-1];
+// reg [VID_BW-1:0] buffer [0:K-1] [0:2*Q-1], n_buffer[0:K-1][0:2*Q-1];
+reg [VID_BW-1:0] buffer_0[0:2*Q-1],buffer_1[0:2*Q-1],buffer_2[0:2*Q-1],buffer_3[0:2*Q-1],
+buffer_4[0:2*Q-1],buffer_5[0:2*Q-1],buffer_6[0:2*Q-1],buffer_7[0:2*Q-1],
+buffer_8[0:2*Q-1],buffer_9[0:2*Q-1],buffer_10[0:2*Q-1],buffer_11[0:2*Q-1],
+buffer_12[0:2*Q-1],buffer_13[0:2*Q-1],buffer_14[0:2*Q-1],buffer_15[0:2*Q-1];
+reg [VID_BW-1:0] n_buffer_0[0:2*Q-1],n_buffer_1[0:2*Q-1],n_buffer_2[0:2*Q-1],n_buffer_3[0:2*Q-1],
+n_buffer_4[0:2*Q-1],n_buffer_5[0:2*Q-1],n_buffer_6[0:2*Q-1],n_buffer_7[0:2*Q-1],
+n_buffer_8[0:2*Q-1],n_buffer_9[0:2*Q-1],n_buffer_10[0:2*Q-1],n_buffer_11[0:2*Q-1],
+n_buffer_12[0:2*Q-1],n_buffer_13[0:2*Q-1],n_buffer_14[0:2*Q-1],n_buffer_15[0:2*Q-1];
+
 reg [BUF_BW-1:0] accum[0:K-1], n_accum[0:K-1]; // buffer size for each of K buffers
 reg [BUF_BW-1:0] buffer_idx[0:Q-1], nbuffer_idx[0:Q-1]; // additioanl bit??
 reg export[0:K-1], n_export[0:K-1];
@@ -223,41 +240,599 @@ always @* begin
     
     end 
     // -------------------------------------------
-    for(buffi = 0; buffi < K; buffi = buffi + 1) begin 
-        for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
-            if(psum_set) begin 
-                if(buffj < Q && export[buffi] == 1 && buffj < buffaccum[buffi]) begin 
-                    // shift 
-                    n_buffer[buffi][buffj] = buffer[buffi][buffj + Q];
-                end else begin 
-                    // take new 
-                    if(buffj < buffaccum[buffi]) begin
-                        n_buffer[buffi][buffj] = buffer[buffi][buffj]; 
-                    end else begin 
-                        n_buffer[buffi][buffj] =
-                                            ((buff_next[0] == buffi) * (buffer_idx[0] == buffj) * v_gidx[0]) |
-                                            ((buff_next[1] == buffi) * (buffer_idx[1] == buffj) * v_gidx[1]) |
-                                            ((buff_next[2] == buffi) * (buffer_idx[2] == buffj) * v_gidx[2]) |
-                                            ((buff_next[3] == buffi) * (buffer_idx[3] == buffj) * v_gidx[3]) |
-                                            ((buff_next[4] == buffi) * (buffer_idx[4] == buffj) * v_gidx[4]) |
-                                            ((buff_next[5] == buffi) * (buffer_idx[5] == buffj) * v_gidx[5]) |
-                                            ((buff_next[6] == buffi) * (buffer_idx[6] == buffj) * v_gidx[6]) |
-                                            ((buff_next[7] == buffi) * (buffer_idx[7] == buffj) * v_gidx[7]) |
-                                            ((buff_next[8] == buffi) * (buffer_idx[8] == buffj) * v_gidx[8]) |
-                                            ((buff_next[9] == buffi) * (buffer_idx[9] == buffj) * v_gidx[9]) |
-                                            ((buff_next[10] == buffi) * (buffer_idx[10] == buffj) * v_gidx[10]) |
-                                            ((buff_next[11] == buffi) * (buffer_idx[11] == buffj) * v_gidx[11]) |
-                                            ((buff_next[12] == buffi) * (buffer_idx[12] == buffj) * v_gidx[12]) |
-                                            ((buff_next[13] == buffi) * (buffer_idx[13] == buffj) * v_gidx[13]) |
-                                            ((buff_next[14] == buffi) * (buffer_idx[14] == buffj) * v_gidx[14]) |
-                                            ((buff_next[15] == buffi) * (buffer_idx[15] == buffj) * v_gidx[15]);
-                    end 
-                end 
+    // for(buffi = 0; buffi < K; buffi = buffi + 1) begin 
+    //     for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    //         if(psum_set) begin 
+    //             if(buffj < Q && export[buffi] == 1 && buffj < buffaccum[buffi]) begin 
+    //                 // shift 
+    //                 n_buffer[buffi][buffj] = buffer[buffi][buffj + Q];
+    //             end else begin 
+    //                 // take new 
+    //                 if(buffj < buffaccum[buffi]) begin
+    //                     n_buffer[buffi][buffj] = buffer[buffi][buffj]; 
+    //                 end else begin 
+    //                     n_buffer[buffi][buffj] =
+    //                                         ((buff_next[0] == buffi) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+    //                                         ((buff_next[1] == buffi) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+    //                                         ((buff_next[2] == buffi) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+    //                                         ((buff_next[3] == buffi) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+    //                                         ((buff_next[4] == buffi) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+    //                                         ((buff_next[5] == buffi) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+    //                                         ((buff_next[6] == buffi) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+    //                                         ((buff_next[7] == buffi) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+    //                                         ((buff_next[8] == buffi) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+    //                                         ((buff_next[9] == buffi) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+    //                                         ((buff_next[10] == buffi) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+    //                                         ((buff_next[11] == buffi) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+    //                                         ((buff_next[12] == buffi) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+    //                                         ((buff_next[13] == buffi) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+    //                                         ((buff_next[14] == buffi) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+    //                                         ((buff_next[15] == buffi) * (buffer_idx[15] == buffj) * v_gidx[15]);
+    //                 end 
+    //             end 
+    //         end else begin 
+    //             n_buffer[buffi][buffj] = buffer[buffi][buffj];
+    //         end 
+    //     end 
+    // end 
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[15] == 1 && buffj < buffaccum[15]) begin 
+            // shift 
+            n_buffer_15[buffj] = buffer_15[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[15]) begin
+                n_buffer_15[buffj] = buffer_15[buffj]; 
             end else begin 
-                n_buffer[buffi][buffj] = buffer[buffi][buffj];
+                n_buffer_15[buffj] =
+                                    ((buff_next[0] == 4'd15) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd15) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd15) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd15) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd15) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd15) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd15) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd15) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd15) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd15) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd15) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd15) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd15) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd15) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd15) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd15) * (buffer_idx[15] == buffj) * v_gidx[15]);
             end 
         end 
+    end else begin 
+        n_buffer_15[buffj] = buffer_15[buffj];
     end 
+end 
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[14] == 1 && buffj < buffaccum[14]) begin 
+            // shift 
+            n_buffer_14[buffj] = buffer_14[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[14]) begin
+                n_buffer_14[buffj] = buffer_14[buffj]; 
+            end else begin 
+                n_buffer_14[buffj] =
+                                    ((buff_next[0] == 4'd14) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd14) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd14) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd14) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd14) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd14) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd14) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd14) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd14) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd14) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd14) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd14) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd14) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd14) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd14) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd14) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_14[buffj] = buffer_14[buffj];
+    end 
+end 
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[13] == 1 && buffj < buffaccum[13]) begin 
+            // shift 
+            n_buffer_13[buffj] = buffer_13[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[13]) begin
+                n_buffer_13[buffj] = buffer_13[buffj]; 
+            end else begin 
+                n_buffer_13[buffj] =
+                                    ((buff_next[0] == 4'd13) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd13) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd13) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd13) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd13) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd13) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd13) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd13) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd13) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd13) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd13) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd13) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd13) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd13) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd13) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd13) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_13[buffj] = buffer_13[buffj];
+    end 
+end 
+
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[12] == 1 && buffj < buffaccum[12]) begin 
+            // shift 
+            n_buffer_12[buffj] = buffer_12[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[12]) begin
+                n_buffer_12[buffj] = buffer_12[buffj]; 
+            end else begin 
+                n_buffer_12[buffj] =
+                                    ((buff_next[0] == 4'd12) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd12) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd12) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd12) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd12) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd12) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd12) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd12) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd12) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd12) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd12) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd12) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd12) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd12) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd12) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd12) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_12[buffj] = buffer_12[buffj];
+    end 
+end 
+
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[11] == 1 && buffj < buffaccum[11]) begin 
+            // shift 
+            n_buffer_11[buffj] = buffer_11[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[11]) begin
+                n_buffer_11[buffj] = buffer_11[buffj]; 
+            end else begin 
+                n_buffer_11[buffj] =
+                                    ((buff_next[0] == 4'd11) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd11) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd11) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd11) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd11) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd11) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd11) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd11) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd11) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd11) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd11) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd11) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd11) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd11) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd11) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd11) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_11[buffj] = buffer_11[buffj];
+    end 
+end 
+
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[10] == 1 && buffj < buffaccum[10]) begin 
+            // shift 
+            n_buffer_10[buffj] = buffer_10[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[10]) begin
+                n_buffer_10[buffj] = buffer_10[buffj]; 
+            end else begin 
+                n_buffer_10[buffj] =
+                                    ((buff_next[0] == 4'd10) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd10) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd10) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd10) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd10) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd10) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd10) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd10) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd10) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd10) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd10) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd10) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd10) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd10) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd10) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd10) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_10[buffj] = buffer_10[buffj];
+    end 
+end 
+
+
+
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[9] == 1 && buffj < buffaccum[9]) begin 
+            // shift 
+            n_buffer_9[buffj] = buffer_9[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[9]) begin
+                n_buffer_9[buffj] = buffer_9[buffj]; 
+            end else begin 
+                n_buffer_9[buffj] =
+                                    ((buff_next[0] == 4'd9) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd9) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd9) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd9) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd9) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd9) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd9) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd9) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd9) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd9) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd9) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd9) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd9) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd9) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd9) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd9) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_9[buffj] = buffer_9[buffj];
+    end 
+end 
+
+
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[8] == 1 && buffj < buffaccum[8]) begin 
+            // shift 
+            n_buffer_8[buffj] = buffer_8[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[8]) begin
+                n_buffer_8[buffj] = buffer_8[buffj]; 
+            end else begin 
+                n_buffer_8[buffj] =
+                                    ((buff_next[0] == 4'd8) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd8) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd8) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd8) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd8) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd8) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd8) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd8) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd8) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd8) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd8) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd8) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd8) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd8) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd8) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd8) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_8[buffj] = buffer_8[buffj];
+    end 
+end 
+
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[7] == 1 && buffj < buffaccum[7]) begin 
+            // shift 
+            n_buffer_7[buffj] = buffer_7[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[7]) begin
+                n_buffer_7[buffj] = buffer_7[buffj]; 
+            end else begin 
+                n_buffer_7[buffj] =
+                                    ((buff_next[0] == 4'd7) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd7) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd7) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd7) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd7) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd7) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd7) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd7) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd7) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd7) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd7) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd7) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd7) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd7) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd7) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd7) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_7[buffj] = buffer_7[buffj];
+    end 
+end 
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[6] == 1 && buffj < buffaccum[6]) begin 
+            // shift 
+            n_buffer_6[buffj] = buffer_6[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[6]) begin
+                n_buffer_6[buffj] = buffer_6[buffj]; 
+            end else begin 
+                n_buffer_6[buffj] =
+                                    ((buff_next[0] == 4'd6) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd6) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd6) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd6) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd6) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd6) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd6) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd6) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd6) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd6) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd6) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd6) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd6) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd6) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd6) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd6) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_6[buffj] = buffer_6[buffj];
+    end 
+end 
+
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[5] == 1 && buffj < buffaccum[5]) begin 
+            // shift 
+            n_buffer_5[buffj] = buffer_5[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[5]) begin
+                n_buffer_5[buffj] = buffer_5[buffj]; 
+            end else begin 
+                n_buffer_5[buffj] =
+                                    ((buff_next[0] == 4'd5) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd5) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd5) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd5) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd5) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd5) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd5) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd5) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd5) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd5) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd5) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd5) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd5) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd5) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd5) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd5) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_5[buffj] = buffer_5[buffj];
+    end 
+end 
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[4] == 1 && buffj < buffaccum[4]) begin 
+            // shift 
+            n_buffer_4[buffj] = buffer_4[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[4]) begin
+                n_buffer_4[buffj] = buffer_4[buffj]; 
+            end else begin 
+                n_buffer_4[buffj] =
+                                    ((buff_next[0] == 4'd4) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd4) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd4) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd4) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd4) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd4) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd4) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd4) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd4) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd4) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd4) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd4) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd4) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd4) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd4) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd4) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_4[buffj] = buffer_4[buffj];
+    end 
+end 
+
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[3] == 1 && buffj < buffaccum[3]) begin 
+            // shift 
+            n_buffer_3[buffj] = buffer_3[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[3]) begin
+                n_buffer_3[buffj] = buffer_3[buffj]; 
+            end else begin 
+                n_buffer_3[buffj] =
+                                    ((buff_next[0] == 4'd3) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd3) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd3) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd3) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd3) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd3) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd3) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd3) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd3) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd3) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd3) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd3) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd3) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd3) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd3) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd3) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_3[buffj] = buffer_3[buffj];
+    end 
+end 
+
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[2] == 1 && buffj < buffaccum[2]) begin 
+            // shift 
+            n_buffer_2[buffj] = buffer_2[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[2]) begin
+                n_buffer_2[buffj] = buffer_2[buffj]; 
+            end else begin 
+                n_buffer_2[buffj] =
+                                    ((buff_next[0] == 4'd2) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd2) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd2) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd2) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd2) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd2) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd2) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd2) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd2) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd2) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd2) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd2) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd2) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd2) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd2) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd2) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_2[buffj] = buffer_2[buffj];
+    end 
+end 
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[1] == 1 && buffj < buffaccum[1]) begin 
+            // shift 
+            n_buffer_1[buffj] = buffer_1[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[1]) begin
+                n_buffer_1[buffj] = buffer_1[buffj]; 
+            end else begin 
+                n_buffer_1[buffj] =
+                                    ((buff_next[0] == 4'd1) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd1) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd1) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd1) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd1) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd1) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd1) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd1) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd1) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd1) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd1) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd1) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd1) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd1) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd1) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd1) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_1[buffj] = buffer_1[buffj];
+    end 
+end 
+
+
+for(buffj = 0; buffj < 2*Q; buffj = buffj + 1) begin  
+    if(psum_set) begin 
+        if(buffj < Q && export[0] == 1 && buffj < buffaccum[0]) begin 
+            // shift 
+            n_buffer_0[buffj] = buffer_0[buffj + Q];
+        end else begin 
+            // take new 
+            if(buffj < buffaccum[0]) begin
+                n_buffer_0[buffj] = buffer_0[buffj]; 
+            end else begin 
+                n_buffer_0[buffj] =
+                                    ((buff_next[0] == 4'd0) * (buffer_idx[0] == buffj) * v_gidx[0]) |
+                                    ((buff_next[1] == 4'd0) * (buffer_idx[1] == buffj) * v_gidx[1]) |
+                                    ((buff_next[2] == 4'd0) * (buffer_idx[2] == buffj) * v_gidx[2]) |
+                                    ((buff_next[3] == 4'd0) * (buffer_idx[3] == buffj) * v_gidx[3]) |
+                                    ((buff_next[4] == 4'd0) * (buffer_idx[4] == buffj) * v_gidx[4]) |
+                                    ((buff_next[5] == 4'd0) * (buffer_idx[5] == buffj) * v_gidx[5]) |
+                                    ((buff_next[6] == 4'd0) * (buffer_idx[6] == buffj) * v_gidx[6]) |
+                                    ((buff_next[7] == 4'd0) * (buffer_idx[7] == buffj) * v_gidx[7]) |
+                                    ((buff_next[8] == 4'd0) * (buffer_idx[8] == buffj) * v_gidx[8]) |
+                                    ((buff_next[9] == 4'd0) * (buffer_idx[9] == buffj) * v_gidx[9]) |
+                                    ((buff_next[10] == 4'd0) * (buffer_idx[10] == buffj) * v_gidx[10]) |
+                                    ((buff_next[11] == 4'd0) * (buffer_idx[11] == buffj) * v_gidx[11]) |
+                                    ((buff_next[12] == 4'd0) * (buffer_idx[12] == buffj) * v_gidx[12]) |
+                                    ((buff_next[13] == 4'd0) * (buffer_idx[13] == buffj) * v_gidx[13]) |
+                                    ((buff_next[14] == 4'd0) * (buffer_idx[14] == buffj) * v_gidx[14]) |
+                                    ((buff_next[15] == 4'd0) * (buffer_idx[15] == buffj) * v_gidx[15]);
+            end 
+        end 
+    end else begin 
+        n_buffer_0[buffj] = buffer_0[buffj];
+    end 
+end 
+
+
 
 end 
 
@@ -555,6 +1130,7 @@ always @* begin
         endcase 
     end 
 end 
+integer bfi, bfidxw;
 always @(posedge clk) begin 
     if(~rst_n) begin 
         state <= IDLE;
@@ -567,22 +1143,36 @@ always @(posedge clk) begin
             buff_next[ri] <= {NEXT_BW{1'b0}};
             buff_1_next[ri] <= {NEXT_BW{1'b0}};
             for(rj = 0; rj < K; rj = rj + 1) begin 
-                buffer[rj][2*ri] <= {VID_BW{1'b0}};
-                buffer[rj][2*ri+1] <= {VID_BW{1'b0}};
+                // buffer[rj][2*ri] <= {VID_BW{1'b0}};
+                // buffer[rj][2*ri+1] <= {VID_BW{1'b0}};
                 partial_sum[ri][rj] <= {OFFSET_BW{1'b0}};
             end 
             buffer_idx[ri] <= {BUF_BW{1'b0}};
         end 
+        for(bfi = 0; bfi < 2 * Q; bfi = bfi + 1) begin 
+            buffer_0[bfi] <= {VID_BW{1'b0}};  buffer_1[bfi] <= {VID_BW{1'b0}};  buffer_2[bfi] <= {VID_BW{1'b0}};  buffer_3[bfi] <= {VID_BW{1'b0}};  
+            buffer_4[bfi] <= {VID_BW{1'b0}};  buffer_5[bfi] <= {VID_BW{1'b0}};  buffer_6[bfi] <= {VID_BW{1'b0}};  buffer_7[bfi] <= {VID_BW{1'b0}};  
+            buffer_8[bfi] <= {VID_BW{1'b0}};  buffer_9[bfi] <= {VID_BW{1'b0}};  buffer_10[bfi] <= {VID_BW{1'b0}};  buffer_11[bfi] <= {VID_BW{1'b0}};  
+            buffer_12[bfi] <= {VID_BW{1'b0}};  buffer_13[bfi] <= {VID_BW{1'b0}};  buffer_14[bfi] <= {VID_BW{1'b0}};  buffer_15[bfi] <= {VID_BW{1'b0}};  
+        end
         vidsram_wen <= {K{1'b1}};
         for(rk = 0; rk < K; rk = rk + 1) begin 
             mi_j[rk] <= {PRO_BW{1'b0}};
             mj_i[rk] <= {PRO_BW{1'b0}};
-            vidsram_wdata[rk] <= {Q*VID_BW-1{1'b0}};
+            // vidsram_wdata[rk] <= {Q*VID_BW-1{1'b0}};
             vidsram_waddr[rk] <= {VID_ADDR_SPACE{1'b0}};
             accum[rk] <= {BUF_BW{1'b0}};
             export[rk] <= 1'b0;
             buffaccum[rk] <= {BUF_BW{1'b0}};
         end 
+        vidsram_wdata_0 <= {Q*VID_BW{1'b0}}; vidsram_wdata_8 <= {Q*VID_BW{1'b0}};
+        vidsram_wdata_1 <= {Q*VID_BW{1'b0}}; vidsram_wdata_9 <= {Q*VID_BW{1'b0}};
+        vidsram_wdata_2 <= {Q*VID_BW{1'b0}}; vidsram_wdata_10 <= {Q*VID_BW{1'b0}};
+        vidsram_wdata_3 <= {Q*VID_BW{1'b0}}; vidsram_wdata_11 <= {Q*VID_BW{1'b0}};
+        vidsram_wdata_4 <= {Q*VID_BW{1'b0}}; vidsram_wdata_12 <= {Q*VID_BW{1'b0}};
+        vidsram_wdata_5 <= {Q*VID_BW{1'b0}}; vidsram_wdata_13 <= {Q*VID_BW{1'b0}};
+        vidsram_wdata_6 <= {Q*VID_BW{1'b0}}; vidsram_wdata_14 <= {Q*VID_BW{1'b0}};
+        vidsram_wdata_7 <= {Q*VID_BW{1'b0}}; vidsram_wdata_15 <= {Q*VID_BW{1'b0}};
         epoch <= 0;
         ready <= 0;
         finish <= 0;
@@ -634,9 +1224,22 @@ always @(posedge clk) begin
                 export[sk] <= n_export[sk];
                 buffaccum[sk] <= n_buffaccum[sk];
             end 
-            for(sq = 0; sq < 2*Q; sq = sq + 1) begin 
-                if(~enable) buffer[sk][sq] <= 0;
-                else buffer[sk][sq] <= n_buffer[sk][sq];
+            // for(sq = 0; sq < 2*Q; sq = sq + 1) begin 
+            //     if(~enable) buffer[sk][sq] <= 0;
+            //     else buffer[sk][sq] <= n_buffer[sk][sq];
+            // end 
+        end 
+        for(bfidxw = 0; bfidxw < 2 * Q; bfidxw = bfidxw + 1) begin 
+            if(~enable) begin 
+                buffer_0[bfidxw] <= 0;  buffer_1[bfidxw] <= 0;  buffer_2[bfidxw] <= 0;  buffer_3[bfidxw] <= 0;  
+                buffer_4[bfidxw] <= 0;  buffer_5[bfidxw] <= 0;  buffer_6[bfidxw] <= 0;  buffer_7[bfidxw] <= 0;  
+                buffer_8[bfidxw] <= 0;  buffer_9[bfidxw] <= 0;  buffer_10[bfidxw] <= 0;  buffer_11[bfidxw] <= 0;  
+                buffer_12[bfidxw] <= 0;  buffer_13[bfidxw] <= 0;  buffer_14[bfidxw] <= 0;  buffer_15[bfidxw] <= 0; 
+            end else begin 
+                buffer_0[bfidxw] <= n_buffer_0[bfidxw]; buffer_1[bfidxw] <= n_buffer_1[bfidxw]; buffer_2[bfidxw] <= n_buffer_2[bfidxw]; buffer_3[bfidxw] <= n_buffer_3[bfidxw]; 
+                buffer_4[bfidxw] <= n_buffer_4[bfidxw]; buffer_5[bfidxw] <= n_buffer_5[bfidxw]; buffer_6[bfidxw] <= n_buffer_6[bfidxw]; buffer_7[bfidxw] <= n_buffer_7[bfidxw]; 
+                buffer_8[bfidxw] <= n_buffer_8[bfidxw]; buffer_9[bfidxw] <= n_buffer_9[bfidxw]; buffer_10[bfidxw] <= n_buffer_10[bfidxw]; buffer_11[bfidxw] <= n_buffer_11[bfidxw]; 
+                buffer_12[bfidxw] <= n_buffer_12[bfidxw]; buffer_13[bfidxw] <= n_buffer_13[bfidxw]; buffer_14[bfidxw] <= n_buffer_14[bfidxw]; buffer_15[bfidxw] <= n_buffer_15[bfidxw];
             end 
         end 
 
@@ -646,26 +1249,57 @@ always @(posedge clk) begin
                 if(vidsram_wen[export_i] == 1'b0)  
                     vidsram_waddr[export_i]  <= vidsram_waddr[export_i] + 1;
                 if(export[export_i] == 1) begin 
-                    vidsram_wdata[export_i]  <= {buffer[export_i][0],buffer[export_i][1],buffer[export_i][2],buffer[export_i][3],buffer[export_i][4],buffer[export_i][5],buffer[export_i][6],buffer[export_i][7],buffer[export_i][8],buffer[export_i][9],buffer[export_i][10],buffer[export_i][11],buffer[export_i][12],buffer[export_i][13],buffer[export_i][14],buffer[export_i][15]};
+                    // vidsram_wdata[export_i]  <= {buffer[export_i][0],buffer[export_i][1],buffer[export_i][2],buffer[export_i][3],buffer[export_i][4],buffer[export_i][5],buffer[export_i][6],buffer[export_i][7],buffer[export_i][8],buffer[export_i][9],buffer[export_i][10],buffer[export_i][11],buffer[export_i][12],buffer[export_i][13],buffer[export_i][14],buffer[export_i][15]};
                     vidsram_wen[export_i]  <= 1'b0;
                 end else begin 
                     vidsram_wen[export_i]  <= 1'b1;
                 end 
             end else begin 
                 vidsram_wen[export_i]  <= 1'b1;
-                vidsram_waddr[export_i] <= 5'd16 & {5{pingpong}};
+                vidsram_waddr[export_i] <= 5'd16 & {5{pingpong}};//{5{1'd0}}; // to change ping pong 
             end 
         end 
-    
+        vidsram_wdata_0 <= {buffer_0[0],buffer_0[1],buffer_0[2],buffer_0[3],buffer_0[4],buffer_0[5],buffer_0[6],buffer_0[7],buffer_0[8],buffer_0[9],buffer_0[10],buffer_0[11],buffer_0[12],buffer_0[13],buffer_0[14],buffer_0[15]} ; 
+        vidsram_wdata_1 <= {buffer_1[0],buffer_1[1],buffer_1[2],buffer_1[3],buffer_1[4],buffer_1[5],buffer_1[6],buffer_1[7],buffer_1[8],buffer_1[9],buffer_1[10],buffer_1[11],buffer_1[12],buffer_1[13],buffer_1[14],buffer_1[15]} ; 
+        vidsram_wdata_2 <= {buffer_2[0],buffer_2[1],buffer_2[2],buffer_2[3],buffer_2[4],buffer_2[5],buffer_2[6],buffer_2[7],buffer_2[8],buffer_2[9],buffer_2[10],buffer_2[11],buffer_2[12],buffer_2[13],buffer_2[14],buffer_2[15]} ; 
+        vidsram_wdata_3 <= {buffer_3[0],buffer_3[1],buffer_3[2],buffer_3[3],buffer_3[4],buffer_3[5],buffer_3[6],buffer_3[7],buffer_3[8],buffer_3[9],buffer_3[10],buffer_3[11],buffer_3[12],buffer_3[13],buffer_3[14],buffer_3[15]} ; 
+        vidsram_wdata_4 <= {buffer_4[0],buffer_4[1],buffer_4[2],buffer_4[3],buffer_4[4],buffer_4[5],buffer_4[6],buffer_4[7],buffer_4[8],buffer_4[9],buffer_4[10],buffer_4[11],buffer_4[12],buffer_4[13],buffer_4[14],buffer_4[15]} ; 
+        vidsram_wdata_5 <= {buffer_5[0],buffer_5[1],buffer_5[2],buffer_5[3],buffer_5[4],buffer_5[5],buffer_5[6],buffer_5[7],buffer_5[8],buffer_5[9],buffer_5[10],buffer_5[11],buffer_5[12],buffer_5[13],buffer_5[14],buffer_5[15]} ; 
+        vidsram_wdata_6 <= {buffer_6[0],buffer_6[1],buffer_6[2],buffer_6[3],buffer_6[4],buffer_6[5],buffer_6[6],buffer_6[7],buffer_6[8],buffer_6[9],buffer_6[10],buffer_6[11],buffer_6[12],buffer_6[13],buffer_6[14],buffer_6[15]} ; 
+        vidsram_wdata_7 <= {buffer_7[0],buffer_7[1],buffer_7[2],buffer_7[3],buffer_7[4],buffer_7[5],buffer_7[6],buffer_7[7],buffer_7[8],buffer_7[9],buffer_7[10],buffer_7[11],buffer_7[12],buffer_7[13],buffer_7[14],buffer_7[15]} ; 
+        vidsram_wdata_8 <= {buffer_8[0],buffer_8[1],buffer_8[2],buffer_8[3],buffer_8[4],buffer_8[5],buffer_8[6],buffer_8[7],buffer_8[8],buffer_8[9],buffer_8[10],buffer_8[11],buffer_8[12],buffer_8[13],buffer_8[14],buffer_8[15]} ;
+        vidsram_wdata_9 <= {buffer_9[0],buffer_9[1],buffer_9[2],buffer_9[3],buffer_9[4],buffer_9[5],buffer_9[6],buffer_9[7],buffer_9[8],buffer_9[9],buffer_9[10],buffer_9[11],buffer_9[12],buffer_9[13],buffer_9[14],buffer_9[15]} ;
+        vidsram_wdata_10 <= {buffer_10[0],buffer_10[1],buffer_10[2],buffer_10[3],buffer_10[4],buffer_10[5],buffer_10[6],buffer_10[7],buffer_10[8],buffer_10[9],buffer_10[10],buffer_10[11],buffer_10[12],buffer_10[13],buffer_10[14],buffer_10[15]} ;
+        vidsram_wdata_11 <= {buffer_11[0],buffer_11[1],buffer_11[2],buffer_11[3],buffer_11[4],buffer_11[5],buffer_11[6],buffer_11[7],buffer_11[8],buffer_11[9],buffer_11[10],buffer_11[11],buffer_11[12],buffer_11[13],buffer_11[14],buffer_11[15]} ;
+        vidsram_wdata_12 <= {buffer_12[0],buffer_12[1],buffer_12[2],buffer_12[3],buffer_12[4],buffer_12[5],buffer_12[6],buffer_12[7],buffer_12[8],buffer_12[9],buffer_12[10],buffer_12[11],buffer_12[12],buffer_12[13],buffer_12[14],buffer_12[15]} ;
+        vidsram_wdata_13 <= {buffer_13[0],buffer_13[1],buffer_13[2],buffer_13[3],buffer_13[4],buffer_13[5],buffer_13[6],buffer_13[7],buffer_13[8],buffer_13[9],buffer_13[10],buffer_13[11],buffer_13[12],buffer_13[13],buffer_13[14],buffer_13[15]} ;
+        vidsram_wdata_14 <= {buffer_14[0],buffer_14[1],buffer_14[2],buffer_14[3],buffer_14[4],buffer_14[5],buffer_14[6],buffer_14[7],buffer_14[8],buffer_14[9],buffer_14[10],buffer_14[11],buffer_14[12],buffer_14[13],buffer_14[14],buffer_14[15]} ;
+        vidsram_wdata_15 <= {buffer_15[0],buffer_15[1],buffer_15[2],buffer_15[3],buffer_15[4],buffer_15[5],buffer_15[6],buffer_15[7],buffer_15[8],buffer_15[9],buffer_15[10],buffer_15[11],buffer_15[12],buffer_15[13],buffer_15[14],buffer_15[15]} ;
         // write loc sram
         if(psum_set) begin 
             // next_arr -> next_real_arr -> buff_next "write out" 
             for(loci = 0; loci < Q; loci = loci + 1) begin 
-                locsram_wdata[loci] <= {D{1'b1, buff_next[loci]}};
+                // locsram_wdata[loci] <= {D{1'b1, buff_next[loci]}};
                 locsram_wbytemask[loci] <= n_locsram_wbytemask[loci];
                 locsram_wen[loci] <= 1'b0; //loci th "bit"
                 locsram_addr[loci] <= v_gidx[loci][VID_BW-1:8];  //15:8 16 bit - 8
             end
+            locsram_wdata0 <= {D{1'b1, buff_next[0]}};
+            locsram_wdata1 <= {D{1'b1, buff_next[1]}};
+            locsram_wdata2 <= {D{1'b1, buff_next[2]}};
+            locsram_wdata3 <= {D{1'b1, buff_next[3]}};
+            locsram_wdata4 <= {D{1'b1, buff_next[4]}};
+            locsram_wdata5 <= {D{1'b1, buff_next[5]}};
+            locsram_wdata6 <= {D{1'b1, buff_next[6]}};
+            locsram_wdata7 <= {D{1'b1, buff_next[7]}};
+            locsram_wdata8 <= {D{1'b1, buff_next[8]}};
+            locsram_wdata9 <= {D{1'b1, buff_next[9]}};
+            locsram_wdata10 <= {D{1'b1, buff_next[10]}};
+            locsram_wdata11 <= {D{1'b1, buff_next[11]}};
+            locsram_wdata12 <= {D{1'b1, buff_next[12]}};
+            locsram_wdata13 <= {D{1'b1, buff_next[13]}};
+            locsram_wdata14 <= {D{1'b1, buff_next[14]}};
+            locsram_wdata15 <= {D{1'b1, buff_next[15]}};
         end else begin 
             for(loci = 0; loci < Q; loci = loci + 1) begin 
                 locsram_wen[loci] <= 1'b1; //loci th "bit"

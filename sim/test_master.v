@@ -108,6 +108,7 @@ w15_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[15]), .bytemask(locsram_wbytema
 // master_top #(
 //  // 
 // )
+wire pingpong = 0;
 master_top master_instn (
     .clk(clk),
     .enable(enable),
@@ -117,6 +118,7 @@ master_top master_instn (
     .in_mj_i(in_mj_i),
     .in_v_gidx(in_v_gidx),
     .in_proposal_nums(in_proposal_nums),
+    .pingpong(pingpong),
     // output 
     .epoch(epoch),
     .vidsram_wen(vidsram_wen),
