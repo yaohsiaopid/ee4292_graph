@@ -104,8 +104,8 @@ always #(CYCLE/2) clk = ~clk;
 
 initial begin
 	$fsdbDumpfile("proj_presim_worker_temp.fsdb");
-    // $sdf_annotate("../syn/netlist/worker_syn.sdf", worker_instn);
-    $sdf_annotate("../syntest_10/worker_syn.sdf", worker_instn);
+    $sdf_annotate("../syn_f/netlist/worker_syn.sdf", worker_instn);
+    // $sdf_annotate("../syntest_10/worker_syn.sdf", worker_instn);
 	$fsdbDumpvars("+mda");
 end
 
@@ -115,15 +115,15 @@ initial begin
     clk = 0;
     rst_n = 0;
     enable = 1'b0;
-    $readmemh("../software/gold/0_vid.dat", vid_input);
+    $readmemh("../software/gold/15_vid.dat", vid_input);
     $readmemh("../software/gold/dist.dat", dist_input); 
     $readmemh("../software/gold/loc.dat", loc_input);
     $write("loc %h\n", loc_input[4095]);
-    $readmemh("../software/gold/0_bat_part.dat", part_gold); // only batch number 0's 16 sub-batch's part[0-K] 
+    $readmemh("../software/gold/15_bat_part.dat", part_gold); // only batch number 0's 16 sub-batch's part[0-K] 
     $write("part %h\n", part_gold[1]);
-    $readmemh("../software/gold/0_next.dat", next_gold);
+    $readmemh("../software/gold/15_next.dat", next_gold);
     $write("next 15 %h\n", next_gold[15]);
-    $readmemh("../software/gold/0_proposal_num.dat", pro_gold);
+    $readmemh("../software/gold/15_proposal_num.dat", pro_gold);
     $write("proposal_num 15 %h\n", pro_gold[15]);
     #(CYCLE) rst_n = 1; 
     #(CYCLE) enable = 1'b1;
@@ -181,9 +181,8 @@ initial begin
             // (next_wdata & ~(bit_mask))
             check_sub = check_sub + 1;
         end 
-
-        enable = 0;
     end 
+    enable = 0;
 //    $write("\nbat: %d\n",batch);
     $write("SRAM dump:\n");
     for(sram_i = 0; sram_i < 16; sram_i = sram_i + 1) begin

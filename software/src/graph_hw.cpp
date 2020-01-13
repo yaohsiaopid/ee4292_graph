@@ -63,8 +63,13 @@ int main(int argc, char *argv[]) {
   int D = 256;
   for (int iter = 0; iter < 10; iter++) {
     std::cout << "------------- " << iter << " -------------\n";
-    for (int i = 0; i < K; i++) { for (int j = 0; j < K; j++) { part[i][j] = 0; }}
-
+    for (int i = 0; i < K; i++) { 
+        for (int j = 0; j < K; j++) { 
+            part[i][j] = 0; 
+            proposal_cntr[i][j] = 0;
+        }
+    }
+    int cnte[K][K] = {0}, outer[K][K] = {0};
     for (int worker = 0; worker < K; worker++) {
       for (int batch = 0; batch < N / K; batch++) {
         for(int i = 0; i < K; i++) part[worker][i] = 0;
@@ -75,6 +80,7 @@ int main(int argc, char *argv[]) {
             if (dist[tmpvid][j] == 1) {
               int at = loc[j];
               assert(worker < K && at < K);
+              cnte[worker][at]++;
               part[worker][at]++;
             }
           }
@@ -93,7 +99,15 @@ int main(int argc, char *argv[]) {
         proposal_cntr[worker][id]++;
       }
     }
-    
+    if(iter > 0) {
+      int osum = 0, insum = 0;
+      for(int i = 0; i < K; i++) {
+        for(int j = 0; j < K; j++) {
+          if(i != j) osum += cnte[i][j];
+        }
+      }
+      printf("total: osum %d insum %d\n", osum, insum);
+    }
     // master 
     printf("---=======----=====----\n");
     int buffer[K][2*Q] = {0};
@@ -189,17 +203,17 @@ int main(int argc, char *argv[]) {
                     } else {
                         buffer[buffi][buffj] = 0;
                         for(int tmp = 0; tmp < Q; tmp++) {
-                            buffer[buffi][buffj] = buffer[buffi][buffj] | ((real_next_arr[tmp] == buffi) * (buffer_idx[tmp] == buffj) * v_gidx[tmp]);
+                          if(buffer[buffi][buffj] != 0 && (real_next_arr[tmp] == buffi) && (buffer_idx[tmp] == buffj))
+                            printf("conflict %d %d %d\n", buffer[buffi][buffj], buffi, buffj);
+                          buffer[buffi][buffj] = buffer[buffi][buffj] + ((real_next_arr[tmp] == buffi) * (buffer_idx[tmp] == buffj) * v_gidx[tmp]);
                         }
-                        assert(buffer[buffi][buffj] <= vid[banknum][255]);
+                        
                     }
                 }
                 assert(buffer[buffi][buffj] >= 0);
             }
         }
     }
-
-
     // clean buffer 
 
     for(int i = 0; i < K; i++) {
@@ -226,30 +240,26 @@ int main(int argc, char *argv[]) {
             waddr[i]++;
         }
     }
-    // for(int i = 0; i < N; i++) {
-    //     loc[i] = locs_total[i];
-    // }
+    for(int i = 0; i < N; i++) {
+        loc[i] = locs_total[i];
+    }
     char iterflnm[100];
     sprintf(iterflnm, "./logs/hw_iter%d", iter);
     FILE *fpr= fopen(iterflnm, "w");
     for(int i = 0; i < K; i++) {
-        printf("i = %d size %d\n", i, wdata_total[i].size());
+        // printf("i = %d size %d\n", i, wdata_total[i].size());
       assert(wdata_total[i].size() == 256);
       for(int j = 0; j < wdata_total[i].size(); j++) {
-        fprintf(fpr, "%d,", wdata_total[i][j]);
+        // fprintf(fpr, "%d,", wdata_total[i][j]);
+        fprintf(fpr, "%d,%d\n", wdata_total[i][j],i);
         vid[i][j] = wdata_total[i][j]; 
         loc[wdata_total[i][j]] = i;
       }
-      fprintf(fpr, "\n");
+      wdata_total[i].resize(0);
+      // fprintf(fpr, "\n");
     }
     fclose(fpr);
     
-    // for(int i = 0; i < K; i++) {
-    //     printf("wdata total: %d %ld\n",i, wdata_total[i].size());
-    //     for(int j = 0; j < wdata_total[i].size(); j++) {
-    //       printf("%d,", wdata_total[i][j]);
-    //     }
-    //     printf("\n");
-    // }
+
   }
 }
