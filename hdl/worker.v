@@ -34,7 +34,23 @@ module worker
 	output reg [PRO_ADDR_SPACE-1:0] pro_waddr,		//4
     output reg ready,       // for part_reg[0:K-1]	// 1
     output reg batch_finish, // for next / proposal number	// 1
-	output reg wen									// 1
+	output reg wen,									// 1
+	output reg [7:0] proposal_num0,
+	output reg [7:0] proposal_num1,
+	output reg [7:0] proposal_num2,
+	output reg [7:0] proposal_num3,
+	output reg [7:0] proposal_num4,
+	output reg [7:0] proposal_num5,
+	output reg [7:0] proposal_num6,
+	output reg [7:0] proposal_num7,
+	output reg [7:0] proposal_num8,
+	output reg [7:0] proposal_num9,
+	output reg [7:0] proposal_num10,
+	output reg [7:0] proposal_num11,
+	output reg [7:0] proposal_num12,
+	output reg [7:0] proposal_num13,
+	output reg [7:0] proposal_num14,
+	output reg [7:0] proposal_num15
 );
 
 // reg [15:0] vid;
@@ -106,6 +122,22 @@ always@(posedge clk) begin
 		res4_comp <= 4'd0;
 		wen <= 1'd0;
 		en_in <= 1'd0;
+		proposal_num0 <= 8'd0;
+		proposal_num1 <= 8'd0;
+		proposal_num2 <= 8'd0;
+		proposal_num3 <= 8'd0;
+		proposal_num4 <= 8'd0;
+		proposal_num5 <= 8'd0;
+		proposal_num6 <= 8'd0;
+		proposal_num7 <= 8'd0;
+		proposal_num8 <= 8'd0;
+		proposal_num9 <= 8'd0;
+		proposal_num10 <= 8'd0;
+		proposal_num11 <= 8'd0;
+		proposal_num12 <= 8'd0;
+		proposal_num13 <= 8'd0;
+		proposal_num14 <= 8'd0;
+		proposal_num15 <= 8'd0;
     end else begin
         next_waddr <= n_next_waddr;
 		next_bytemask <= n_next_bytemask;
@@ -122,6 +154,22 @@ always@(posedge clk) begin
 		res4_comp <= (res3_comp[11:4] > part_reg[WORK_IDX]) ? res3_comp[3:0] : WORK_IDX;
 		wen <= n_wen;
 		en_in <= en;
+		proposal_num0 <= proposal_cnt[0];
+		proposal_num1 <= proposal_cnt[1];
+		proposal_num2 <= proposal_cnt[2];
+		proposal_num3 <= proposal_cnt[3];
+		proposal_num4 <= proposal_cnt[4];
+		proposal_num5 <= proposal_cnt[5];
+		proposal_num6 <= proposal_cnt[6];
+		proposal_num7 <= proposal_cnt[7];
+		proposal_num8 <= proposal_cnt[8];
+		proposal_num9 <= proposal_cnt[9];
+		proposal_num10 <= proposal_cnt[10];
+		proposal_num11 <= proposal_cnt[11];
+		proposal_num12 <= proposal_cnt[12];
+		proposal_num13 <= proposal_cnt[13];
+		proposal_num14 <= proposal_cnt[14];
+		proposal_num15 <= proposal_cnt[15];
     end
 end
 
