@@ -366,7 +366,7 @@ initial begin
         if(w12_loc_sram_16x256b.mem[locsrami] !== w12_loc_sram_gold[locsrami]) begin $write("FAIL locsram\n"); $finish; end 
         if(w13_loc_sram_16x256b.mem[locsrami] !== w13_loc_sram_gold[locsrami]) begin $write("FAIL locsram\n"); $finish; end 
         if(w14_loc_sram_16x256b.mem[locsrami] !== w14_loc_sram_gold[locsrami]) begin $write("FAIL locsram\n"); $finish; end 
-        if(w15_loc_sram_16x256b.mem[locsrami] !== w15_loc_sram_gold[locsrami]) begin $write("FAIL locsram\n"); $finish; end else $write("good locsrma0 %h vs gold %h\n",w15_loc_sram_16x256b.mem[locsrami] , w15_loc_sram_gold[locsrami]);
+        if(w15_loc_sram_16x256b.mem[locsrami] !== w15_loc_sram_gold[locsrami]) begin $write("FAIL locsram\n"); $finish; end //else $write("good locsrma0 %h vs gold %h\n",w15_loc_sram_16x256b.mem[locsrami] , w15_loc_sram_gold[locsrami]);
     end  
     $write("\n");
     rerun = 1'b1;
@@ -436,7 +436,7 @@ initial begin
     end 
 
     
-
+    $write("========================\nall pass ~\n========================\n");
     $finish;
 end 
 

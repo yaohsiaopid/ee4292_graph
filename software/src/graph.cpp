@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     proposals[i] = new int[K];
   }
   std::cout << "\n";
-  for (int iter = 0; iter < 1; iter++) {
+  for (int iter = 0; iter < 10; iter++) {
     std::cout << "------------- " << iter << " -------------\n";
     for (int i = 0; i < K; i++) {
       for (int j = 0; j < K; j++)
@@ -98,12 +98,7 @@ int main(int argc, char *argv[]) {
           m = part[i][pt];
         }
       }
-      // if(i == 22) {
-        // for(int j = 0; j < K; j++) {
-        //   printf("%3d,", part[i][j]);
-        // }
-        // printf("\n");
-      // }
+    //  if(iter > 0) printf("%d,%d\n", i, proposals[mycurrent][id]);
       part[i][K + 1] = id;
       part[i][K + 2] = proposals[mycurrent][id];
       // if (id != mycurrent) {
@@ -184,37 +179,40 @@ int main(int argc, char *argv[]) {
     //   dumpProposal(proposals, K);
     // }
     // dump where they go
-    for(int i = 0; i < V; i++) {
-      printf("%3d, %3d\n", i, part[i][K]);
-    }
+    // for(int i = 0; i < V; i++) {
+    //   printf("%3d, %3d\n", i, part[i][K]);
+    // }
     // partition count
     int *stat = new int[K];
     for (int i = 0; i < V; i++) {
       stat[part[i][K]]++;
     }
-    std::cout << "parition count: \n";
-    for (int i = 0; i < K; i++) {
-      std::cout << stat[i] << "\t";
-    }
-    std::cout << "\n";
-    for(int i = 0; i < K; i++) {
-      printf("%d: ", i);
-      for(int j = 0; j < 256; j++) {
-        if(part[j][K] == i) printf("%3d,", j);
-      }
-      printf("\n");
-    }
-
-    FILE *fpr= fopen("out_graph.csv", "w");  
+    // std::cout << "parition count: \n";
+    // for (int i = 0; i < K; i++) {
+    //   std::cout << stat[i] << "\t";
+    // }
+    // std::cout << "\n";
+    // for(int i = 0; i < K; i++) {
+    //   printf("%d: ", i);
+    //   for(int j = 0; j < 256; j++) {
+    //     if(part[j][K] == i) printf("%3d,", j);
+    //   }
+    //   printf("\n");
+    // }
+    char iterflnm[100];
+    sprintf(iterflnm, "./logs/iter%d", iter);
+    FILE *fpr= fopen(iterflnm, "w");  
     std::vector<std::vector<int>> wdata_total(K); // K rows 
     for(int i = 0; i < V; i++) {
+      fprintf(fpr, "%d,%d\n", i, part[i][K]);
       wdata_total[part[i][K]].push_back(i);
     }
-    for(int i = 0; i < K; i++) {
-      for(int j = 0; j < wdata_total[i].size(); j++) {
-        fprintf(fpr, "%d,", wdata_total[i][j]);
-      }
-      fprintf(fpr, "\n");
-    }
+    // for(int i = 0; i < K; i++) {
+    //   for(int j = 0; j < wdata_total[i].size(); j++) {
+    //     fprintf(fpr, "%d,", wdata_total[i][j]);
+    //   }
+    //   fprintf(fpr, "\n");
+    // }
+    fclose(fpr);
   }
 }
