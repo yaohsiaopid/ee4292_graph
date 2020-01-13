@@ -1,4 +1,4 @@
-// `timescale 1ns/100ps
+`timescale 1ns/100ps
 module test_master;
 localparam N = 4096;
 localparam K = 16;
@@ -111,8 +111,8 @@ w15_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[15]), .bytemask(locsram_wbytema
 wire pingpong = 0;
 master_top master_instn (
     .clk(clk),
-    .enable_in(enable),
-    .rst_n_in(rst_n),
+    .enable(enable),
+    .rst_n(rst_n),
     .in_next_arr(in_next_arr),
     .in_mi_j(in_mi_j),
     .in_mj_i(in_mj_i),
@@ -289,7 +289,7 @@ initial begin
     in_v_gidx = file_v_gidx[epoch];
     in_proposal_nums = file_proposal_nums[epoch];
     #(CYCLE) rst_n = 1;   enable = 1'b1;
-    #(CYCLE)
+    #(CYCLE*2)
     while(epoch < MAX_EPOCH - 1) begin 
         @(negedge clk)
         in_next_arr = file_next_arr[epoch-1 >= 0 ? epoch - 1: 0];
@@ -505,9 +505,10 @@ initial begin
     // wait(epoch == 100000);
     // $finish;
 end 
-// initial begin
-// 	$fsdbDumpfile("test_master.fsdb");
-// 	$fsdbDumpvars("+mda");
-// end
+initial begin
+	$fsdbDumpfile("test_master.fsdb");
+    $sdf_annotate("../syn_master/netlist/master_top_syn.sdf", master_instn);
+	$fsdbDumpvars("+mda");
+end
 endmodule
 
