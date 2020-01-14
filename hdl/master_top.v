@@ -24,7 +24,7 @@ input pingpong,
 // outputs 
 output reg [7:0] epoch,
 output reg [K-1:0] vidsram_wen, // 0 at MSB
-output reg [Q-1:0] locsram_wen,
+output reg locsram_wen,
 output reg ready,
 output reg finish,
 // vidsram writing  
@@ -6273,6 +6273,11 @@ always @(posedge clk) begin
         ready <= 0;
         finish <= 0;
         delay <= 0;
+        locsram_wen <= 1'b1;
+        for(loci = 0; loci < Q; loci = loci + 1) begin 
+            locsram_wbytemask[loci] <= 256'd0;//n_locsram_wbytemask[loci];
+            locsram_addr[loci] <= 8'd0;//v_gidx[loci][VID_BW-1:8];  //15:8 16 bit - 8
+        end
     end else begin
         enable <= enable_in;
         state <= nstate; 
@@ -6384,16 +6389,18 @@ always @(posedge clk) begin
         
         if(psum_set) begin 
             // next_arr -> next_real_arr -> buff_next "write out" 
+            locsram_wen <= 1'b0;
             for(loci = 0; loci < Q; loci = loci + 1) begin 
                 // locsram_wdata[loci] <= {D{1'b1, buff_next[loci]}};
                 locsram_wbytemask[loci] <= n_locsram_wbytemask[loci];
-                locsram_wen[loci] <= 1'b0; //loci th "bit"
+                // locsram_wen[loci] <= 1'b0; //loci th "bit"
                 locsram_addr[loci] <= v_gidx[loci][VID_BW-1:8];  //15:8 16 bit - 8
             end
         end else begin 
-            for(loci = 0; loci < Q; loci = loci + 1) begin 
-                locsram_wen[loci] <= 1'b1; //loci th "bit"
-            end
+            locsram_wen <= 1'b1;
+            // for(loci = 0; loci < Q; loci = loci + 1) begin 
+            //     locsram_wen[loci] <= 1'b1; //loci th "bit"
+            // end
         end 
         // TODO: start update read_waddr of vid ! 
 

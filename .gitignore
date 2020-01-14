@@ -13,3 +13,5 @@ sim/*.fsdb
 software/gold_master/
 software/*.csv
 
+hdl/spyglass-1
+sim/*.sdf.X
