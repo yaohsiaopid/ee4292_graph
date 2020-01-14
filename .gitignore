@@ -18,3 +18,5 @@ software/*.csv
 */alib-52/
 */default.svf
 */logfile
+hdl/spyglass-1
+sim/*.sdf.X

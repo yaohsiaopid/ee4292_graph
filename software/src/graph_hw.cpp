@@ -14,7 +14,94 @@
 int dist[10000][10000] = {0};
 int N, E;
 const int K = 16;
+int giter;
 std::vector<std::vector<int>> wdata_total(K); // K rows 
+void export_vid(int worker, int vid) {
+  if(giter == 0) return;
+  char filename[100];
+  sprintf(filename, "./gold/%d_vid.dat", worker);
+  FILE *fptr = fopen(filename, "a+");
+  fprintf(fptr, "%2x", vid);
+  // for(int itm = 16; itm >= 0; itm--){
+  //   fprintf(fptr, "%d", (proposal >> itm) & 1);
+  // }
+  fprintf(fptr, "\n");
+  fclose(fptr);
+  if(worker == 0){
+    FILE *tmp = fopen("./gold/tmp_vid_num.dat", "a+");
+    fprintf(tmp, "%d\n", vid);
+    fclose(tmp);
+  }
+}
+void export_proposal_num(int worker, int batch, int proposal[]) {
+  if(giter == 0) return;
+  char filename[100];
+  sprintf(filename, "./gold/%d_proposal_num.dat", worker);
+  FILE *fptr = fopen(filename, "a+");
+  for(int i = batch, j = 0; j < K && i >= 0; j++, i--) {
+    fprintf(fptr, "%02x", proposal[i]);
+  }
+  fprintf(fptr, "\n");
+  fclose(fptr);
+  // if(worker == 0){
+  //   FILE *tmp = fopen("./gold/tmp_propsal_num.dat", "a+");
+  //   fprintf(tmp, "%d\n", proposal);
+  //   fclose(tmp);
+  // }
+}
+void export_part(int worker, int batch, int part[][K], int end) {
+  if(giter == 0) return;
+  // if(batch > 2) return;
+  char filename[100];
+  if(end == 0) 
+  sprintf(filename, "./gold/%d_bat_part_0sub.dat", worker);
+  else 
+  sprintf(filename, "./gold/%d_bat_part.dat", worker);
+  FILE *fptr = fopen(filename, "a+");
+  for(int i = 0; i < K; i++) {
+    int p = part[worker][i];
+    fprintf(fptr, "%02x", p);
+    // for(int itm = 7; itm >= 0; itm--){
+    //   fprintf(fptr, "%d", (p >> itm) & 1);
+    // }
+    if(i != K-1)
+    fprintf(fptr, "_");
+  }
+  fprintf(fptr, "\n");
+  fclose(fptr);
+  if(worker == 0 && batch == 0){
+    FILE *tmp = fopen("./gold/tmp_bat.dat", "a+");
+    for(int i = 0; i < K; i++) {
+    fprintf(tmp, "%3d,", part[worker][i]);
+    }
+    fprintf(tmp, "\n");
+    fclose(tmp);
+  }
+}
+void export_next(int worker, int batch, int next[]) {
+  if(giter == 0) return;
+  char filename[100];
+  sprintf(filename, "./gold/%d_next.dat", worker);
+  FILE *fptr = fopen(filename, "a+");
+  for(int i = batch, j = 0; j < K && i >= 0; j++, i--) {
+    fprintf(fptr, "%1x", next[i]);
+  }
+  fprintf(fptr, "\n");
+  fclose(fptr);
+  // if(worker == 0){
+  //   FILE *tmp = fopen("./gold/tmp.dat", "a+");
+  //   fprintf(tmp, "%d\n", next);
+  //   fclose(tmp);
+  // }
+}
+void dumploc(int *loc) {
+  if(giter == 0) return;
+  FILE *fptr = fopen("./gold/loc.dat", "a+");
+  for(int i = 0; i < N; i++) {
+    fprintf(fptr, "%02x\n", loc[i]);
+  }
+  fclose(fptr);
+}
 void input(char filename[]) {
   std::fstream fs;
   fs.open(filename, std::ios::in | std::ios::binary);
@@ -31,6 +118,71 @@ void input(char filename[]) {
     dist[src_id][dst_id] = 1;
     dist[dst_id][src_id] = 1;
   }
+  FILE *fptr = fopen("./gold/dist.dat", "a+");
+  
+  for(int i = 0; i < N; i++) {
+    int j = 0;
+    while(j < N) {
+    for(int tmp = 0; tmp < 64 && j < N; tmp++, j+=4) {
+      // fprintf(fptr, "%", dist[i][j]);
+      int a = dist[i][j] * 8 + dist[i][j+1] * 4 + dist[i][j+2] * 2 + dist[i][j+3];
+      fprintf(fptr, "%1x", a);
+      // if(j += 4 < N) fprintf(fptr, " ");
+    }
+    }
+    fprintf(fptr, "\n");
+  }
+  fclose(fptr);
+}
+void export_inputs(int v_gidx[], int proposal_nums[], int next_arr[], int mi_j[], int mj_i[]) {
+  if(giter == 0) return;
+  FILE *f_v_gids = fopen("./gold_master/v_gidx.dat", "a+");
+  FILE *f_props_num = fopen("./gold_master/proposal_nums.dat", "a+");
+  FILE *f_next_arr = fopen("./gold_master/next_arr.dat", "a+");
+  FILE *f_mi_j = fopen("./gold_master/mi_j.dat", "a+");
+  FILE *f_mj_i = fopen("./gold_master/mj_i.dat", "a+");
+  for(int i = 0; i < Q; i++) {
+    fprintf(f_v_gids, "%04x", v_gidx[i]);
+    if(i < Q - 1) fprintf(f_v_gids, "_");
+    fprintf(f_props_num, "%02x", proposal_nums[i]);
+    if(i < Q - 1) fprintf(f_props_num, "_");
+    fprintf(f_next_arr, "%1x", next_arr[i]);
+    if(i < Q - 1) fprintf(f_next_arr, "_");
+  }
+  for(int i = 0; i < K; i++) {
+    fprintf(f_mi_j, "%02x", mi_j[i]);
+    if(i < K - 1) fprintf(f_mi_j, "_");
+    fprintf(f_mj_i, "%02x", mj_i[i]);
+    if(i < K - 1) fprintf(f_mj_i, "_");
+  }
+  fprintf(f_v_gids, "\n");
+  fprintf(f_props_num, "\n");
+  fprintf(f_next_arr, "\n");
+  fprintf(f_mi_j, "\n");
+  fprintf(f_mj_i, "\n");
+  fclose(f_v_gids);
+  fclose(f_props_num);
+  fclose(f_next_arr);
+  fclose(f_mi_j);
+  fclose(f_mj_i);
+}
+void export_wdata(int epoch, int wen, int wdata[][Q]) {
+  if(giter == 0) return;
+  FILE *f_wdata = fopen("./gold_master/wdata.dat", "a+");
+  assert(wen < 65536);
+  fprintf(f_wdata, "%02x %04x\n", epoch, wen);
+  for(int i = 0, bitselect = 1; i < K; i++, bitselect = bitselect << 1) {
+    if(wen & bitselect) {
+      fprintf(f_wdata, "%x\n", i);
+      for(int j = 0; j < Q; j++) {  
+        fprintf(f_wdata, "%04x", wdata[i][j]);
+        if(j < Q - 1) 
+        fprintf(f_wdata, "_");
+      }
+      fprintf(f_wdata, "\n");
+    }
+  }
+  fclose(f_wdata);
 }
 
 int main(int argc, char *argv[]) {
@@ -61,7 +213,9 @@ int main(int argc, char *argv[]) {
 
   int *local = new int[K], *outer = new int[K];
   int D = 256;
-  for (int iter = 0; iter < 10; iter++) {
+  for (int iter = 0; iter < 2; iter++) {
+    giter = iter;
+    dumploc(loc);
     std::cout << "------------- " << iter << " -------------\n";
     for (int i = 0; i < K; i++) { 
         for (int j = 0; j < K; j++) { 
@@ -74,6 +228,7 @@ int main(int argc, char *argv[]) {
       for (int batch = 0; batch < N / K; batch++) {
         for(int i = 0; i < K; i++) part[worker][i] = 0;
         int tmpvid = vid[worker][batch];
+        export_vid(worker, tmpvid);
         for (int sub = 0; sub < N / D; sub++) {
           for (int j = sub * D; j < (sub + 1) * D; j++) {
             assert(tmpvid < N && j < N);
@@ -84,7 +239,9 @@ int main(int argc, char *argv[]) {
               part[worker][at]++;
             }
           }
+          if(sub == 0) export_part(worker, batch, part, 0);
         }
+        export_part(worker, batch, part, 1);
         int id = worker;
         int m = part[worker][worker];
         for (int pt = 0; pt < K; pt++) {
@@ -97,6 +254,10 @@ int main(int argc, char *argv[]) {
         next[worker][batch] = id;
         proposal_number[worker][batch] = proposal_cntr[worker][id];
         proposal_cntr[worker][id]++;
+        if(batch % 16 == 15 && batch > 0) {
+        export_next(worker, batch, next[worker]);
+        export_proposal_num(worker, batch, proposal_number[worker]);
+        }
       }
     }
     if(iter > 0) {
@@ -138,7 +299,7 @@ int main(int argc, char *argv[]) {
             mj_i[i] = proposal_cntr[i][banknum];
             xijs[i] = mi_j[i] < mj_i[i] ? mi_j[i] : mj_i[i];
         }
-        
+        export_inputs(v_gidx, proposal_nums, next_arr, mi_j, mj_i);
         for(int i = 0; i < Q; i++) {
             real_next_arr[i] = xijs[next_arr[i]] > proposal_nums[i] ?  next_arr[i] : banknum; 
             locsram[i][(v_gidx[i]/256)][(v_gidx[i]%256)][0] = real_next_arr[i];//v_gidx[i];
@@ -193,6 +354,7 @@ int main(int argc, char *argv[]) {
                 waddr[i]++;
             }
         }
+        export_wdata(epoch, wen, wdata);
         for(int buffi = 0; buffi < K; buffi++) {
             for(int buffj = 0; buffj < 2*Q; buffj++) {
                 if(export_flg[buffi] == 1 && buffj < buffaccum[buffi]) {
@@ -240,6 +402,7 @@ int main(int argc, char *argv[]) {
             waddr[i]++;
         }
     }
+    export_wdata(epoch_num, wen, wdata);
     for(int i = 0; i < N; i++) {
         loc[i] = locs_total[i];
     }

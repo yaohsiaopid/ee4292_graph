@@ -178,8 +178,9 @@ initial begin
             check_sub = check_sub + 1;
         end 
 
-        enable = 0;
+        
     end 
+    enable = 0;
 //    $write("\nbat: %d\n",batch);
     $write("SRAM dump:\n");
     for(sram_i = 0; sram_i < 16; sram_i = sram_i + 1) begin

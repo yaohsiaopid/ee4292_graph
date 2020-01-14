@@ -34,7 +34,7 @@ module worker
 	output reg [PRO_ADDR_SPACE-1:0] pro_waddr,		//4
     output reg ready,       // for part_reg[0:K-1]	// 1
     output reg batch_finish, // for next / proposal number	// 1
-	output reg wen,									// 1
+	output reg wen_delay,									// 1
 	output reg [7:0] proposal_num0,
 	output reg [7:0] proposal_num1,
 	output reg [7:0] proposal_num2,
@@ -82,7 +82,7 @@ reg [PRO_ADDR_SPACE-1:0] n_pro_waddr;
 reg [Q-1:0] n_pro_bytemask;
 
 reg [2:0] state, n_state;
-reg n_batch_finish, n_ready;
+reg n_batch_finish, n_ready;// , ready_delay;
 
 reg [11:0] res0_comp [0:7];
 reg [11:0] res1_comp [0:3];
@@ -93,9 +93,12 @@ reg [3:0] res4_comp;
 reg [7:0] n_proposal_cnt [0:15];
 reg [7:0] proposal_cnt [0:15];
 
+reg [1:0] check_cnt, n_check_cnt;
+
 reg part_en;
 
-reg rst_n_in, en_in, n_wen;
+reg rst_n_in, en_in, n_wen, wen;
+
 
 // wire [3:0] tmp_res3_comp = (res3_comp[11:4] > part_reg[7]) ? res3_comp[3:0] : 4'd7;
 
@@ -118,7 +121,9 @@ always@(posedge clk) begin
         state <= 2'd0;
         batch_finish <= 1'd0;
         ready <= 1'd0;
-		part_en <= 1'b0;
+		wen_delay <= 1'd0;
+//		ready_delay <= 1'd0;
+//		part_en <= 1'b0;
 		res4_comp <= 4'd0;
 		wen <= 1'd0;
 		en_in <= 1'd0;
@@ -138,6 +143,7 @@ always@(posedge clk) begin
 		proposal_num13 <= 8'd0;
 		proposal_num14 <= 8'd0;
 		proposal_num15 <= 8'd0;
+		check_cnt <= 2'd0;
     end else begin
         next_waddr <= n_next_waddr;
 		next_bytemask <= n_next_bytemask;
@@ -150,9 +156,11 @@ always@(posedge clk) begin
         state <= n_state;
         batch_finish <= n_batch_finish;
         ready <= n_ready;
-		part_en <= (batch_num_reg == 0 && sub_bat == 2) ? 1 : ready;
+		wen_delay <= (batch_num_reg == 8'd0 && sub_bat == 4'd3) ? 1 : wen;
+//		ready_delay <= ready;
+//		part_en <= ready_delay;
 		res4_comp <= (res3_comp[11:4] > part_reg[WORK_IDX]) ? res3_comp[3:0] : WORK_IDX;
-		wen <= n_wen;
+		wen <= ready; //ready_delay;
 		en_in <= en;
 		proposal_num0 <= proposal_cnt[0];
 		proposal_num1 <= proposal_cnt[1];
@@ -170,6 +178,7 @@ always@(posedge clk) begin
 		proposal_num13 <= proposal_cnt[13];
 		proposal_num14 <= proposal_cnt[14];
 		proposal_num15 <= proposal_cnt[15];
+		check_cnt <= n_check_cnt;
     end
 end
 
@@ -181,7 +190,7 @@ always@(posedge clk) begin
         {vid_reg[8], vid_reg[9], vid_reg[10], vid_reg[11]} <= {vid_rdata[127:112], vid_rdata[111:96], vid_rdata[95:80], vid_rdata[79:64]};
         {vid_reg[12], vid_reg[13], vid_reg[14], vid_reg[15]} <= {vid_rdata[63:48], vid_rdata[47:32], vid_rdata[31:16], vid_rdata[15:0]};
         vid <= n_vid;
-    end else if(batch_num_reg[3:0] != 4'b1111) begin
+    end else if(batch_num_reg[3:0] != 4'b0000) begin
         {vid_reg[0], vid_reg[1], vid_reg[2], vid_reg[3]} <= {vid_reg[0], vid_reg[1], vid_reg[2], vid_reg[3]};
         {vid_reg[4], vid_reg[5], vid_reg[6], vid_reg[7]} <= {vid_reg[4], vid_reg[5], vid_reg[6], vid_reg[7]};
         {vid_reg[8], vid_reg[9], vid_reg[10], vid_reg[11]} <= {vid_reg[8], vid_reg[9], vid_reg[10], vid_reg[11]};
@@ -434,30 +443,39 @@ always@* begin
                 n_state = IDLE;
                 n_sub_bat = 0;
             end
+			n_check_cnt = 0;
         end
 		DELAY1: begin
-			n_sub_bat = 0;
+			n_sub_bat = sub_bat + 1;
 			n_batch_finish = 0;
 			n_ready = 0;								
-			n_state = SUB;
+			n_state = (sub_bat == 1) ? SUB : DELAY1;
+			n_check_cnt = 0;
 		end
         SUB: begin
             n_batch_finish = 0;
 			n_ready = ((batch_num_reg > 0 && sub_bat == 1)) ? 1 : 0;
             n_state = (sub_bat == 15) ? DELAY2 : SUB;
 			n_sub_bat = sub_bat + 1;
+			n_check_cnt = 0;
         end
 		DELAY2: begin
+			n_check_cnt = 0;
 			n_sub_bat = 0;
 			n_batch_finish = 0;
 			n_ready = 0;								
 			n_state = CHECK;
 		end
         CHECK: begin
-          	n_sub_bat = 1;
+			n_check_cnt = (check_cnt < 1) ? check_cnt + 1 : 0;
+          	n_sub_bat = (check_cnt == 1) ? 1 : 0;
 			n_ready = 0;
             n_batch_finish = 0;
-            n_state = (batch_num_reg == 8'd0) ? FIN : SUB;
+			if(batch_num_reg == 8'd0) begin
+				n_state = FIN;
+			end else begin
+            	n_state = (check_cnt == 1) ? SUB : CHECK;
+			end
         end
         FIN: begin
             n_sub_bat = sub_bat + 1;
@@ -5235,7 +5253,7 @@ end
 
 // COMB3: get part_reg
 always@* begin
-    if(part_en) begin
+    if(wen_delay) begin
         n_part_reg[0] = dsum_reg[0] + dsum_reg[1] + dsum_reg[2] + dsum_reg[3] + dsum_reg[4] + dsum_reg[5] + dsum_reg[6] + dsum_reg[7];
         n_part_reg[1] = dsum_reg[8] + dsum_reg[9] + dsum_reg[10] + dsum_reg[11] + dsum_reg[12] + dsum_reg[13] + dsum_reg[14] + dsum_reg[15];
         n_part_reg[2] = dsum_reg[16] + dsum_reg[17] + dsum_reg[18] + dsum_reg[19] + dsum_reg[20] + dsum_reg[21] + dsum_reg[22] + dsum_reg[23];
@@ -5318,7 +5336,7 @@ always@* begin
 end
 
 always@* begin
-	if(part_en) begin
+	if(wen) begin
 		case(batch_num_reg[3:0])
 			4'd1: n_next_bytemask = 16'b1111_1111_1111_1110;
 			4'd2: n_next_bytemask = 16'b1111_1111_1111_1101;
@@ -5338,7 +5356,7 @@ always@* begin
 			4'd0: n_next_bytemask = 16'b0111_1111_1111_1111;
 			default: n_next_bytemask = 16'b1111_1111_1111_1111;
 		endcase
-			n_next_waddr = (batch_num_reg - 1) / 16;
+			n_next_waddr = (batch_num_reg - 1) >> 4;
 	end else begin
 		n_next_bytemask = 16'b1111_1111_1111_1111;
 		n_next_waddr = next_waddr;
@@ -5347,7 +5365,7 @@ end
 
 // COMB5 proposal_cnt
 always@* begin
-	if(part_en&& (batch_num_reg != 0)) begin
+	if(wen && (batch_num_reg != 0)) begin
 		for(i = 0; i < 16; i = i + 1) begin
 			if(res4_comp == i) begin
 				n_proposal_cnt[i] = proposal_cnt[i] + 1;
@@ -5385,7 +5403,7 @@ always@* begin
 end
 
 always@* begin
-	if(part_en) begin
+	if(wen) begin
 		case(batch_num_reg[3:0])
 			4'd1: n_pro_bytemask = 16'b1111_1111_1111_1110;
 			4'd2: n_pro_bytemask = 16'b1111_1111_1111_1101;
@@ -5405,16 +5423,11 @@ always@* begin
 			4'd0: n_pro_bytemask = 16'b0111_1111_1111_1111;
 			default: n_pro_bytemask = 16'b1111_1111_1111_1111;
 		endcase
-			n_pro_waddr = (batch_num_reg - 1) / 16;
+			n_pro_waddr = (batch_num_reg - 1) >> 4;
 	end else begin
 		n_pro_bytemask = 16'b1111_1111_1111_1111;
 		n_pro_waddr = pro_waddr;
 	end
-end
-
-always@* begin
-	if(part_en) n_wen = 1;
-	else n_wen = 0;
 end
 
 // TEST_CYCLE 2.0 -> slack -0.56

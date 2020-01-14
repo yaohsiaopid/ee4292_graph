@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
     
     // master 
     printf("---=======----=====----\n");
-    int buffer[K][2*Q] = {0};
+    int buffer[K][2*Q-1] = {0};
     int accum[K] = {0};
     int buffaccum[K] = {0};
     int export_flg[K] = {0};
@@ -213,7 +213,7 @@ int main(int argc, char *argv[]) {
             // printf("%2d,",buffer_idx[i]);
             // printf("buffer_idx[%2d] = %3d; ",i, buffer_idx[i]);
             // printf("%3d, %3d\n", v_gidx[i], real_next_arr[i]);
-            assert(buffer_idx[i] < 2 * Q);
+            assert(buffer_idx[i] < 2 * Q - 1);
         }
         // printf("\n");
         // printf("buffaccum: ");
@@ -268,7 +268,7 @@ int main(int argc, char *argv[]) {
         // printf("----\n");
         for(int buffi = 0; buffi < K; buffi++) {
             // printf("epoch %d buffer: ", epoch);
-            for(int buffj = 0; buffj < 2*Q; buffj++) {
+            for(int buffj = 0; buffj < 2*Q-1; buffj++) {
                 if(export_flg[buffi] == 1 && buffj < buffaccum[buffi]) {
                     buffer[buffi][buffj] = buffer[buffi][buffj + Q];
                 } else {
@@ -348,7 +348,7 @@ int main(int argc, char *argv[]) {
     }
     printf("\n-----------\nbuff:\n");
     for(int buffi = 0; buffi < K; buffi++) {
-        for(int buffj = 0; buffj < 2*Q; buffj++) {
+        for(int buffj = 0; buffj < 2*Q-1; buffj++) {
             printf("%3d,", buffer[buffi][buffj]);
         }
         printf("\n");

@@ -14,20 +14,23 @@ int dist[10000][10000] = {0};
 int N, E;
 const int K = 16;
 void export_vid(int worker, int vid) {
+  static int vidcnt = 0;
   char filename[100];
   sprintf(filename, "./gold/%d_vid.dat", worker);
   FILE *fptr = fopen(filename, "a+");
-  fprintf(fptr, "%2x", vid);
+  fprintf(fptr, "%04x", vid);
   // for(int itm = 16; itm >= 0; itm--){
   //   fprintf(fptr, "%d", (proposal >> itm) & 1);
   // }
-  fprintf(fptr, "\n");
+  if(vidcnt % 16 == 15)
+    fprintf(fptr, "\n");
+  vidcnt++;
   fclose(fptr);
-  if(worker == 0){
-    FILE *tmp = fopen("./gold/tmp_vid_num.dat", "a+");
-    fprintf(tmp, "%d\n", vid);
-    fclose(tmp);
-  }
+  // if(worker == 0){
+  //   FILE *tmp = fopen("./gold/tmp_vid_num.dat", "a+");
+  //   fprintf(tmp, "%d\n", vid);
+  //   fclose(tmp);
+  // }
 }
 void export_proposal_num(int worker, int batch, int proposal[]) {
   char filename[100];
@@ -103,15 +106,15 @@ void input(char filename[]) {
     dist[src_id][dst_id] = 1;
     dist[dst_id][src_id] = 1;
   }
-  printf("JJJJJJ\n");
-  for(int i = 0; i < 1; i++) {
-    for(int j = 0; j < N; j++) {
-      if(j % 256 == 0 && j > 0) printf("\n");
-      printf("%d", dist[i][j]);
-    }
-    printf("\n");
-  }
-  printf("JJJJJJ\n");
+  // printf("JJJJJJ\n");
+  // for(int i = 0; i < 1; i++) {
+  //   for(int j = 0; j < N; j++) {
+  //     if(j % 256 == 0 && j > 0) printf("\n");
+  //     printf("%d", dist[i][j]);
+  //   }
+  //   printf("\n");
+  // }
+  // printf("JJJJJJ\n");
   // export dist 
   FILE *fptr = fopen("./gold/dist.dat", "a+");
   
@@ -126,6 +129,19 @@ void input(char filename[]) {
     }
     }
     fprintf(fptr, "\n");
+  }
+  fclose(fptr);
+  fptr = fopen("./gold/dist_sram.dat", "a+");
+  
+  for(int i = 0; i < N; i++) {
+    int j = 0;
+    while(j < N) {
+      for(int tmp = 0; tmp < 64 && j < N; tmp++, j+=4) {
+        int a = dist[i][j] * 8 + dist[i][j+1] * 4 + dist[i][j+2] * 2 + dist[i][j+3];
+        fprintf(fptr, "%1x", a);
+      }
+      fprintf(fptr, "\n");
+    }
   }
   fclose(fptr);
 }
