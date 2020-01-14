@@ -18,6 +18,8 @@ check: ./src/check.cpp
 KaHIP: ./src/KaHIP.cpp
 	#clang-format -i $^
 	g++ $(CXXFLAGS) -o ./build/$@ $? 
+inter_data_nonsram: ./src/inter_data_nonsram.cpp
+	g++ $(CXXFLAGS) -o ./build/$@ $?
 inter_data:	./src/inter_data.cpp
 	#clang-format -i $^
 	g++ $(CXXFLAGS) -o ./build/$@ $? 
