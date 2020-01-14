@@ -12,6 +12,7 @@ localparam D = 256;
 localparam LOC_ADDR_SPACE = 8;
 localparam LOC_BW = 5;
 localparam NEXT_ADDR_SPACE = 4;
+localparam PRO_ADDR_SPACE = 4;
 real CYCLE = 10;
 integer fptr;
 //====== module I/O =====
@@ -20,11 +21,11 @@ reg rst_n;
 reg enable;
 
 // input, assign from gold 
-reg [NEXT_BW*Q-1:0] in_next_arr;
+// reg [NEXT_BW*Q-1:0] in_next_arr;
 reg [PRO_BW*K-1:0] in_mi_j; 
 reg [PRO_BW*K-1:0] in_mj_i; 
 reg [VID_BW*Q-1:0] in_v_gidx; 
-reg [PRO_BW*Q-1:0] in_proposal_nums;
+// reg [PRO_BW*Q-1:0] in_proposal_nums;
 wire [NEXT_BW*Q-1:0] next_sram_rdata0, next_sram_rdata8;
 wire [NEXT_BW*Q-1:0] next_sram_rdata1, next_sram_rdata9;
 wire [NEXT_BW*Q-1:0] next_sram_rdata2, next_sram_rdata10;
@@ -34,6 +35,17 @@ wire [NEXT_BW*Q-1:0] next_sram_rdata5, next_sram_rdata13;
 wire [NEXT_BW*Q-1:0] next_sram_rdata6, next_sram_rdata14;
 wire [NEXT_BW*Q-1:0] next_sram_rdata7, next_sram_rdata15;
 wire [NEXT_ADDR_SPACE-1:0] next_sram_raddr;
+wire [PRO_ADDR_SPACE-1:0] pronum_sram_raddr;
+
+wire [PRO_BW*Q-1:0] proposal_sram_rdata0, proposal_sram_rdata8;
+wire [PRO_BW*Q-1:0] proposal_sram_rdata1, proposal_sram_rdata9;
+wire [PRO_BW*Q-1:0] proposal_sram_rdata2, proposal_sram_rdata10;
+wire [PRO_BW*Q-1:0] proposal_sram_rdata3, proposal_sram_rdata11;
+wire [PRO_BW*Q-1:0] proposal_sram_rdata4, proposal_sram_rdata12;
+wire [PRO_BW*Q-1:0] proposal_sram_rdata5, proposal_sram_rdata13;
+wire [PRO_BW*Q-1:0] proposal_sram_rdata6, proposal_sram_rdata14;
+wire [PRO_BW*Q-1:0] proposal_sram_rdata7, proposal_sram_rdata15;
+
 // output 
 wire master_finish;
 wire [7:0] epoch;
@@ -73,6 +85,42 @@ next_sram_256x4b #(.ADDR_SPACE(NEXT_ADDR_SPACE),.Q(Q),.BW(NEXT_BW))
 w14_next_sram_256x4b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(next_sram_raddr), .rdata(next_sram_rdata14));
 next_sram_256x4b #(.ADDR_SPACE(NEXT_ADDR_SPACE),.Q(Q),.BW(NEXT_BW)) 
 w15_next_sram_256x4b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(next_sram_raddr), .rdata(next_sram_rdata15));
+// ---
+
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w0_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata0));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w1_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata1));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w2_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata2));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w3_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata3));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w4_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata4));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w5_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata5));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w6_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata6));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w7_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata7));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w8_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata8));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w9_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata9));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w10_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata10));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w11_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata11));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w12_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata12));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w13_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata13));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w14_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata14));
+proposal_sram_16x128b #(.ADDR_SPACE(PRO_ADDR_SPACE),.Q(Q),.BW(PRO_BW))
+w15_proposal_sram_16x128b(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(pronum_sram_raddr), .rdata(proposal_sram_rdata15));
+
+
 // write 
 // graph.py to gen
 wire [VID_BW*Q-1:0] vid_sram_wdata0,vid_sram_wdata1,vid_sram_wdata2,vid_sram_wdata3,vid_sram_wdata4,vid_sram_wdata5,vid_sram_wdata6,vid_sram_wdata7,vid_sram_wdata8,vid_sram_wdata9,vid_sram_wdata10,vid_sram_wdata11,vid_sram_wdata12,vid_sram_wdata13,vid_sram_wdata14,vid_sram_wdata15;
@@ -168,7 +216,7 @@ master_top_sram master_instn (
     .in_mi_j(in_mi_j),
     .in_mj_i(in_mj_i),
     .in_v_gidx(in_v_gidx),
-    .in_proposal_nums(in_proposal_nums),
+    // .in_proposal_nums(in_proposal_nums),
     .pingpong(pingpong),
     // output 
     .next_sram_raddr(next_sram_raddr),
@@ -214,7 +262,7 @@ master_top_sram master_instn (
 reg [PRO_BW*K-1:0] file_mi_j[0:MAX_EPOCH-1]; 
 reg [PRO_BW*K-1:0] file_mj_i[0:MAX_EPOCH-1]; 
 reg [VID_BW*Q-1:0] file_v_gidx[0:MAX_EPOCH-1]; 
-reg [PRO_BW*Q-1:0] file_proposal_nums[0:MAX_EPOCH-1];
+// reg [PRO_BW*Q-1:0] file_proposal_nums[0:MAX_EPOCH-1];
 reg [VID_BW*Q-1:0] w0_vid_sram_gold[0:16-1];
 reg [VID_BW*Q-1:0] w1_vid_sram_gold[0:16-1];
 reg [VID_BW*Q-1:0] w2_vid_sram_gold[0:16-1];
@@ -328,9 +376,9 @@ initial begin
     $readmemh("../software/gold_master/mj_i.dat", file_mj_i);
     $write("file_mj_i 0: %h\n", file_mj_i[0]);
     $write("file_mj_i 1: %h\n", file_mj_i[1]);
-    $readmemh("../software/gold_master/proposal_nums.dat", file_proposal_nums);
-    $write("file_proposal_nums 0: %h\n", file_proposal_nums[0]);
-    $write("file_proposal_nums 1: %h\n", file_proposal_nums[1]);
+    // $readmemh("../software/gold_master/proposal_nums.dat", file_proposal_nums);
+    // $write("file_proposal_nums 0: %h\n", file_proposal_nums[0]);
+    // $write("file_proposal_nums 1: %h\n", file_proposal_nums[1]);
     $write("=========== locsram =============\n");
     for(locsrami = 0; locsrami < 16; locsrami = locsrami + 1) begin 
         w0_loc_sram_16x256b.load_param(locsrami, 0);
@@ -356,7 +404,7 @@ initial begin
     in_mi_j = file_mi_j[epoch];
     in_mj_i = file_mj_i[epoch];
     in_v_gidx = file_v_gidx[epoch];
-    in_proposal_nums = file_proposal_nums[epoch];
+    // in_proposal_nums = file_proposal_nums[epoch];
     #(CYCLE) rst_n = 1;   enable = 1'b1;
     #(CYCLE)
     while(epoch < MAX_EPOCH - 1) begin 
@@ -365,7 +413,7 @@ initial begin
         in_mi_j = file_mi_j[epoch-1 >= 0 ? epoch - 1: 0];
         in_mj_i = file_mj_i[epoch-1 >= 0 ? epoch - 1: 0];
         in_v_gidx = file_v_gidx[epoch-4 >= 0 ? epoch - 4: 0];
-        in_proposal_nums = file_proposal_nums[epoch-1 >= 0 ? epoch - 1: 0];
+        // in_proposal_nums = file_proposal_nums[epoch-1 >= 0 ? epoch - 1: 0];
     end 
     feed = 255;
     feed_v = 252;
@@ -376,7 +424,7 @@ initial begin
         in_mi_j = file_mi_j[feed];
         in_mj_i = file_mj_i[feed];
         in_v_gidx = file_v_gidx[feed_v];
-        in_proposal_nums = file_proposal_nums[feed];
+        // in_proposal_nums = file_proposal_nums[feed];
         // $write("; vgid in %h;\n",in_v_gidx );
         feed_v = feed_v + 1;
         if(feed == 255) feed = 255;
