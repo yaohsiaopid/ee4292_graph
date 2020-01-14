@@ -1,0 +1,72 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : master_top
+Version: O-2018.06
+Date   : Tue Jan 14 20:42:54 2020
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: ss0p95v125c   Library: saed32hvt_ss0p95v125c
+Wire Load Model Mode: enclosed
+
+  Startpoint: rst_n_reg (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: clk_gate_accum_reg_12_/latch
+            (positive level-sensitive latch clocked by clk')
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  master_top         540000                saed32hvt_ss0p95v125c
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  rst_n_reg/CLK (DFFX1_HVT)                             0.0000 #   0.0000 r
+  rst_n_reg/Q (DFFX1_HVT)                               0.2229     0.2229 r
+  U93282/Y (NAND2X0_HVT)                                0.2578     0.4807 f
+  U96213/Y (INVX2_HVT)                                  0.1773     0.6579 r
+  U94041/Y (NAND2X0_HVT)                                0.2934     0.9513 f
+  U77048/Y (INVX1_HVT)                                  0.1020     1.0533 r
+  U92768/Y (INVX1_HVT)                                  0.1139     1.1672 f
+  U94044/Y (NBUFFX2_HVT)                                0.1471     1.3143 f
+  U94045/Y (NBUFFX2_HVT)                                0.1442     1.4585 f
+  U94046/Y (NBUFFX2_HVT)                                0.1441     1.6026 f
+  U94047/Y (NBUFFX2_HVT)                                0.1441     1.7467 f
+  U94048/Y (NBUFFX2_HVT)                                0.1441     1.8908 f
+  U94074/Y (NBUFFX2_HVT)                                0.1441     2.0349 f
+  U94075/Y (NBUFFX2_HVT)                                0.1441     2.1790 f
+  U94076/Y (NBUFFX2_HVT)                                0.1417     2.3207 f
+  clk_gate_accum_reg_12_/EN (SNPS_CLOCK_GATE_HIGH_master_top_mydesign_471)
+                                                        0.0000     2.3207 f
+  clk_gate_accum_reg_12_/latch/D (LATCHX1_HVT)          0.0000     2.3207 f
+  data arrival time                                                2.3207
+
+  clock clk' (rise edge)                                5.0000     5.0000
+  clock network delay (ideal)                           0.0000     5.0000
+  clk_gate_accum_reg_12_/latch/CLK (LATCHX1_HVT)        0.0000     5.0000 r
+  time borrowed from endpoint                           0.0000     5.0000
+  data required time                                               5.0000
+  --------------------------------------------------------------------------
+  data required time                                               5.0000
+  data arrival time                                               -2.3207
+  --------------------------------------------------------------------------
+  slack (MET)                                                      2.6793
+
+  Time Borrowing Information
+  --------------------------------------------------------------
+  clk' nominal pulse width                              5.0000   
+  library setup time                                   -0.1110   
+  --------------------------------------------------------------
+  max time borrow                                       4.8890   
+  actual time borrow                                    0.0000   
+  --------------------------------------------------------------
+
+
+1

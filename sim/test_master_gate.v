@@ -69,41 +69,41 @@ vid_sram_16x256b #(.ADDR_SPACE(VID_ADDR_SPACE),.Q(Q),.VID_BW(VID_BW))
 w15_vid_sram_16x256b(.clk(clk), .wsb(vidsram_wen[15]), .wdata(vid_sram_wdata15), .waddr(vid_sram_waddr15), .raddr(vid_sram_raddr), .rdata(vid_sram_rdata15));
 // --------- loc sram ------
 wire [LOC_BW*D-1:0] loc_sram_wdata0,loc_sram_wdata1,loc_sram_wdata2,loc_sram_wdata3,loc_sram_wdata4,loc_sram_wdata5,loc_sram_wdata6,loc_sram_wdata7,loc_sram_wdata8,loc_sram_wdata9,loc_sram_wdata10,loc_sram_wdata11,loc_sram_wdata12,loc_sram_wdata13,loc_sram_wdata14,loc_sram_wdata15;
-wire [Q-1:0] locsram_wen;
+wire locsram_wen;
 wire [D-1:0] locsram_wbytemask0,locsram_wbytemask1,locsram_wbytemask2,locsram_wbytemask3,locsram_wbytemask4,locsram_wbytemask5,locsram_wbytemask6,locsram_wbytemask7,locsram_wbytemask8,locsram_wbytemask9,locsram_wbytemask10,locsram_wbytemask11,locsram_wbytemask12,locsram_wbytemask13,locsram_wbytemask14,locsram_wbytemask15;
 wire [LOC_ADDR_SPACE-1:0] loc_sram_waddr0,loc_sram_waddr1,loc_sram_waddr2,loc_sram_waddr3,loc_sram_waddr4,loc_sram_waddr5,loc_sram_waddr6,loc_sram_waddr7,loc_sram_waddr8,loc_sram_waddr9,loc_sram_waddr10,loc_sram_waddr11,loc_sram_waddr12,loc_sram_waddr13,loc_sram_waddr14,loc_sram_waddr15;
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w0_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[0]), .bytemask(locsram_wbytemask0), .wdata(loc_sram_wdata0), .waddr(loc_sram_waddr0), .raddr(), .rdata());
+w0_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask0), .wdata(loc_sram_wdata0), .waddr(loc_sram_waddr0), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w1_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[1]), .bytemask(locsram_wbytemask1), .wdata(loc_sram_wdata1), .waddr(loc_sram_waddr1), .raddr(), .rdata());
+w1_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask1), .wdata(loc_sram_wdata1), .waddr(loc_sram_waddr1), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w2_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[2]), .bytemask(locsram_wbytemask2), .wdata(loc_sram_wdata2), .waddr(loc_sram_waddr2), .raddr(), .rdata());
+w2_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask2), .wdata(loc_sram_wdata2), .waddr(loc_sram_waddr2), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w3_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[3]), .bytemask(locsram_wbytemask3), .wdata(loc_sram_wdata3), .waddr(loc_sram_waddr3), .raddr(), .rdata());
+w3_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask3), .wdata(loc_sram_wdata3), .waddr(loc_sram_waddr3), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w4_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[4]), .bytemask(locsram_wbytemask4), .wdata(loc_sram_wdata4), .waddr(loc_sram_waddr4), .raddr(), .rdata());
+w4_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask4), .wdata(loc_sram_wdata4), .waddr(loc_sram_waddr4), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w5_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[5]), .bytemask(locsram_wbytemask5), .wdata(loc_sram_wdata5), .waddr(loc_sram_waddr5), .raddr(), .rdata());
+w5_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask5), .wdata(loc_sram_wdata5), .waddr(loc_sram_waddr5), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w6_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[6]), .bytemask(locsram_wbytemask6), .wdata(loc_sram_wdata6), .waddr(loc_sram_waddr6), .raddr(), .rdata());
+w6_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask6), .wdata(loc_sram_wdata6), .waddr(loc_sram_waddr6), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w7_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[7]), .bytemask(locsram_wbytemask7), .wdata(loc_sram_wdata7), .waddr(loc_sram_waddr7), .raddr(), .rdata());
+w7_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask7), .wdata(loc_sram_wdata7), .waddr(loc_sram_waddr7), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w8_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[8]), .bytemask(locsram_wbytemask8), .wdata(loc_sram_wdata8), .waddr(loc_sram_waddr8), .raddr(), .rdata());
+w8_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask8), .wdata(loc_sram_wdata8), .waddr(loc_sram_waddr8), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w9_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[9]), .bytemask(locsram_wbytemask9), .wdata(loc_sram_wdata9), .waddr(loc_sram_waddr9), .raddr(), .rdata());
+w9_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask9), .wdata(loc_sram_wdata9), .waddr(loc_sram_waddr9), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w10_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[10]), .bytemask(locsram_wbytemask10), .wdata(loc_sram_wdata10), .waddr(loc_sram_waddr10), .raddr(), .rdata());
+w10_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask10), .wdata(loc_sram_wdata10), .waddr(loc_sram_waddr10), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w11_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[11]), .bytemask(locsram_wbytemask11), .wdata(loc_sram_wdata11), .waddr(loc_sram_waddr11), .raddr(), .rdata());
+w11_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask11), .wdata(loc_sram_wdata11), .waddr(loc_sram_waddr11), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w12_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[12]), .bytemask(locsram_wbytemask12), .wdata(loc_sram_wdata12), .waddr(loc_sram_waddr12), .raddr(), .rdata());
+w12_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask12), .wdata(loc_sram_wdata12), .waddr(loc_sram_waddr12), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w13_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[13]), .bytemask(locsram_wbytemask13), .wdata(loc_sram_wdata13), .waddr(loc_sram_waddr13), .raddr(), .rdata());
+w13_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask13), .wdata(loc_sram_wdata13), .waddr(loc_sram_waddr13), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w14_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[14]), .bytemask(locsram_wbytemask14), .wdata(loc_sram_wdata14), .waddr(loc_sram_waddr14), .raddr(), .rdata());
+w14_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask14), .wdata(loc_sram_wdata14), .waddr(loc_sram_waddr14), .raddr(), .rdata());
 loc_sram_16x1280b #(.ADDR_SPACE(LOC_ADDR_SPACE),.D(D),.BW(LOC_BW)) 
-w15_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[15]), .bytemask(locsram_wbytemask15), .wdata(loc_sram_wdata15), .waddr(loc_sram_waddr15), .raddr(), .rdata());
+w15_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen), .bytemask(locsram_wbytemask15), .wdata(loc_sram_wdata15), .waddr(loc_sram_waddr15), .raddr(), .rdata());
 // ===================================================================================
 // master_top #(
 //  // 
@@ -111,8 +111,8 @@ w15_loc_sram_16x256b(.clk(clk), .wsb(locsram_wen[15]), .bytemask(locsram_wbytema
 wire pingpong = 0;
 master_top master_instn (
     .clk(clk),
-    .enable(enable),
-    .rst_n(rst_n),
+    .enable_in(enable),
+    .rst_n_in(rst_n),
     .in_next_arr(in_next_arr),
     .in_mi_j(in_mi_j),
     .in_mj_i(in_mj_i),
@@ -122,7 +122,7 @@ master_top master_instn (
     // output 
     .epoch(epoch),
     .vidsram_wen(vidsram_wen),
-    .locsram_wen(locsram_wen),
+    .locsram_wen(locsram_wen), 
     .ready(ready),
     .finish(master_finish),
     .vid_sram_wdata0(vid_sram_wdata0),     .vid_sram_waddr0(vid_sram_waddr0),
@@ -289,7 +289,7 @@ initial begin
     in_v_gidx = file_v_gidx[epoch];
     in_proposal_nums = file_proposal_nums[epoch];
     #(CYCLE) rst_n = 1;   enable = 1'b1;
-    #(CYCLE*2)
+    #(CYCLE)
     while(epoch < MAX_EPOCH - 1) begin 
         @(negedge clk)
         in_next_arr = file_next_arr[epoch-1 >= 0 ? epoch - 1: 0];
