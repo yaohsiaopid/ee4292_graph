@@ -1,6 +1,6 @@
 // FOR Vid
 module vid_sram_16x256b #(     
-parameter ADDR_SPACE = 4, // batch number = N / (K * Q)
+parameter ADDR_SPACE = 5, // batch number = N / (K * Q)
 parameter Q = 16,
 parameter VID_BW = 16
 )

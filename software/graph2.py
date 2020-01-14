@@ -23,10 +23,10 @@ print("----------buffer--------------")
 # {1} < Q
 sss = '''
 if(psum_set) begin 
-    if(export[{0}] == 1'b1 && buffaccum[{0}] > 5'd{1}) begin 
+    if(export[{0}] == 1'b1 && buffaccum[{0}] > 4'd{1}) begin 
         n_buffer_{0}[{1}] = buffer_{0}[{1} + Q];
     end else begin 
-        if(buffaccum[{0}] > 5'd{1}) 
+        if(buffaccum[{0}] > 4'd{1}) 
             n_buffer_{0}[{1}] = buffer_{0}[{1}]; 
         else  
             n_buffer_{0}[{1}] = ((buff_next[0] == 4'd{0}) * (buffer_idx[0] == 5'd{1}) * v_gidx[0]) | ((buff_next[1] == 4'd{0}) * (buffer_idx[1] == 5'd{1}) * v_gidx[1]) | ((buff_next[2] == 4'd{0}) * (buffer_idx[2] == 5'd{1}) * v_gidx[2]) | ((buff_next[3] == 4'd{0}) * (buffer_idx[3] == 5'd{1}) * v_gidx[3]) | ((buff_next[4] == 4'd{0}) * (buffer_idx[4] == 5'd{1}) * v_gidx[4]) | ((buff_next[5] == 4'd{0}) * (buffer_idx[5] == 5'd{1}) * v_gidx[5]) | ((buff_next[6] == 4'd{0}) * (buffer_idx[6] == 5'd{1}) * v_gidx[6]) | ((buff_next[7] == 4'd{0}) * (buffer_idx[7] == 5'd{1}) * v_gidx[7]) | ((buff_next[8] == 4'd{0}) * (buffer_idx[8] == 5'd{1}) * v_gidx[8]) | ((buff_next[9] == 4'd{0}) * (buffer_idx[9] == 5'd{1}) * v_gidx[9]) | ((buff_next[10] == 4'd{0}) * (buffer_idx[10] == 5'd{1}) * v_gidx[10]) | ((buff_next[11] == 4'd{0}) * (buffer_idx[11] == 5'd{1}) * v_gidx[11]) | ((buff_next[12] == 4'd{0}) * (buffer_idx[12] == 5'd{1}) * v_gidx[12]) | ((buff_next[13] == 4'd{0}) * (buffer_idx[13] == 5'd{1}) * v_gidx[13]) | ((buff_next[14] == 4'd{0}) * (buffer_idx[14] == 5'd{1}) * v_gidx[14]) | ((buff_next[15] == 4'd{0}) * (buffer_idx[15] == 5'd{1}) * v_gidx[15]);
@@ -37,7 +37,7 @@ end else
 # {1} >= Q
 sss2 = '''
 if(psum_set) begin 
-    if(buffaccum[{0}] > 5'd{1}) 
+    if(buffaccum[{0}] > 4'd{1}) 
         n_buffer_{0}[{1}] = buffer_{0}[{1}]; 
     else  
         n_buffer_{0}[{1}] = ((buff_next[0] == 4'd{0}) * (buffer_idx[0] == 5'd{1}) * v_gidx[0]) | ((buff_next[1] == 4'd{0}) * (buffer_idx[1] == 5'd{1}) * v_gidx[1]) | ((buff_next[2] == 4'd{0}) * (buffer_idx[2] == 5'd{1}) * v_gidx[2]) | ((buff_next[3] == 4'd{0}) * (buffer_idx[3] == 5'd{1}) * v_gidx[3]) | ((buff_next[4] == 4'd{0}) * (buffer_idx[4] == 5'd{1}) * v_gidx[4]) | ((buff_next[5] == 4'd{0}) * (buffer_idx[5] == 5'd{1}) * v_gidx[5]) | ((buff_next[6] == 4'd{0}) * (buffer_idx[6] == 5'd{1}) * v_gidx[6]) | ((buff_next[7] == 4'd{0}) * (buffer_idx[7] == 5'd{1}) * v_gidx[7]) | ((buff_next[8] == 4'd{0}) * (buffer_idx[8] == 5'd{1}) * v_gidx[8]) | ((buff_next[9] == 4'd{0}) * (buffer_idx[9] == 5'd{1}) * v_gidx[9]) | ((buff_next[10] == 4'd{0}) * (buffer_idx[10] == 5'd{1}) * v_gidx[10]) | ((buff_next[11] == 4'd{0}) * (buffer_idx[11] == 5'd{1}) * v_gidx[11]) | ((buff_next[12] == 4'd{0}) * (buffer_idx[12] == 5'd{1}) * v_gidx[12]) | ((buff_next[13] == 4'd{0}) * (buffer_idx[13] == 5'd{1}) * v_gidx[13]) | ((buff_next[14] == 4'd{0}) * (buffer_idx[14] == 5'd{1}) * v_gidx[14]) | ((buff_next[15] == 4'd{0}) * (buffer_idx[15] == 5'd{1}) * v_gidx[15]);
