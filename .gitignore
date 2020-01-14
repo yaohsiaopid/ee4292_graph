@@ -13,3 +13,8 @@ sim/*.fsdb
 software/gold_master/
 software/*.csv
 
+*/.synopsys_dc.setup
+*/*.tcl
+*/alib-52/
+*/default.svf
+*/logfile
