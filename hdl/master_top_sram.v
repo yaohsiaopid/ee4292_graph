@@ -1,4 +1,4 @@
-module master_top #(
+module master_top_sram #(
 parameter Q = 16,
 parameter PRO_BW = 8,
 parameter NEXT_BW = 4,
@@ -9,19 +9,37 @@ parameter OFFSET_BW = 5, // 0-16 partial sum
 parameter VID_ADDR_SPACE = 5,
 parameter LOC_BW = 5,
 parameter D = 256,
-parameter LOC_ADDR_SPACE = 8 //4 2^16/256
+parameter LOC_ADDR_SPACE = 8, //4 2^16/256,
+parameter NEXT_ADDR_SPACE = 4
 ) (
 input clk,
 input rst_n_in, 
 input enable_in,
 // inputs 
-input [NEXT_BW*Q-1:0] in_next_arr,
+input [NEXT_BW*Q-1:0] next_sram_rdata0,
+input [NEXT_BW*Q-1:0] next_sram_rdata1,
+input [NEXT_BW*Q-1:0] next_sram_rdata2,
+input [NEXT_BW*Q-1:0] next_sram_rdata3,
+input [NEXT_BW*Q-1:0] next_sram_rdata4,
+input [NEXT_BW*Q-1:0] next_sram_rdata5,
+input [NEXT_BW*Q-1:0] next_sram_rdata6,
+input [NEXT_BW*Q-1:0] next_sram_rdata7,
+input [NEXT_BW*Q-1:0] next_sram_rdata8,
+input [NEXT_BW*Q-1:0] next_sram_rdata9,
+input [NEXT_BW*Q-1:0] next_sram_rdata10,
+input [NEXT_BW*Q-1:0] next_sram_rdata11,
+input [NEXT_BW*Q-1:0] next_sram_rdata12,
+input [NEXT_BW*Q-1:0] next_sram_rdata13,
+input [NEXT_BW*Q-1:0] next_sram_rdata14,
+input [NEXT_BW*Q-1:0] next_sram_rdata15,
+
 input [PRO_BW*K-1:0] in_mi_j, 
 input [PRO_BW*K-1:0] in_mj_i, 
 input [VID_BW*Q-1:0] in_v_gidx, 
 input [PRO_BW*Q-1:0] in_proposal_nums,
 input pingpong,
 // outputs 
+output reg [NEXT_ADDR_SPACE-1:0] next_sram_raddr,
 output reg [7:0] epoch,
 output reg [K-1:0] vidsram_wen, // 0 at MSB
 output reg locsram_wen,
@@ -166,11 +184,33 @@ reg [BUF_BW-2:0] buffaccum[0:K-1], n_buffaccum[0:K-1]; // for buffer indexing's 
 reg [K-1:0] onehot[0:Q-1];
 reg [OFFSET_BW-1:0] partial_sum[0:Q-1][0:K-1],n_partial_sum[0:Q-1][0:K-1];
 reg psum_set, n_psum_set;
+reg [NEXT_BW*Q-1:0] in_next_arr;
 integer o_idx, in_idx;
 integer accumidx;
 integer partial_i, partial_j, check_i;
 integer buffi,buffj;
-
+reg [7:0] epoch_buff;
+always @* begin 
+    (* synthesis, parallel_case *)
+    case(epoch_buff[7:4])
+	    4'd0: in_next_arr = next_sram_rdata0;
+	    4'd1: in_next_arr = next_sram_rdata1;
+	    4'd2: in_next_arr = next_sram_rdata2;
+	    4'd3: in_next_arr = next_sram_rdata3;
+	    4'd4: in_next_arr = next_sram_rdata4;
+	    4'd5: in_next_arr = next_sram_rdata5;
+	    4'd6: in_next_arr = next_sram_rdata6;
+	    4'd7: in_next_arr = next_sram_rdata7;
+	    4'd8: in_next_arr = next_sram_rdata8;
+	    4'd9: in_next_arr = next_sram_rdata9;
+	    4'd10: in_next_arr = next_sram_rdata10;
+	    4'd11: in_next_arr = next_sram_rdata11;
+	    4'd12: in_next_arr = next_sram_rdata12;
+	    4'd13: in_next_arr = next_sram_rdata13;
+	    4'd14: in_next_arr = next_sram_rdata14;
+	    4'd15: in_next_arr = next_sram_rdata15;
+  	endcase
+end 
 always @* begin 
     if(~enable) n_psum_set = 0;
     else begin 
@@ -6278,10 +6318,17 @@ always @(posedge clk) begin
             locsram_wbytemask[loci] <= 256'd0;//n_locsram_wbytemask[loci];
             locsram_addr[loci] <= 8'd0;//v_gidx[loci][VID_BW-1:8];  //15:8 16 bit - 8
         end
+        next_sram_raddr <= 4'b0;
+        epoch_buff <= 8'd0;
     end else begin
         enable <= enable_in;
         state <= nstate; 
         epoch <= n_epoch;
+        next_sram_raddr <= n_epoch;
+        if(~enable) 
+            epoch_buff <= 8'd0;
+        else 
+            epoch_buff <= epoch;
         // $write("epoch: %d\n",epoch);
         delay <= n_delay;
         psum_set <= n_psum_set;

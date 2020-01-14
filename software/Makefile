@@ -21,6 +21,8 @@ KaHIP: ./src/KaHIP.cpp
 inter_data:	./src/inter_data.cpp
 	#clang-format -i $^
 	g++ $(CXXFLAGS) -o ./build/$@ $? 
+master_sram: ./src/master_sram.cpp
+	g++ $(CXXFLAGS) -o ./build/$@ $? 
 master: ./src/master.cpp
 	g++ $(CXXFLAGS) -o ./build/$@ $? 
 graph_hw: ./src/graph_hw.cpp
