@@ -17,8 +17,9 @@ const int K = 16;
 std::vector<std::vector<int>> wdata_total(K); // K rows 
 void export_inputs(int v_gidx[], int proposal_nums[], int next_arr[], int mi_j[], int mj_i[]) {
   static int cntrs = 0;
-  FILE *f_v_gids = fopen("./gold_master_s/v_gidx.dat", "a+");
   char filnm[100];
+  sprintf(filnm, "./gold_master_s/v_gidx_w%d.dat", cntrs/256);
+  FILE *f_v_gids = fopen(filnm, "a+");
   sprintf(filnm, "./gold_master_s/proposal_nums_w%d.dat", cntrs/256);
   FILE *f_props_num = fopen(filnm, "a+");
   sprintf(filnm, "./gold_master_s/next_sram_w%d.dat", cntrs/256);

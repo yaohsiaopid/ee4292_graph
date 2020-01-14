@@ -14,7 +14,7 @@ output reg [VID_BW*Q-1:0] rdata //read data 128 bits
 );
 
 reg [VID_BW*Q-1:0] _rdata;
-reg [VID_BW*Q-1:0] mem [0:15]; // N / (K * Q)
+reg [VID_BW*Q-1:0] mem [0:31]; // N / (K * Q)
 
 always @(posedge clk) begin
     if(~wsb) begin

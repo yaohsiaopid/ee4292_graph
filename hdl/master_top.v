@@ -1041,7 +1041,7 @@ always @(posedge clk) begin
         {next_arr[0],next_arr[1],next_arr[2],next_arr[3],next_arr[4],next_arr[5],next_arr[6],next_arr[7],
         next_arr[8],next_arr[9],next_arr[10],next_arr[11],next_arr[12],next_arr[13],next_arr[14],next_arr[15]}
             <= in_next_arr;
-        // $write("epoch %d; in_next_arr: %h\n", epoch, in_next_arr);
+        $write("epoch %d; in_vid: %h\n", epoch, in_v_gidx);
         {proposal_nums[0],proposal_nums[1],proposal_nums[2],proposal_nums[3],proposal_nums[4],proposal_nums[5],proposal_nums[6],proposal_nums[7],
         proposal_nums[8],proposal_nums[9],proposal_nums[10],proposal_nums[11],proposal_nums[12],proposal_nums[13],proposal_nums[14],proposal_nums[15]}
             <= in_proposal_nums;

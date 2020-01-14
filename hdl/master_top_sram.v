@@ -10,36 +10,50 @@ parameter VID_ADDR_SPACE = 5,
 parameter LOC_BW = 5,
 parameter D = 256,
 parameter LOC_ADDR_SPACE = 8, //4 2^16/256,
-parameter NEXT_ADDR_SPACE = 4
+parameter NEXT_ADDR_SPACE = 4,
+parameter PRO_ADDR_SPACE = 4
 ) (
 input clk,
 input rst_n_in, 
 input enable_in,
 // inputs 
-input [NEXT_BW*Q-1:0] next_sram_rdata0,
-input [NEXT_BW*Q-1:0] next_sram_rdata1,
-input [NEXT_BW*Q-1:0] next_sram_rdata2,
-input [NEXT_BW*Q-1:0] next_sram_rdata3,
-input [NEXT_BW*Q-1:0] next_sram_rdata4,
-input [NEXT_BW*Q-1:0] next_sram_rdata5,
-input [NEXT_BW*Q-1:0] next_sram_rdata6,
-input [NEXT_BW*Q-1:0] next_sram_rdata7,
-input [NEXT_BW*Q-1:0] next_sram_rdata8,
-input [NEXT_BW*Q-1:0] next_sram_rdata9,
-input [NEXT_BW*Q-1:0] next_sram_rdata10,
-input [NEXT_BW*Q-1:0] next_sram_rdata11,
-input [NEXT_BW*Q-1:0] next_sram_rdata12,
-input [NEXT_BW*Q-1:0] next_sram_rdata13,
-input [NEXT_BW*Q-1:0] next_sram_rdata14,
-input [NEXT_BW*Q-1:0] next_sram_rdata15,
+input [NEXT_BW*Q-1:0] next_sram_rdata0, input [NEXT_BW*Q-1:0] next_sram_rdata8,
+input [NEXT_BW*Q-1:0] next_sram_rdata1, input [NEXT_BW*Q-1:0] next_sram_rdata9,
+input [NEXT_BW*Q-1:0] next_sram_rdata2, input [NEXT_BW*Q-1:0] next_sram_rdata10,
+input [NEXT_BW*Q-1:0] next_sram_rdata3, input [NEXT_BW*Q-1:0] next_sram_rdata11,
+input [NEXT_BW*Q-1:0] next_sram_rdata4, input [NEXT_BW*Q-1:0] next_sram_rdata12,
+input [NEXT_BW*Q-1:0] next_sram_rdata5, input [NEXT_BW*Q-1:0] next_sram_rdata13,
+input [NEXT_BW*Q-1:0] next_sram_rdata6, input [NEXT_BW*Q-1:0] next_sram_rdata14,
+input [NEXT_BW*Q-1:0] next_sram_rdata7, input [NEXT_BW*Q-1:0] next_sram_rdata15,
+
+input [PRO_BW*Q-1:0] proposal_sram_rdata0, input [PRO_BW*Q-1:0] proposal_sram_rdata8,
+input [PRO_BW*Q-1:0] proposal_sram_rdata1, input [PRO_BW*Q-1:0] proposal_sram_rdata9,
+input [PRO_BW*Q-1:0] proposal_sram_rdata2, input [PRO_BW*Q-1:0] proposal_sram_rdata10,
+input [PRO_BW*Q-1:0] proposal_sram_rdata3, input [PRO_BW*Q-1:0] proposal_sram_rdata11,
+input [PRO_BW*Q-1:0] proposal_sram_rdata4, input [PRO_BW*Q-1:0] proposal_sram_rdata12,
+input [PRO_BW*Q-1:0] proposal_sram_rdata5, input [PRO_BW*Q-1:0] proposal_sram_rdata13,
+input [PRO_BW*Q-1:0] proposal_sram_rdata6, input [PRO_BW*Q-1:0] proposal_sram_rdata14,
+input [PRO_BW*Q-1:0] proposal_sram_rdata7, input [PRO_BW*Q-1:0] proposal_sram_rdata15,
+
+input [VID_BW*Q-1:0] vid_sram_rdata0, input [VID_BW*Q-1:0] vid_sram_rdata8,
+input [VID_BW*Q-1:0] vid_sram_rdata1, input [VID_BW*Q-1:0] vid_sram_rdata9,
+input [VID_BW*Q-1:0] vid_sram_rdata2, input [VID_BW*Q-1:0] vid_sram_rdata10,
+input [VID_BW*Q-1:0] vid_sram_rdata3, input [VID_BW*Q-1:0] vid_sram_rdata11,
+input [VID_BW*Q-1:0] vid_sram_rdata4, input [VID_BW*Q-1:0] vid_sram_rdata12,
+input [VID_BW*Q-1:0] vid_sram_rdata5, input [VID_BW*Q-1:0] vid_sram_rdata13,
+input [VID_BW*Q-1:0] vid_sram_rdata6, input [VID_BW*Q-1:0] vid_sram_rdata14,
+input [VID_BW*Q-1:0] vid_sram_rdata7, input [VID_BW*Q-1:0] vid_sram_rdata15,
+
 
 input [PRO_BW*K-1:0] in_mi_j, 
 input [PRO_BW*K-1:0] in_mj_i, 
-input [VID_BW*Q-1:0] in_v_gidx, 
-input [PRO_BW*Q-1:0] in_proposal_nums,
+// input [VID_BW*Q-1:0] in_v_gidx, 
+// input [PRO_BW*Q-1:0] in_proposal_nums,
 input pingpong,
 // outputs 
 output reg [NEXT_ADDR_SPACE-1:0] next_sram_raddr,
+// output reg [PRO_ADDR_SPACE-1:0] pronum_sram_raddr,
+output reg [VID_ADDR_SPACE-1:0] vid_sram_raddr,
 output reg [7:0] epoch,
 output reg [K-1:0] vidsram_wen, // 0 at MSB
 output reg locsram_wen,
@@ -109,7 +123,7 @@ reg [NEXT_BW-1:0] locsram_wdata[0:Q-1];
 // reg [D*LOC_BW-1:0] locsram_wdata10,locsram_wdata11,locsram_wdata12,locsram_wdata13,locsram_wdata14,locsram_wdata15;
 reg [D-1:0] locsram_wbytemask[0:Q-1], n_locsram_wbytemask[0:Q-1];
 reg [LOC_ADDR_SPACE-1:0] locsram_addr[0:Q-1];
-
+reg [3:0] select_vid;
 // sram wire connect
 assign vid_sram_wdata0 = vidsram_wdata_0;    assign vid_sram_waddr0 =   vidsram_waddr[0];   
 assign vid_sram_wdata1 = vidsram_wdata_1;    assign vid_sram_waddr1 =   vidsram_waddr[1];   
@@ -185,6 +199,8 @@ reg [K-1:0] onehot[0:Q-1];
 reg [OFFSET_BW-1:0] partial_sum[0:Q-1][0:K-1],n_partial_sum[0:Q-1][0:K-1];
 reg psum_set, n_psum_set;
 reg [NEXT_BW*Q-1:0] in_next_arr;
+reg [PRO_BW*Q-1:0] in_proposal_nums;
+reg [VID_BW*Q-1:0] in_v_gidx;
 integer o_idx, in_idx;
 integer accumidx;
 integer partial_i, partial_j, check_i;
@@ -210,6 +226,46 @@ always @* begin
 	    4'd14: in_next_arr = next_sram_rdata14;
 	    4'd15: in_next_arr = next_sram_rdata15;
   	endcase
+
+    (* synthesis, parallel_case *)
+    case(epoch_buff[7:4])
+        4'd0: in_proposal_nums = proposal_sram_rdata0;
+	    4'd1: in_proposal_nums = proposal_sram_rdata1;
+	    4'd2: in_proposal_nums = proposal_sram_rdata2;
+	    4'd3: in_proposal_nums = proposal_sram_rdata3;
+	    4'd4: in_proposal_nums = proposal_sram_rdata4;
+	    4'd5: in_proposal_nums = proposal_sram_rdata5;
+	    4'd6: in_proposal_nums = proposal_sram_rdata6;
+	    4'd7: in_proposal_nums = proposal_sram_rdata7;
+	    4'd8: in_proposal_nums = proposal_sram_rdata8;
+	    4'd9: in_proposal_nums = proposal_sram_rdata9;
+	    4'd10: in_proposal_nums = proposal_sram_rdata10;
+	    4'd11: in_proposal_nums = proposal_sram_rdata11;
+	    4'd12: in_proposal_nums = proposal_sram_rdata12;
+	    4'd13: in_proposal_nums = proposal_sram_rdata13;
+	    4'd14: in_proposal_nums = proposal_sram_rdata14;
+	    4'd15: in_proposal_nums = proposal_sram_rdata15;
+	endcase
+
+    (* synthesis, parallel_case *)
+    case(select_vid) 
+        4'd0: in_v_gidx = vid_sram_rdata0;
+        4'd1: in_v_gidx = vid_sram_rdata1;
+        4'd2: in_v_gidx = vid_sram_rdata2;
+        4'd3: in_v_gidx = vid_sram_rdata3;
+        4'd4: in_v_gidx = vid_sram_rdata4;
+        4'd5: in_v_gidx = vid_sram_rdata5;
+        4'd6: in_v_gidx = vid_sram_rdata6;
+        4'd7: in_v_gidx = vid_sram_rdata7;
+        4'd8: in_v_gidx = vid_sram_rdata8;
+        4'd9: in_v_gidx = vid_sram_rdata9;
+        4'd10: in_v_gidx = vid_sram_rdata10;
+        4'd11: in_v_gidx = vid_sram_rdata11;
+        4'd12: in_v_gidx = vid_sram_rdata12;
+        4'd13: in_v_gidx = vid_sram_rdata13;
+        4'd14: in_v_gidx = vid_sram_rdata14;
+        4'd15: in_v_gidx = vid_sram_rdata15;
+    endcase 
 end 
 always @* begin 
     if(~enable) n_psum_set = 0;
@@ -1072,12 +1128,33 @@ always @(posedge clk) begin
             locsram_addr[loci] <= 8'd0;//v_gidx[loci][VID_BW-1:8];  //15:8 16 bit - 8
         end
         next_sram_raddr <= 4'b0;
+        vid_sram_raddr <= 5'b0;
         epoch_buff <= 8'd0;
+        select_vid <= 4'd0;
     end else begin
         enable <= enable_in;
         state <= nstate; 
         epoch <= n_epoch;
         next_sram_raddr <= n_epoch;
+        if((~enable) || epoch < PSUM_READY) begin 
+            vid_sram_raddr <= 5'd16 & {5{pingpong}};
+        end else begin 
+            if(vid_sram_raddr != 5'd15 && vid_sram_raddr != 5'd31)
+                vid_sram_raddr <= vid_sram_raddr + 1;
+            else 
+                vid_sram_raddr <= epoch == 8'd255 ? vid_sram_raddr : 5'd16 & {5{pingpong}};
+        end 
+        // if((~enable) || epoch < PSUM_READY + 1) begin 
+        //     select_vid <= 8'd0;
+        // end else begin 
+        //     select_vid <= select_vid == 8'd255 ? 8'd255 : select_vid + 1;
+        // end 
+        if(~enable) 
+            select_vid <= 4'd0;
+        else if(epoch[3:0] == 4'd3 && (epoch[7] || epoch[6] || epoch[5] || epoch[4])) begin 
+            select_vid <= select_vid + 1;
+        end 
+
         if(~enable) 
             epoch_buff <= 8'd0;
         else 
@@ -1090,7 +1167,7 @@ always @(posedge clk) begin
         {next_arr[0],next_arr[1],next_arr[2],next_arr[3],next_arr[4],next_arr[5],next_arr[6],next_arr[7],
         next_arr[8],next_arr[9],next_arr[10],next_arr[11],next_arr[12],next_arr[13],next_arr[14],next_arr[15]}
             <= in_next_arr;
-        $write("epoch %d; in_next_arr: %h\n", epoch, in_next_arr);
+        // $write("epoch %d; raddr %d selectvid %d in_vid: %h \n", epoch, vid_sram_raddr, select_vid, in_v_gidx);// vid_sram_rdata0);
         {proposal_nums[0],proposal_nums[1],proposal_nums[2],proposal_nums[3],proposal_nums[4],proposal_nums[5],proposal_nums[6],proposal_nums[7],
         proposal_nums[8],proposal_nums[9],proposal_nums[10],proposal_nums[11],proposal_nums[12],proposal_nums[13],proposal_nums[14],proposal_nums[15]}
             <= in_proposal_nums;
@@ -1159,7 +1236,7 @@ always @(posedge clk) begin
                 end 
             end else begin 
                 vidsram_wen[export_i]  <= 1'b1;
-                vidsram_waddr[export_i] <= 5'd16 & {5{pingpong}};//{5{1'd0}}; // to change ping pong 
+                vidsram_waddr[export_i] <= 5'd16 & {5{~pingpong}};//{5{1'd0}}; // to change ping pong 
             end 
         end 
         vidsram_wdata_0 <= {buffer_0[0],buffer_0[1],buffer_0[2],buffer_0[3],buffer_0[4],buffer_0[5],buffer_0[6],buffer_0[7],buffer_0[8],buffer_0[9],buffer_0[10],buffer_0[11],buffer_0[12],buffer_0[13],buffer_0[14],buffer_0[15]} ; 
