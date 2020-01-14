@@ -57,7 +57,6 @@ output reg [VID_ADDR_SPACE-1:0] vid_sram_raddr,
 output reg [7:0] epoch,
 output reg [K-1:0] vidsram_wen, // 0 at MSB
 output reg locsram_wen,
-output reg ready,
 output reg finish,
 // vidsram writing  
 output [VID_BW*Q-1:0] vid_sram_wdata0,  output [VID_ADDR_SPACE-1:0] vid_sram_waddr0,
@@ -97,7 +96,7 @@ output [D*LOC_BW-1:0] loc_sram_wdata15, output [LOC_ADDR_SPACE-1:0] loc_sram_wad
 // wire pingpong = 0;
 localparam IDLE=2'd0, RUNS=2'd1, DELAY=2'd2, FINISH=2'd3;
 localparam PSUM_READY = 3;
-localparam DONEII = 6;
+localparam DONEII = 5;
 reg [1:0] nstate, state;
 reg rst_n, enable;
 // localparam WDATII = 6; // WDATII = PSUM_READY + 3
@@ -311,11 +310,14 @@ always @* begin
     end 
     // ----------- same time to write into ----------------
     for(partial_i = 0; partial_i < Q; partial_i = partial_i + 1) begin
+        if(~enable) nbuffer_idx[partial_i] = 0;
+        else begin 
         if(psum_set) 
         nbuffer_idx[partial_i] = (partial_sum[partial_i][buff_1_next[partial_i]] - 1) + (accum[buff_1_next[partial_i]] >= Q ? accum[buff_1_next[partial_i]] - Q : accum[buff_1_next[partial_i]]) ;
         else 
         nbuffer_idx[partial_i] = buffer_idx[partial_i];
         // TODO: accum[q] == Q also update to partial_sum[15][q], / transfer out 
+        end 
     end
        
     for(accumidx = 0; accumidx < K; accumidx = accumidx + 1) begin 
@@ -1119,7 +1121,6 @@ always @(posedge clk) begin
         vidsram_wdata_6 <= {Q*VID_BW{1'b0}}; vidsram_wdata_14 <= {Q*VID_BW{1'b0}};
         vidsram_wdata_7 <= {Q*VID_BW{1'b0}}; vidsram_wdata_15 <= {Q*VID_BW{1'b0}};
         epoch <= 0;
-        ready <= 0;
         finish <= 0;
         delay <= 0;
         locsram_wen <= 1'b1;
@@ -1142,7 +1143,7 @@ always @(posedge clk) begin
             if(vid_sram_raddr != 5'd15 && vid_sram_raddr != 5'd31)
                 vid_sram_raddr <= vid_sram_raddr + 1;
             else 
-                vid_sram_raddr <= epoch == 8'd255 ? vid_sram_raddr : 5'd16 & {5{pingpong}};
+                vid_sram_raddr <= (epoch == 8'd255 ? vid_sram_raddr : (pingpong == 1 ? 5'd16 : 5'd0));
         end 
         // if((~enable) || epoch < PSUM_READY + 1) begin 
         //     select_vid <= 8'd0;
@@ -1162,11 +1163,18 @@ always @(posedge clk) begin
         // $write("epoch: %d\n",epoch);
         delay <= n_delay;
         psum_set <= n_psum_set;
-        if(state == FINISH) finish <= 1;
-        else                finish <= 0;
+        if(~enable) finish <= 0;
+        else begin 
+            if(state == FINISH) finish <= 1;
+            else                finish <= 0;
+        end 
         {next_arr[0],next_arr[1],next_arr[2],next_arr[3],next_arr[4],next_arr[5],next_arr[6],next_arr[7],
         next_arr[8],next_arr[9],next_arr[10],next_arr[11],next_arr[12],next_arr[13],next_arr[14],next_arr[15]}
             <= in_next_arr;
+        // $write("epoch %d: %h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h, \n", 
+        // epoch, buffer_15[0],buffer_15[1],buffer_15[2],buffer_15[3],buffer_15[4],buffer_15[5],buffer_15[6],buffer_15[7],buffer_15[8],buffer_15[9],buffer_15[10],buffer_15[11],buffer_15[12],buffer_15[13],buffer_15[14],buffer_15[15]);  
+        // $write("epoch %d: %h\n", epoch, in_v_gidx);
+        // $write("epoch %d; %h\n",  epoch, in_proposal_nums);
         // $write("epoch %d; raddr %d selectvid %d in_vid: %h \n", epoch, vid_sram_raddr, select_vid, in_v_gidx);// vid_sram_rdata0);
         {proposal_nums[0],proposal_nums[1],proposal_nums[2],proposal_nums[3],proposal_nums[4],proposal_nums[5],proposal_nums[6],proposal_nums[7],
         proposal_nums[8],proposal_nums[9],proposal_nums[10],proposal_nums[11],proposal_nums[12],proposal_nums[13],proposal_nums[14],proposal_nums[15]}
@@ -1190,15 +1198,12 @@ always @(posedge clk) begin
         mi_j[8],mi_j[9],mi_j[10],mi_j[11],mi_j[12],mi_j[13],mi_j[14],mi_j[15]} <= in_mi_j;
         {mj_i[0],mj_i[1],mj_i[2],mj_i[3],mj_i[4],mj_i[5],mj_i[6],mj_i[7],
         mj_i[8],mj_i[9],mj_i[10],mj_i[11],mj_i[12],mj_i[13],mj_i[14],mj_i[15]} <= in_mj_i;
-        if(enable && epoch > 4)
-            ready <= 1;
-        else 
-            ready <= 0;
+       
         for(sk = 0; sk < K; sk = sk + 1) begin 
             if(~enable) begin
                 accum[sk] <= {BUF_BW{1'b0}};
                 export[sk] <= 1'b0;
-                buffaccum[sk] <= {BUF_BW{1'b0}};
+                buffaccum[sk] <= {4{1'b0}};
             end else begin 
                 accum[sk] <= n_accum[sk];
                 export[sk] <= n_export[sk];
@@ -1224,12 +1229,14 @@ always @(posedge clk) begin
         end 
 
         // write vid sram 
-        for(export_i = 0; export_i < K; export_i = export_i + 1) begin 
-            if(enable && state >= RUNS) begin 
+        for(export_i = 0; export_i < K; export_i = export_i + 1) begin
+            if(~enable) begin 
+                vidsram_waddr[export_i] <= 5'd16 & {5{~pingpong}};  
+                vidsram_wen[export_i]  <= 1'b1;
+            end else if(state >= RUNS && state < FINISH) begin 
                 if(vidsram_wen[export_i] == 1'b0)  
                     vidsram_waddr[export_i]  <= vidsram_waddr[export_i] + 1;
                 if(export[export_i] == 1) begin 
-                    // vidsram_wdata[export_i]  <= {buffer[export_i][0],buffer[export_i][1],buffer[export_i][2],buffer[export_i][3],buffer[export_i][4],buffer[export_i][5],buffer[export_i][6],buffer[export_i][7],buffer[export_i][8],buffer[export_i][9],buffer[export_i][10],buffer[export_i][11],buffer[export_i][12],buffer[export_i][13],buffer[export_i][14],buffer[export_i][15]};
                     vidsram_wen[export_i]  <= 1'b0;
                 end else begin 
                     vidsram_wen[export_i]  <= 1'b1;
@@ -1264,23 +1271,18 @@ always @(posedge clk) begin
         locsram_wdata[5] <= buff_next[5];   locsram_wdata[13] <= buff_next[13];
         locsram_wdata[6] <= buff_next[6];   locsram_wdata[14] <= buff_next[14];
         locsram_wdata[7] <= buff_next[7];   locsram_wdata[15] <= buff_next[15];
-        
-        if(psum_set) begin 
+        if(~enable) begin 
+            locsram_wen <= 1'b1;
+        end else if(psum_set && state < FINISH) begin 
             // next_arr -> next_real_arr -> buff_next "write out" 
             locsram_wen <= 1'b0;
             for(loci = 0; loci < Q; loci = loci + 1) begin 
-                // locsram_wdata[loci] <= {D{1'b1, buff_next[loci]}};
                 locsram_wbytemask[loci] <= n_locsram_wbytemask[loci];
-                // locsram_wen[loci] <= 1'b0; //loci th "bit"
                 locsram_addr[loci] <= v_gidx[loci][VID_BW-1:8];  //15:8 16 bit - 8
             end
         end else begin 
             locsram_wen <= 1'b1;
-            // for(loci = 0; loci < Q; loci = loci + 1) begin 
-            //     locsram_wen[loci] <= 1'b1; //loci th "bit"
-            // end
         end 
-        // TODO: start update read_waddr of vid ! 
 
     end 
 end 
