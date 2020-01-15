@@ -149,7 +149,7 @@ always@(posedge clk) begin
 		proposal_num15 <= 8'd0;
 		check_cnt <= 2'd0;
     end else begin
-		if(batch_finish == 1) begin 
+		if(batch_finish == 1 && en) begin 
 			for(irr = 0; irr < 16; irr = irr + 1) 
 				proposal_cnt_buff[irr] <= proposal_cnt[irr];
 		end 

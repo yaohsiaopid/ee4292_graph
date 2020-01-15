@@ -1622,7 +1622,7 @@ always@ (posedge clk) begin
 end
 
 always@* begin 
-	if(state == IDLE)  
+	if(state == IDLE || state == MASTER)  
 		n_batch_num = batch_num;
 	else  
 		n_batch_num = (sub_bat0 == 4'd14) ? batch_num + 1 : batch_num;
@@ -1636,7 +1636,7 @@ always@* begin
 		case(state) 
 			IDLE: rst_n_worker = rst_n;
 			WORKER: rst_n_worker = 1'b1;//batch_finish0 == 1 ? 1'b0 : 1'b1;
-			MASTER: rst_n_worker = 1'b1;
+			MASTER: rst_n_worker = master_finish == 1 ? 1'b0 : 1'b1;
 			FIN: rst_n_worker = 1'b0;
 		endcase 
 	end 
@@ -1659,7 +1659,7 @@ always@* begin
 			en_master = 0;
 			rst_n_master = 0;
 			if (batch_finish0) begin
-				n_state = MASTER;
+				n_state = MASTER;//(iter == 4'd1) ? FIN : MASTER;//MASTER;
 				//rst_n_worker = 0;
 			end else begin
 				n_state = WORKER;
@@ -1672,7 +1672,7 @@ always@* begin
 			en_master = en && interfinish;
 			//rst_n_worker = 0;
 			if (master_finish) begin 
-				n_state = FIN;
+				n_state = (iter == 4'd1) ? FIN : WORKER;
 				rst_n_master = 0;
 				n_iter = iter + 1;
 			end else begin 

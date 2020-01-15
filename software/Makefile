@@ -3,7 +3,11 @@ CXX = g++
 CXXFLAGS = -O3 -std=c++11
 CFLAGS = -O3 -lm 
 TARGETS = graph gen check KaHIP
-all: master graph graph_hw #gen check KaHIP inter_data
+all: master graph graph_hw top_module_gen #gen check KaHIP inter_data
+
+top_module_gen: ./src/top_module_gen.cpp
+	#clang-format -i $^
+	g++ $(CXXFLAGS) -o ./build/$@ $? 
 
 graph: ./src/graph.cpp ./src/utility.h
 	#clang-format -i graph.cpp

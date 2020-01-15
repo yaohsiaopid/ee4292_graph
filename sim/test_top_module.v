@@ -433,60 +433,26 @@ initial begin
     rst_n = 1;
     enable = 1'b0;
     rerun = 1'b0;
-    // $readmemh("../software/gold_master_s/v_gidx_w0.dat", w0_vgidx);    
-    // $readmemh("../software/gold_master_s/v_gidx_w1.dat", w1_vgidx);    
-    // $readmemh("../software/gold_master_s/v_gidx_w2.dat", w2_vgidx);    
-    // $readmemh("../software/gold_master_s/v_gidx_w3.dat", w3_vgidx);    
-    // $readmemh("../software/gold_master_s/v_gidx_w4.dat", w4_vgidx);    
-    // $readmemh("../software/gold_master_s/v_gidx_w5.dat", w5_vgidx);    
-    // $readmemh("../software/gold_master_s/v_gidx_w6.dat", w6_vgidx);    
-    // $readmemh("../software/gold_master_s/v_gidx_w7.dat", w7_vgidx);    
-    // $readmemh("../software/gold_master_s/v_gidx_w8.dat", w8_vgidx);    
-    // $readmemh("../software/gold_master_s/v_gidx_w9.dat", w9_vgidx);    
-    // $readmemh("../software/gold_master_s/v_gidx_w10.dat", w10_vgidx);  
-    // $readmemh("../software/gold_master_s/v_gidx_w11.dat", w11_vgidx);  
-    // $readmemh("../software/gold_master_s/v_gidx_w12.dat", w12_vgidx);  
-    // $readmemh("../software/gold_master_s/v_gidx_w13.dat", w13_vgidx);  
-    // $readmemh("../software/gold_master_s/v_gidx_w14.dat", w14_vgidx);  
-    // $readmemh("../software/gold_master_s/v_gidx_w15.dat", w15_vgidx);  
-    
+
     $write("read master gold done");
     // ---- prepare for worker data ----
-    $readmemh("../software/gold/dist_sram.dat", grand_dist_NxNbxk.mem);
-    // for(mi = 0; mi < 65536; mi = mi + 1) begin 
-    // w1_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w2_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w3_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w4_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w5_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w6_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w7_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w8_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w9_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w10_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w11_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w12_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w13_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w14_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // w15_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    // end 
-
-    $readmemh("../software/gold/0_vid.dat", vid_input_w0);
-    $readmemh("../software/gold/1_vid.dat", vid_input_w1);
-    $readmemh("../software/gold/2_vid.dat", vid_input_w2);
-    $readmemh("../software/gold/3_vid.dat", vid_input_w3);
-    $readmemh("../software/gold/4_vid.dat", vid_input_w4);
-    $readmemh("../software/gold/5_vid.dat", vid_input_w5);
-    $readmemh("../software/gold/6_vid.dat", vid_input_w6);
-    $readmemh("../software/gold/7_vid.dat", vid_input_w7);
-    $readmemh("../software/gold/8_vid.dat", vid_input_w8);
-    $readmemh("../software/gold/9_vid.dat", vid_input_w9);
-    $readmemh("../software/gold/10_vid.dat", vid_input_w10);
-    $readmemh("../software/gold/11_vid.dat", vid_input_w11);
-    $readmemh("../software/gold/12_vid.dat", vid_input_w12);
-    $readmemh("../software/gold/13_vid.dat", vid_input_w13);
-    $readmemh("../software/gold/14_vid.dat", vid_input_w14);
-    $readmemh("../software/gold/15_vid.dat", vid_input_w15);
+    $readmemh("../software/gold_top/dist_sram.dat", grand_dist_NxNbxk.mem);
+    $readmemh("../software/gold_top/0_vid.dat", vid_input_w0);
+    $readmemh("../software/gold_top/1_vid.dat", vid_input_w1);
+    $readmemh("../software/gold_top/2_vid.dat", vid_input_w2);
+    $readmemh("../software/gold_top/3_vid.dat", vid_input_w3);
+    $readmemh("../software/gold_top/4_vid.dat", vid_input_w4);
+    $readmemh("../software/gold_top/5_vid.dat", vid_input_w5);
+    $readmemh("../software/gold_top/6_vid.dat", vid_input_w6);
+    $readmemh("../software/gold_top/7_vid.dat", vid_input_w7);
+    $readmemh("../software/gold_top/8_vid.dat", vid_input_w8);
+    $readmemh("../software/gold_top/9_vid.dat", vid_input_w9);
+    $readmemh("../software/gold_top/10_vid.dat", vid_input_w10);
+    $readmemh("../software/gold_top/11_vid.dat", vid_input_w11);
+    $readmemh("../software/gold_top/12_vid.dat", vid_input_w12);
+    $readmemh("../software/gold_top/13_vid.dat", vid_input_w13);
+    $readmemh("../software/gold_top/14_vid.dat", vid_input_w14);
+    $readmemh("../software/gold_top/15_vid.dat", vid_input_w15);
     for(tmp = 0; tmp < 16; tmp = tmp + 1) begin 
         w0_vid_sram_16x256b.load_param(tmp, vid_input_w0[tmp]);
         w1_vid_sram_16x256b.load_param(tmp, vid_input_w1[tmp]);
@@ -528,32 +494,32 @@ initial begin
     $readmemb("../software/gold_master_s/loc_w0.dat", w0_loc_sram_16x256b.mem);
 
     $write("init done\m");
-    
     $write("read worker gold\n");
     #(CYCLE) rst_n = 1'b0; 
-
     #(CYCLE) rst_n = 1'b1;   enable = 1'b1;
     
     wait(part_finish == 1);
-    // $readmemh("../software/gold_master_s/proposal_nums_w0.dat", w0_pro_gold);       $readmemh("../software/gold_master_s/next_sram_w0.dat", w0_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w1.dat", w1_pro_gold);       $readmemh("../software/gold_master_s/next_sram_w1.dat", w1_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w2.dat", w2_pro_gold);       $readmemh("../software/gold_master_s/next_sram_w2.dat", w2_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w3.dat", w3_pro_gold);       $readmemh("../software/gold_master_s/next_sram_w3.dat", w3_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w4.dat", w4_pro_gold);       $readmemh("../software/gold_master_s/next_sram_w4.dat", w4_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w5.dat", w5_pro_gold);       $readmemh("../software/gold_master_s/next_sram_w5.dat", w5_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w6.dat", w6_pro_gold);       $readmemh("../software/gold_master_s/next_sram_w6.dat", w6_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w7.dat", w7_pro_gold);       $readmemh("../software/gold_master_s/next_sram_w7.dat", w7_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w8.dat", w8_pro_gold);       $readmemh("../software/gold_master_s/next_sram_w8.dat", w8_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w9.dat", w9_pro_gold);       $readmemh("../software/gold_master_s/next_sram_w9.dat", w9_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w10.dat", w10_pro_gold);     $readmemh("../software/gold_master_s/next_sram_w10.dat", w10_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w11.dat", w11_pro_gold);     $readmemh("../software/gold_master_s/next_sram_w11.dat", w11_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w12.dat", w12_pro_gold);     $readmemh("../software/gold_master_s/next_sram_w12.dat", w12_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w13.dat", w13_pro_gold);     $readmemh("../software/gold_master_s/next_sram_w13.dat", w13_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w14.dat", w14_pro_gold);     $readmemh("../software/gold_master_s/next_sram_w14.dat", w14_next_gold);
-    // $readmemh("../software/gold_master_s/proposal_nums_w15.dat", w15_pro_gold);     $readmemh("../software/gold_master_s/next_sram_w15.dat", w15_next_gold);
+
+    // ================ check worker  ===============
+    // $readmemh("../software/gold_top/proposal_nums_w0.dat", w0_pro_gold);       $readmemh("../software/gold_top/next_sram_w0.dat", w0_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w1.dat", w1_pro_gold);       $readmemh("../software/gold_top/next_sram_w1.dat", w1_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w2.dat", w2_pro_gold);       $readmemh("../software/gold_top/next_sram_w2.dat", w2_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w3.dat", w3_pro_gold);       $readmemh("../software/gold_top/next_sram_w3.dat", w3_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w4.dat", w4_pro_gold);       $readmemh("../software/gold_top/next_sram_w4.dat", w4_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w5.dat", w5_pro_gold);       $readmemh("../software/gold_top/next_sram_w5.dat", w5_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w6.dat", w6_pro_gold);       $readmemh("../software/gold_top/next_sram_w6.dat", w6_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w7.dat", w7_pro_gold);       $readmemh("../software/gold_top/next_sram_w7.dat", w7_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w8.dat", w8_pro_gold);       $readmemh("../software/gold_top/next_sram_w8.dat", w8_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w9.dat", w9_pro_gold);       $readmemh("../software/gold_top/next_sram_w9.dat", w9_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w10.dat", w10_pro_gold);     $readmemh("../software/gold_top/next_sram_w10.dat", w10_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w11.dat", w11_pro_gold);     $readmemh("../software/gold_top/next_sram_w11.dat", w11_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w12.dat", w12_pro_gold);     $readmemh("../software/gold_top/next_sram_w12.dat", w12_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w13.dat", w13_pro_gold);     $readmemh("../software/gold_top/next_sram_w13.dat", w13_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w14.dat", w14_pro_gold);     $readmemh("../software/gold_top/next_sram_w14.dat", w14_next_gold);
+    // $readmemh("../software/gold_top/proposal_nums_w15.dat", w15_pro_gold);     $readmemh("../software/gold_top/next_sram_w15.dat", w15_next_gold);
     
-    enable = 1'b0;
-    $write("DONEE\n");
+    // enable = 1'b0;
+    // $write("DONEE\n");
     // for(sram_i = 0; sram_i < 16; sram_i = sram_i + 1) begin
     //     if(w0_next_sram_256x4b.mem[sram_i] !== w0_next_gold[sram_i]) begin $write("FAIL at w0 next sram[%d]: %h vs gold: %h\n", sram_i, w0_next_sram_256x4b.mem[sram_i], w0_next_gold[sram_i]); end
     //     if(w1_next_sram_256x4b.mem[sram_i] !== w1_next_gold[sram_i]) begin $write("FAIL at w1 next sram[%d]: %h vs gold: %h\n", sram_i, w1_next_sram_256x4b.mem[sram_i], w1_next_gold[sram_i]); end
@@ -590,57 +556,59 @@ initial begin
     //     if(w15_proposal_sram_16x128b.mem[sram_i] !== w15_pro_gold[sram_i]) begin $write("FAIL at w15 proposal sram[%d]: %h vs gold: %h\n", sram_i, w15_proposal_sram_16x128b.mem[sram_i], w15_pro_gold[sram_i]); end
        
     // end 
-    
-    $readmemh("../software/gold_master/vid_sram_w0.dat", w0_vid_sram_gold);
-    $readmemh("../software/gold_master/vid_sram_w1.dat", w1_vid_sram_gold);
-    $readmemh("../software/gold_master/vid_sram_w2.dat", w2_vid_sram_gold);
-    $readmemh("../software/gold_master/vid_sram_w3.dat", w3_vid_sram_gold);
-    $readmemh("../software/gold_master/vid_sram_w4.dat", w4_vid_sram_gold);
-    $readmemh("../software/gold_master/vid_sram_w5.dat", w5_vid_sram_gold);
-    $readmemh("../software/gold_master/vid_sram_w6.dat", w6_vid_sram_gold);
-    $readmemh("../software/gold_master/vid_sram_w7.dat", w7_vid_sram_gold);
-    $readmemh("../software/gold_master/vid_sram_w8.dat", w8_vid_sram_gold);
-    $readmemh("../software/gold_master/vid_sram_w9.dat", w9_vid_sram_gold);
-    $readmemh("../software/gold_master/vid_sram_w10.dat", w10_vid_sram_gold);    
-    $readmemh("../software/gold_master/vid_sram_w11.dat", w11_vid_sram_gold);    
-    $readmemh("../software/gold_master/vid_sram_w12.dat", w12_vid_sram_gold);    
-    $readmemh("../software/gold_master/vid_sram_w13.dat", w13_vid_sram_gold);    
-    $readmemh("../software/gold_master/vid_sram_w14.dat", w14_vid_sram_gold);    
-    $readmemh("../software/gold_master/vid_sram_w15.dat", w15_vid_sram_gold);  
+    // =================================================================
 
-    $readmemb("../software/gold_master_s/locsram_w0.dat",  w0_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w1.dat",  w1_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w2.dat",  w2_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w3.dat",  w3_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w4.dat",  w4_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w5.dat",  w5_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w6.dat",  w6_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w7.dat",  w7_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w8.dat",  w8_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w9.dat",  w9_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w10.dat",  w10_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w11.dat",  w11_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w12.dat",  w12_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w13.dat",  w13_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w14.dat",  w14_loc_sram_gold);
-    $readmemb("../software/gold_master_s/locsram_w15.dat",  w15_loc_sram_gold);  
+    // ===================== CHECK MASTER ==========================
+    $readmemh("../software/gold_top/vid_sram_w0.dat", w0_vid_sram_gold);
+    $readmemh("../software/gold_top/vid_sram_w1.dat", w1_vid_sram_gold);
+    $readmemh("../software/gold_top/vid_sram_w2.dat", w2_vid_sram_gold);
+    $readmemh("../software/gold_top/vid_sram_w3.dat", w3_vid_sram_gold);
+    $readmemh("../software/gold_top/vid_sram_w4.dat", w4_vid_sram_gold);
+    $readmemh("../software/gold_top/vid_sram_w5.dat", w5_vid_sram_gold);
+    $readmemh("../software/gold_top/vid_sram_w6.dat", w6_vid_sram_gold);
+    $readmemh("../software/gold_top/vid_sram_w7.dat", w7_vid_sram_gold);
+    $readmemh("../software/gold_top/vid_sram_w8.dat", w8_vid_sram_gold);
+    $readmemh("../software/gold_top/vid_sram_w9.dat", w9_vid_sram_gold);
+    $readmemh("../software/gold_top/vid_sram_w10.dat", w10_vid_sram_gold);    
+    $readmemh("../software/gold_top/vid_sram_w11.dat", w11_vid_sram_gold);    
+    $readmemh("../software/gold_top/vid_sram_w12.dat", w12_vid_sram_gold);    
+    $readmemh("../software/gold_top/vid_sram_w13.dat", w13_vid_sram_gold);    
+    $readmemh("../software/gold_top/vid_sram_w14.dat", w14_vid_sram_gold);    
+    $readmemh("../software/gold_top/vid_sram_w15.dat", w15_vid_sram_gold);  
+
+    $readmemb("../software/gold_top/locsram_w0.dat",  w0_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w1.dat",  w1_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w2.dat",  w2_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w3.dat",  w3_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w4.dat",  w4_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w5.dat",  w5_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w6.dat",  w6_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w7.dat",  w7_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w8.dat",  w8_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w9.dat",  w9_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w10.dat",  w10_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w11.dat",  w11_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w12.dat",  w12_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w13.dat",  w13_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w14.dat",  w14_loc_sram_gold);
+    $readmemb("../software/gold_top/locsram_w15.dat",  w15_loc_sram_gold);  
     for(srami = 0; srami < 16; srami = srami + 1) begin 
-        if(w0_vid_sram_gold[srami] !== w0_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 0 at %d ( gold %h vs %h) \n", srami, w0_vid_sram_gold[srami], w0_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w1_vid_sram_gold[srami] !== w1_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 1 at %d ( gold %h vs %h) \n", srami, w1_vid_sram_gold[srami], w1_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w2_vid_sram_gold[srami] !== w2_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 2 at %d ( gold %h vs %h) \n", srami, w2_vid_sram_gold[srami], w2_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w3_vid_sram_gold[srami] !== w3_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 3 at %d ( gold %h vs %h) \n", srami, w3_vid_sram_gold[srami], w3_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w4_vid_sram_gold[srami] !== w4_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 4 at %d ( gold %h vs %h) \n", srami, w4_vid_sram_gold[srami], w4_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w5_vid_sram_gold[srami] !== w5_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 5 at %d ( gold %h vs %h) \n", srami, w5_vid_sram_gold[srami], w5_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w6_vid_sram_gold[srami] !== w6_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 6 at %d ( gold %h vs %h) \n", srami, w6_vid_sram_gold[srami], w6_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w7_vid_sram_gold[srami] !== w7_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 7 at %d ( gold %h vs %h) \n", srami, w7_vid_sram_gold[srami], w7_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w8_vid_sram_gold[srami] !== w8_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 8 at %d ( gold %h vs %h) \n", srami, w8_vid_sram_gold[srami], w8_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w9_vid_sram_gold[srami] !== w9_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 9 at %d ( gold %h vs %h) \n", srami, w9_vid_sram_gold[srami], w9_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w10_vid_sram_gold[srami] !== w10_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 10  at %d ( gold %h vs %h)\n", srami, w10_vid_sram_gold[srami], w10_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w11_vid_sram_gold[srami] !== w11_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 11  at %d ( gold %h vs %h)\n", srami, w11_vid_sram_gold[srami], w11_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w12_vid_sram_gold[srami] !== w12_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 12  at %d ( gold %h vs %h)\n", srami, w12_vid_sram_gold[srami], w12_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w13_vid_sram_gold[srami] !== w13_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 13  at %d ( gold %h vs %h)\n", srami, w13_vid_sram_gold[srami], w13_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w14_vid_sram_gold[srami] !== w14_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 14  at %d ( gold %h vs %h)\n", srami, w14_vid_sram_gold[srami], w14_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
-        if(w15_vid_sram_gold[srami] !== w15_vid_sram_16x256b.mem[(1) * 16 + srami]) begin  $write("FAIL vidsram 15  at %d ( gold %h vs %h)\n", srami, w15_vid_sram_gold[srami], w15_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w0_vid_sram_gold[srami] !== w0_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 0 at %d ( gold %h vs %h) \n", srami, w0_vid_sram_gold[srami], w0_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w1_vid_sram_gold[srami] !== w1_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 1 at %d ( gold %h vs %h) \n", srami, w1_vid_sram_gold[srami], w1_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w2_vid_sram_gold[srami] !== w2_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 2 at %d ( gold %h vs %h) \n", srami, w2_vid_sram_gold[srami], w2_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w3_vid_sram_gold[srami] !== w3_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 3 at %d ( gold %h vs %h) \n", srami, w3_vid_sram_gold[srami], w3_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w4_vid_sram_gold[srami] !== w4_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 4 at %d ( gold %h vs %h) \n", srami, w4_vid_sram_gold[srami], w4_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w5_vid_sram_gold[srami] !== w5_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 5 at %d ( gold %h vs %h) \n", srami, w5_vid_sram_gold[srami], w5_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w6_vid_sram_gold[srami] !== w6_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 6 at %d ( gold %h vs %h) \n", srami, w6_vid_sram_gold[srami], w6_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w7_vid_sram_gold[srami] !== w7_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 7 at %d ( gold %h vs %h) \n", srami, w7_vid_sram_gold[srami], w7_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w8_vid_sram_gold[srami] !== w8_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 8 at %d ( gold %h vs %h) \n", srami, w8_vid_sram_gold[srami], w8_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w9_vid_sram_gold[srami] !== w9_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 9 at %d ( gold %h vs %h) \n", srami, w9_vid_sram_gold[srami], w9_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w10_vid_sram_gold[srami] !== w10_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 10  at %d ( gold %h vs %h)\n", srami, w10_vid_sram_gold[srami], w10_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w11_vid_sram_gold[srami] !== w11_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 11  at %d ( gold %h vs %h)\n", srami, w11_vid_sram_gold[srami], w11_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w12_vid_sram_gold[srami] !== w12_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 12  at %d ( gold %h vs %h)\n", srami, w12_vid_sram_gold[srami], w12_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w13_vid_sram_gold[srami] !== w13_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 13  at %d ( gold %h vs %h)\n", srami, w13_vid_sram_gold[srami], w13_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w14_vid_sram_gold[srami] !== w14_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 14  at %d ( gold %h vs %h)\n", srami, w14_vid_sram_gold[srami], w14_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
+        if(w15_vid_sram_gold[srami] !== w15_vid_sram_16x256b.mem[(1-1) * 16 + srami]) begin  $write("FAIL vidsram 15  at %d ( gold %h vs %h)\n", srami, w15_vid_sram_gold[srami], w15_vid_sram_16x256b.mem[(1) * 16 + srami]);  end 
         $write("\n");
     end 
     $write("=========== locsram =============\n");
@@ -663,7 +631,7 @@ initial begin
         if(w15_loc_sram_16x256b.mem[locsrami] !== w15_loc_sram_gold[locsrami]) begin $write("FAIL locsram(%h vs gold %h)\n", w15_loc_sram_16x256b.mem[locsrami], w15_loc_sram_gold[locsrami]); end //else $write("good locsrma0 %h vs gold %h\n",w15_loc_sram_16x256b.mem[locsrami] , w15_loc_sram_gold[locsrami]);
     end  
     $write("\n");
-
+    $write("PASSS YEH!?======\n");
     $finish;
 end 
 initial begin 
