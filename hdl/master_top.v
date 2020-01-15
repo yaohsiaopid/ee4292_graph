@@ -1033,6 +1033,9 @@ always @(posedge clk) begin
         enable <= enable_in;
         state <= nstate; 
         epoch <= n_epoch;
+        $write("epoch %d: wen %d wdata: %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h\n", epoch, locsram_wen,locsram_wdata[0],locsram_wdata[1],locsram_wdata[2],locsram_wdata[3],locsram_wdata[4],locsram_wdata[5],locsram_wdata[6],locsram_wdata[7],locsram_wdata[8],locsram_wdata[9],locsram_wdata[10],locsram_wdata[11],locsram_wdata[12],locsram_wdata[13],locsram_wdata[14],locsram_wdata[15]);
+        $write("\t\t waddr %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h\n", loc_sram_waddr0,loc_sram_waddr1,loc_sram_waddr2,loc_sram_waddr3,loc_sram_waddr4,loc_sram_waddr5,loc_sram_waddr6,loc_sram_waddr7,loc_sram_waddr8,loc_sram_waddr9,loc_sram_waddr10,loc_sram_waddr11,loc_sram_waddr12,loc_sram_waddr13,loc_sram_waddr14,loc_sram_waddr15);
+// $write("epoch %d: in_next_arr %h  in_mi_j %h in_mj_i %h in_v_gidx %h in_proposalnum %h\n", epoch, in_next_arr ,in_mi_j ,in_mj_i ,in_v_gidx ,in_proposal_nums);
         // $write("epoch: %d\n",epoch);
         delay <= n_delay;
         psum_set <= n_psum_set;
@@ -1041,7 +1044,7 @@ always @(posedge clk) begin
         {next_arr[0],next_arr[1],next_arr[2],next_arr[3],next_arr[4],next_arr[5],next_arr[6],next_arr[7],
         next_arr[8],next_arr[9],next_arr[10],next_arr[11],next_arr[12],next_arr[13],next_arr[14],next_arr[15]}
             <= in_next_arr;
-        $write("epoch %d; in_vid: %h\n", epoch, in_v_gidx);
+        // $write("epoch %d; in_vid: %h\n", epoch, in_v_gidx);
         {proposal_nums[0],proposal_nums[1],proposal_nums[2],proposal_nums[3],proposal_nums[4],proposal_nums[5],proposal_nums[6],proposal_nums[7],
         proposal_nums[8],proposal_nums[9],proposal_nums[10],proposal_nums[11],proposal_nums[12],proposal_nums[13],proposal_nums[14],proposal_nums[15]}
             <= in_proposal_nums;

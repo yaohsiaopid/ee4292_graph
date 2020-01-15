@@ -373,6 +373,7 @@ initial begin
     $write("\n");
     rerun = 1'b1;
     $write("--------------------rerun to check---\n");
+/*
     #(CYCLE*3) enable = 1'b1;
     #(CYCLE*2) $write("re: epoch %d\n", epoch);
     while(epoch < MAX_EPOCH - 1) begin 
@@ -436,6 +437,7 @@ initial begin
         // else $write("15_%02d,", srami);
         // $write("\n");
     end 
+*/
 
     
     $write("========================\nall pass ~\n========================\n");

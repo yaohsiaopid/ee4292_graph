@@ -370,7 +370,7 @@ worker #(.WORK_IDX(0)) worker_0
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w0_vid_rdata),
 	.dist_rdata(w0_dist_rdata),
@@ -409,7 +409,7 @@ worker #(.WORK_IDX(1)) worker_1
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w1_vid_rdata),
 	.dist_rdata(w1_dist_rdata),
@@ -448,7 +448,7 @@ worker #(.WORK_IDX(2)) worker_2
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w2_vid_rdata),
 	.dist_rdata(w2_dist_rdata),
@@ -487,7 +487,7 @@ worker #(.WORK_IDX(3)) worker_3
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w3_vid_rdata),
 	.dist_rdata(w3_dist_rdata),
@@ -526,7 +526,7 @@ worker #(.WORK_IDX(4)) worker_4
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w4_vid_rdata),
 	.dist_rdata(w4_dist_rdata),
@@ -565,7 +565,7 @@ worker #(.WORK_IDX(5)) worker_5
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w5_vid_rdata),
 	.dist_rdata(w5_dist_rdata),
@@ -604,7 +604,7 @@ worker #(.WORK_IDX(6)) worker_6
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w6_vid_rdata),
 	.dist_rdata(w6_dist_rdata),
@@ -643,7 +643,7 @@ worker #(.WORK_IDX(7)) worker_7
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w7_vid_rdata),
 	.dist_rdata(w7_dist_rdata),
@@ -682,7 +682,7 @@ worker #(.WORK_IDX(8)) worker_8
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w8_vid_rdata),
 	.dist_rdata(w8_dist_rdata),
@@ -721,7 +721,7 @@ worker #(.WORK_IDX(9)) worker_9
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w9_vid_rdata),
 	.dist_rdata(w9_dist_rdata),
@@ -760,7 +760,7 @@ worker #(.WORK_IDX(10)) worker_10
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w10_vid_rdata),
 	.dist_rdata(w10_dist_rdata),
@@ -799,7 +799,7 @@ worker #(.WORK_IDX(11)) worker_11
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w11_vid_rdata),
 	.dist_rdata(w11_dist_rdata),
@@ -838,7 +838,7 @@ worker #(.WORK_IDX(12)) worker_12
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w12_vid_rdata),
 	.dist_rdata(w12_dist_rdata),
@@ -877,7 +877,7 @@ worker #(.WORK_IDX(13)) worker_13
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w13_vid_rdata),
 	.dist_rdata(w13_dist_rdata),
@@ -916,7 +916,7 @@ worker #(.WORK_IDX(14)) worker_14
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w14_vid_rdata),
 	.dist_rdata(w14_dist_rdata),
@@ -955,7 +955,7 @@ worker #(.WORK_IDX(15)) worker_15
 (
 	.clk(clk),
 	.en(en_worker),
-	.rst_n(rst_n),
+	.rst_n(rst_n_worker),
 	.batch_num(batch_num),
 	.vid_rdata(w15_vid_rdata),
 	.dist_rdata(w15_dist_rdata),
@@ -990,7 +990,7 @@ worker #(.WORK_IDX(15)) worker_15
 	.proposal_num15(w15_proposal_num15)
 );
 
-assign worker_wen = wen0;
+assign worker_wen = (state == MASTER) ? 1'b0 : wen0;
 
 // next_sram write out
 assign next_wbytemask0 = w0_next_bytemask;
@@ -1630,11 +1630,22 @@ end
 
 // FSM
 always@* begin
+	if(~rst_n) begin 
+		rst_n_worker = 1'b0;
+	end else begin 
+		case(state) 
+			IDLE: rst_n_worker = rst_n;
+			WORKER: rst_n_worker = 1'b1;//batch_finish0 == 1 ? 1'b0 : 1'b1;
+			MASTER: rst_n_worker = 1'b1;
+			FIN: rst_n_worker = 1'b0;
+		endcase 
+	end 
+
 	case(state)
 		IDLE: begin
 			en_worker = en;
 			en_master = 0;
-			rst_n_worker = rst_n;
+			//rst_n_worker = rst_n;
 			rst_n_master = rst_n;
 			if (en) begin
 				n_state = WORKER;
@@ -1648,18 +1659,18 @@ always@* begin
 			en_master = 0;
 			rst_n_master = 0;
 			if (batch_finish0) begin
-				n_state = FIN;
-				rst_n_worker = 0;
+				n_state = MASTER;
+				//rst_n_worker = 0;
 			end else begin
 				n_state = WORKER;
-				rst_n_worker = 1;
+				//rst_n_worker = 1;
 			end
 			n_iter = iter;
 		end
 		MASTER: begin
 			en_worker = 0;
 			en_master = en && interfinish;
-			rst_n_worker = 0;
+			//rst_n_worker = 0;
 			if (master_finish) begin 
 				n_state = FIN;
 				rst_n_master = 0;
@@ -1673,7 +1684,7 @@ always@* begin
 		FIN: begin
 			en_worker = 0;
 			en_master = 0;
-			rst_n_worker = 0;
+			//rst_n_worker = 0;
 			rst_n_master = 0;
 			n_state = IDLE;
 			n_iter = iter;

@@ -92,6 +92,7 @@ reg [3:0] res4_comp;
 
 reg [7:0] n_proposal_cnt [0:15];
 reg [7:0] proposal_cnt [0:15];
+reg [7:0] proposal_cnt_buff[0:15];
 
 reg [1:0] check_cnt, n_check_cnt;
 
@@ -107,9 +108,12 @@ integer i;
 parameter IDLE = 3'd0, DELAY1 = 3'd1, SUB = 3'd2, DELAY2 = 3'd3, CHECK = 3'd4, FIN = 3'd5;
 
 // batch_num, sub_bat, state, controls
+integer irr;
 always@(posedge clk) begin
 	rst_n_in <= rst_n;
     if(~rst_n_in) begin
+		for(irr = 0; irr < 16; irr = irr + 1) 
+			proposal_cnt_buff[irr] <= 8'd0;
         next_wdata <= 64'd0;
         next_waddr <= 4'd0;
 		next_bytemask <= 16'b1111_1111_1111_1111;
@@ -145,6 +149,10 @@ always@(posedge clk) begin
 		proposal_num15 <= 8'd0;
 		check_cnt <= 2'd0;
     end else begin
+		if(batch_finish == 1) begin 
+			for(irr = 0; irr < 16; irr = irr + 1) 
+				proposal_cnt_buff[irr] <= proposal_cnt[irr];
+		end 
         next_waddr <= n_next_waddr;
 		next_bytemask <= n_next_bytemask;
         next_wdata <= n_next_wdata;
@@ -162,22 +170,22 @@ always@(posedge clk) begin
 		res4_comp <= (res3_comp[11:4] > part_reg[WORK_IDX]) ? res3_comp[3:0] : WORK_IDX;
 		wen <= ready; //ready_delay;
 		en_in <= en;
-		proposal_num0 <= proposal_cnt[0];
-		proposal_num1 <= proposal_cnt[1];
-		proposal_num2 <= proposal_cnt[2];
-		proposal_num3 <= proposal_cnt[3];
-		proposal_num4 <= proposal_cnt[4];
-		proposal_num5 <= proposal_cnt[5];
-		proposal_num6 <= proposal_cnt[6];
-		proposal_num7 <= proposal_cnt[7];
-		proposal_num8 <= proposal_cnt[8];
-		proposal_num9 <= proposal_cnt[9];
-		proposal_num10 <= proposal_cnt[10];
-		proposal_num11 <= proposal_cnt[11];
-		proposal_num12 <= proposal_cnt[12];
-		proposal_num13 <= proposal_cnt[13];
-		proposal_num14 <= proposal_cnt[14];
-		proposal_num15 <= proposal_cnt[15];
+		proposal_num0 <= proposal_cnt_buff[0];
+		proposal_num1 <= proposal_cnt_buff[1];
+		proposal_num2 <= proposal_cnt_buff[2];
+		proposal_num3 <= proposal_cnt_buff[3];
+		proposal_num4 <= proposal_cnt_buff[4];
+		proposal_num5 <= proposal_cnt_buff[5];
+		proposal_num6 <= proposal_cnt_buff[6];
+		proposal_num7 <= proposal_cnt_buff[7];
+		proposal_num8 <= proposal_cnt_buff[8];
+		proposal_num9 <= proposal_cnt_buff[9];
+		proposal_num10 <= proposal_cnt_buff[10];
+		proposal_num11 <= proposal_cnt_buff[11];
+		proposal_num12 <= proposal_cnt_buff[12];
+		proposal_num13 <= proposal_cnt_buff[13];
+		proposal_num14 <= proposal_cnt_buff[14];
+		proposal_num15 <= proposal_cnt_buff[15];
 		check_cnt <= n_check_cnt;
     end
 end
@@ -5376,8 +5384,18 @@ always@* begin
 			end
 		end
 	end else begin
-		for(i = 0; i < 16; i = i + 1) begin
-			n_proposal_cnt[i] = proposal_cnt[i];
+		if(state == FIN && wen) begin
+			for(i = 0; i < 16; i = i + 1) begin
+				if(res4_comp == i) begin
+					n_proposal_cnt[i] = proposal_cnt[i] + 1;
+				end else begin
+					n_proposal_cnt[i] = proposal_cnt[i];
+				end
+			end
+		end else begin			
+			for(i = 0; i < 16; i = i + 1) begin
+				n_proposal_cnt[i] = proposal_cnt[i];
+			end
 		end
 	end
 end
