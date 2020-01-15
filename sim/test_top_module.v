@@ -129,39 +129,42 @@ w15_loc_sram_16x256b(.clk(clk), .wsb(loc_sram_wen), .bytemask(locsram_wbytemask1
 // --------- dist_sram_instn ------
 wire [D*DIST_BW-1:0] dist_sram_rdata0, dist_sram_rdata1, dist_sram_rdata2, dist_sram_rdata3, dist_sram_rdata4, dist_sram_rdata5, dist_sram_rdata6, dist_sram_rdata7, dist_sram_rdata8, dist_sram_rdata9, dist_sram_rdata10, dist_sram_rdata11, dist_sram_rdata12, dist_sram_rdata13, dist_sram_rdata14, dist_sram_rdata15;
 wire [DIST_ADDR_SPACE-1:0] dist_sram_raddr0, dist_sram_raddr1, dist_sram_raddr2, dist_sram_raddr3, dist_sram_raddr4, dist_sram_raddr5, dist_sram_raddr6, dist_sram_raddr7, dist_sram_raddr8, dist_sram_raddr9, dist_sram_raddr10, dist_sram_raddr11, dist_sram_raddr12, dist_sram_raddr13, dist_sram_raddr14, dist_sram_raddr15;
+dist_sram_NxNbxk #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
+grand_dist_NxNbxk(.clk(clk), .wsb(), .wdata(), .waddr(),
+.raddr0(dist_sram_raddr0),
+.raddr1(dist_sram_raddr1),
+.raddr2(dist_sram_raddr2),
+.raddr3(dist_sram_raddr3),
+.raddr4(dist_sram_raddr4),
+.raddr5(dist_sram_raddr5),
+.raddr6(dist_sram_raddr6),
+.raddr7(dist_sram_raddr7),
+.raddr8(dist_sram_raddr8),
+.raddr9(dist_sram_raddr9),
+.raddr10(dist_sram_raddr10),
+.raddr11(dist_sram_raddr11),
+.raddr12(dist_sram_raddr12),
+.raddr13(dist_sram_raddr13),
+.raddr14(dist_sram_raddr14),
+.raddr15(dist_sram_raddr15),
+.rdata0(dist_sram_rdata0),
+.rdata1(dist_sram_rdata1),
+.rdata2(dist_sram_rdata2),
+.rdata3(dist_sram_rdata3),
+.rdata4(dist_sram_rdata4),
+.rdata5(dist_sram_rdata5),
+.rdata6(dist_sram_rdata6),
+.rdata7(dist_sram_rdata7),
+.rdata8(dist_sram_rdata8),
+.rdata9(dist_sram_rdata9),
+.rdata10(dist_sram_rdata10),
+.rdata11(dist_sram_rdata11),
+.rdata12(dist_sram_rdata12),
+.rdata13(dist_sram_rdata13),
+.rdata14(dist_sram_rdata14),
+.rdata15(dist_sram_rdata15)
+);
 
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w0_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr0), .rdata(dist_sram_rdata0));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w1_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr1), .rdata(dist_sram_rdata1));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w2_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr2), .rdata(dist_sram_rdata2));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w3_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr3), .rdata(dist_sram_rdata3));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w4_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr4), .rdata(dist_sram_rdata4));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w5_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr5), .rdata(dist_sram_rdata5));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w6_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr6), .rdata(dist_sram_rdata6));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w7_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr7), .rdata(dist_sram_rdata7));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w8_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr8), .rdata(dist_sram_rdata8));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w9_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr9), .rdata(dist_sram_rdata9));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w10_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr10), .rdata(dist_sram_rdata10));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w11_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr11), .rdata(dist_sram_rdata11));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w12_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr12), .rdata(dist_sram_rdata12));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w13_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr13), .rdata(dist_sram_rdata13));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w14_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr14), .rdata(dist_sram_rdata14));
-dist_sram_NxNb #(.N(N), .BW(DIST_BW), .D(D), .ADDR_SPACE(DIST_ADDR_SPACE))
-w15_dist_sram_NxNb(.clk(clk), .wsb(), .wdata(), .waddr(), .raddr(dist_sram_raddr15), .rdata(dist_sram_rdata15));
 
 wire worker_wen;
 
@@ -423,7 +426,7 @@ integer sram_i;
 reg rerun;
 integer rrr, tmp;
 integer mi;
-reg [VID_BW*Q-1:0] vid_input[0:15];
+reg [VID_BW*Q-1:0] vid_input_w0 [0:16-1], vid_input_w1 [0:16-1], vid_input_w2 [0:16-1], vid_input_w3 [0:16-1], vid_input_w4 [0:16-1], vid_input_w5 [0:16-1], vid_input_w6 [0:16-1], vid_input_w7 [0:16-1], vid_input_w8 [0:16-1], vid_input_w9 [0:16-1], vid_input_w10 [0:16-1], vid_input_w11 [0:16-1], vid_input_w12 [0:16-1], vid_input_w13 [0:16-1], vid_input_w14 [0:16-1], vid_input_w15 [0:16-1];
 initial begin 
     // pingpong = 0;
     clk = 0;
@@ -449,28 +452,59 @@ initial begin
     
     $write("read master gold done");
     // ---- prepare for worker data ----
-    $readmemh("../software/gold/dist_sram.dat", w0_dist_sram_NxNb.mem);
-    for(mi = 0; mi < 65536; mi = mi + 1) begin 
-    w1_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w2_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w3_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w4_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w5_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w6_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w7_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w8_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w9_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w10_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w11_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w12_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w13_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w14_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    w15_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
-    end 
+    $readmemh("../software/gold/dist_sram.dat", grand_dist_NxNbxk.mem);
+    // for(mi = 0; mi < 65536; mi = mi + 1) begin 
+    // w1_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w2_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w3_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w4_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w5_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w6_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w7_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w8_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w9_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w10_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w11_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w12_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w13_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w14_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // w15_dist_sram_NxNb.mem[mi] = w0_dist_sram_NxNb.mem[mi];
+    // end 
 
-    $readmemh("../software/gold/0_vid.dat", vid_input);
-    for(tmp = 0; tmp < 16; tmp = tmp + 1) 
-        w0_vid_sram_16x256b.load_param(tmp, vid_input[tmp]);
+    $readmemh("../software/gold/0_vid.dat", vid_input_w0);
+    $readmemh("../software/gold/1_vid.dat", vid_input_w1);
+    $readmemh("../software/gold/2_vid.dat", vid_input_w2);
+    $readmemh("../software/gold/3_vid.dat", vid_input_w3);
+    $readmemh("../software/gold/4_vid.dat", vid_input_w4);
+    $readmemh("../software/gold/5_vid.dat", vid_input_w5);
+    $readmemh("../software/gold/6_vid.dat", vid_input_w6);
+    $readmemh("../software/gold/7_vid.dat", vid_input_w7);
+    $readmemh("../software/gold/8_vid.dat", vid_input_w8);
+    $readmemh("../software/gold/9_vid.dat", vid_input_w9);
+    $readmemh("../software/gold/10_vid.dat", vid_input_w10);
+    $readmemh("../software/gold/11_vid.dat", vid_input_w11);
+    $readmemh("../software/gold/12_vid.dat", vid_input_w12);
+    $readmemh("../software/gold/13_vid.dat", vid_input_w13);
+    $readmemh("../software/gold/14_vid.dat", vid_input_w14);
+    $readmemh("../software/gold/15_vid.dat", vid_input_w15);
+    for(tmp = 0; tmp < 16; tmp = tmp + 1) begin 
+        w0_vid_sram_16x256b.load_param(tmp, vid_input_w0[tmp]);
+        w1_vid_sram_16x256b.load_param(tmp, vid_input_w1[tmp]);
+        w2_vid_sram_16x256b.load_param(tmp, vid_input_w2[tmp]);
+        w3_vid_sram_16x256b.load_param(tmp, vid_input_w3[tmp]);
+        w4_vid_sram_16x256b.load_param(tmp, vid_input_w4[tmp]);
+        w5_vid_sram_16x256b.load_param(tmp, vid_input_w5[tmp]);
+        w6_vid_sram_16x256b.load_param(tmp, vid_input_w6[tmp]);
+        w7_vid_sram_16x256b.load_param(tmp, vid_input_w7[tmp]);
+        w8_vid_sram_16x256b.load_param(tmp, vid_input_w8[tmp]);
+        w9_vid_sram_16x256b.load_param(tmp, vid_input_w9[tmp]);
+        w10_vid_sram_16x256b.load_param(tmp, vid_input_w10[tmp]);
+        w11_vid_sram_16x256b.load_param(tmp, vid_input_w11[tmp]);
+        w12_vid_sram_16x256b.load_param(tmp, vid_input_w12[tmp]);
+        w13_vid_sram_16x256b.load_param(tmp, vid_input_w13[tmp]);
+        w14_vid_sram_16x256b.load_param(tmp, vid_input_w14[tmp]);
+        w15_vid_sram_16x256b.load_param(tmp, vid_input_w15[tmp]);
+    end 
 
     for(locsrami = 0; locsrami < 16; locsrami = locsrami + 1) begin 
         w0_loc_sram_16x256b.load_param(locsrami, 0);
@@ -492,7 +526,7 @@ initial begin
     end 
     
     $readmemb("../software/gold_master_s/loc_w0.dat", w0_loc_sram_16x256b.mem);
-    $write("locsram %b\n", w0_loc_sram_16x256b.mem[3]);
+    // $write("locsram %b\n", w0_loc_sram_16x256b.mem[3]);
 
     $write("init done");
     // -------------
