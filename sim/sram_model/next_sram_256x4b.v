@@ -22,7 +22,6 @@ assign bit_mask = { {4{bytemask[15]}},{4{bytemask[14]}},{4{bytemask[13]}},{4{byt
 
 always @(posedge clk) begin
     if(~wsb) begin
-        // $write("::SRAM WRITE %h %d %h\n", wdata, waddr, bit_mask);
         mem[waddr] <= (wdata & ~(bit_mask)) | (mem[waddr] & bit_mask);
     end
 end

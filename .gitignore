@@ -18,5 +18,16 @@ software/*.csv
 */alib-52/
 */default.svf
 */logfile
+
 hdl/spyglass-1
 sim/*.sdf.X
+
+
+*/TOPLEVEL/
+*/netlist/*.ddc
+*/netlist/*.saif
+*/netlist/*.sdc
+*/report/check_design.log
+*/report/check_timing.log
+*/run_dc.bat
+
