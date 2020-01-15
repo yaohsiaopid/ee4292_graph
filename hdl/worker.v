@@ -478,12 +478,14 @@ always@* begin
 			end
         end
         FIN: begin
+			n_check_cnt = 0;
             n_sub_bat = sub_bat + 1;
             n_batch_finish = (sub_bat == 4'd4) ? 1 : 0;
             n_ready = (sub_bat == 4'd1) ? 1 : 0;
             n_state = (sub_bat == 4'd4) ? IDLE : FIN;
         end
         default: begin
+			n_check_cnt = 0;
             n_sub_bat = 0;
             n_batch_finish = 0;
             n_ready = 0;
