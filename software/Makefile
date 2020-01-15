@@ -9,6 +9,9 @@ graph: ./src/graph.cpp ./src/utility.h
 	#clang-format -i graph.cpp
 	#clang-format -i utility.h
 	g++ $(CXXFLAGS) -o ./build/$@ $?
+gen_loc: ./src/gen_loc.cpp
+	#clang-format -i $^
+	g++ $(CXXFLAGS) -o ./build/$@ $? 
 gen: ./src/gen.cpp
 	#clang-format -i $^
 	g++ $(CXXFLAGS) -o ./build/$@ $? 

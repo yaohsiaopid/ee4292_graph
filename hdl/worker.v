@@ -5317,22 +5317,22 @@ end
 
 always@* begin
 	case(batch_num_reg[3:0])
-		4'd1: n_next_wdata = {60'd0, res4_comp};
-		4'd2: n_next_wdata = {56'd0, res4_comp, 4'd0};
-		4'd3: n_next_wdata = {52'd0, res4_comp, 8'd0};
-		4'd4: n_next_wdata = {48'd0, res4_comp, 12'd0};
-		4'd5: n_next_wdata = {44'd0, res4_comp, 16'd0};
-		4'd6: n_next_wdata = {40'd0, res4_comp, 20'd0};
-		4'd7: n_next_wdata = {36'd0, res4_comp, 24'd0};
-		4'd8: n_next_wdata = {32'd0, res4_comp, 28'd0};
-		4'd9: n_next_wdata = {28'd0, res4_comp, 32'd0};
-		4'd10: n_next_wdata = {24'd0, res4_comp, 36'd0};
-		4'd11: n_next_wdata = {20'd0, res4_comp, 40'd0};
-		4'd12: n_next_wdata = {16'd0, res4_comp, 44'd0};
-		4'd13: n_next_wdata = {12'd0, res4_comp, 48'd0};
-		4'd14: n_next_wdata = {8'd0, res4_comp, 52'd0};
-		4'd15: n_next_wdata = {4'd0, res4_comp, 56'd0};
-		4'd0: n_next_wdata = {res4_comp, 60'd0};
+		4'd1: n_next_wdata = {res4_comp, 60'd0};
+		4'd2: n_next_wdata = {4'd0, res4_comp, 56'd0};
+		4'd3: n_next_wdata = {8'd0, res4_comp, 52'd0};
+		4'd4: n_next_wdata = {12'd0, res4_comp, 48'd0};
+		4'd5: n_next_wdata = {16'd0, res4_comp, 44'd0};
+		4'd6: n_next_wdata = {20'd0, res4_comp, 40'd0};
+		4'd7: n_next_wdata = {24'd0, res4_comp, 36'd0};
+		4'd8: n_next_wdata = {28'd0, res4_comp, 32'd0};
+		4'd9: n_next_wdata = {32'd0, res4_comp, 28'd0};
+		4'd10: n_next_wdata = {36'd0, res4_comp, 24'd0};
+		4'd11: n_next_wdata = {40'd0, res4_comp, 20'd0};
+		4'd12: n_next_wdata = {44'd0, res4_comp, 16'd0};
+		4'd13: n_next_wdata = {48'd0, res4_comp, 12'd0};
+		4'd14: n_next_wdata = {52'd0, res4_comp, 8'd0};
+		4'd15: n_next_wdata = {56'd0, res4_comp, 4'd0};
+		4'd0: n_next_wdata = {60'd0, res4_comp};
 		default: n_next_wdata = 64'd0;
 	endcase
 end
@@ -5340,22 +5340,22 @@ end
 always@* begin
 	if(wen) begin
 		case(batch_num_reg[3:0])
-			4'd1: n_next_bytemask = 16'b1111_1111_1111_1110;
-			4'd2: n_next_bytemask = 16'b1111_1111_1111_1101;
-			4'd3: n_next_bytemask = 16'b1111_1111_1111_1011;
-			4'd4: n_next_bytemask = 16'b1111_1111_1111_0111;
-			4'd5: n_next_bytemask = 16'b1111_1111_1110_1111;
-			4'd6: n_next_bytemask = 16'b1111_1111_1101_1111;
-			4'd7: n_next_bytemask = 16'b1111_1111_1011_1111;
-			4'd8: n_next_bytemask = 16'b1111_1111_0111_1111;
-			4'd9: n_next_bytemask = 16'b1111_1110_1111_1111;
-			4'd10: n_next_bytemask = 16'b1111_1101_1111_1111;
-			4'd11: n_next_bytemask = 16'b1111_1011_1111_1111;
-			4'd12: n_next_bytemask = 16'b1111_0111_1111_1111;
-			4'd13: n_next_bytemask = 16'b1110_1111_1111_1111;
-			4'd14: n_next_bytemask = 16'b1101_1111_1111_1111;
-			4'd15: n_next_bytemask = 16'b1011_1111_1111_1111;
-			4'd0: n_next_bytemask = 16'b0111_1111_1111_1111;
+			4'd1: n_next_bytemask = 16'b0111_1111_1111_1111;
+			4'd2: n_next_bytemask = 16'b1011_1111_1111_1111;
+			4'd3: n_next_bytemask = 16'b1101_1111_1111_1111;
+			4'd4: n_next_bytemask = 16'b1110_1111_1111_1111;
+			4'd5: n_next_bytemask = 16'b1111_0111_1111_1111;
+			4'd6: n_next_bytemask = 16'b1111_1011_1111_1111;
+			4'd7: n_next_bytemask = 16'b1111_1101_1111_1111;
+			4'd8: n_next_bytemask = 16'b1111_1110_1111_1111;
+			4'd9: n_next_bytemask = 16'b1111_1111_0111_1111;
+			4'd10: n_next_bytemask = 16'b1111_1111_1011_1111;
+			4'd11: n_next_bytemask = 16'b1111_1111_1101_1111;
+			4'd12: n_next_bytemask = 16'b1111_1111_1110_1111;
+			4'd13: n_next_bytemask = 16'b1111_1111_1111_0111;
+			4'd14: n_next_bytemask = 16'b1111_1111_1111_1011;
+			4'd15: n_next_bytemask = 16'b1111_1111_1111_1101;
+			4'd0: n_next_bytemask = 16'b1111_1111_1111_1110;
 			default: n_next_bytemask = 16'b1111_1111_1111_1111;
 		endcase
 			n_next_waddr = (batch_num_reg - 1) >> 4;
@@ -5384,22 +5384,22 @@ end
 
 always@* begin
 	case(batch_num_reg[3:0])
-		4'd1: n_pro_wdata = {120'd0, proposal_cnt[res4_comp]};
-		4'd2: n_pro_wdata = {112'd0, proposal_cnt[res4_comp], 8'd0};
-		4'd3: n_pro_wdata = {104'd0, proposal_cnt[res4_comp], 16'd0};
-		4'd4: n_pro_wdata = {96'd0, proposal_cnt[res4_comp], 24'd0};
-		4'd5: n_pro_wdata = {88'd0, proposal_cnt[res4_comp], 32'd0};
-		4'd6: n_pro_wdata = {80'd0, proposal_cnt[res4_comp], 40'd0};
-		4'd7: n_pro_wdata = {72'd0, proposal_cnt[res4_comp], 48'd0};
-		4'd8: n_pro_wdata = {64'd0, proposal_cnt[res4_comp], 56'd0};
-		4'd9: n_pro_wdata = {56'd0, proposal_cnt[res4_comp], 64'd0};
-		4'd10: n_pro_wdata = {48'd0, proposal_cnt[res4_comp], 72'd0};
-		4'd11: n_pro_wdata = {40'd0, proposal_cnt[res4_comp], 80'd0};
-		4'd12: n_pro_wdata = {32'd0, proposal_cnt[res4_comp], 88'd0};
-		4'd13: n_pro_wdata = {24'd0, proposal_cnt[res4_comp], 96'd0};
-		4'd14: n_pro_wdata = {16'd0, proposal_cnt[res4_comp], 104'd0};
-		4'd15: n_pro_wdata = {8'd0, proposal_cnt[res4_comp], 112'd0};
-		4'd0: n_pro_wdata = {proposal_cnt[res4_comp], 120'd0};
+		4'd1: n_pro_wdata = {proposal_cnt[res4_comp], 120'd0} ;
+		4'd2: n_pro_wdata = {8'd0, proposal_cnt[res4_comp], 112'd0};
+		4'd3: n_pro_wdata = {16'd0, proposal_cnt[res4_comp], 104'd0};
+		4'd4: n_pro_wdata = {24'd0, proposal_cnt[res4_comp], 96'd0};
+		4'd5: n_pro_wdata = {32'd0, proposal_cnt[res4_comp], 88'd0};
+		4'd6: n_pro_wdata = {40'd0, proposal_cnt[res4_comp], 80'd0};
+		4'd7: n_pro_wdata = {48'd0, proposal_cnt[res4_comp], 72'd0};
+		4'd8: n_pro_wdata = {56'd0, proposal_cnt[res4_comp], 64'd0};
+		4'd9: n_pro_wdata = {64'd0, proposal_cnt[res4_comp], 56'd0};
+		4'd10: n_pro_wdata = {72'd0, proposal_cnt[res4_comp], 48'd0};
+		4'd11: n_pro_wdata = {80'd0, proposal_cnt[res4_comp], 40'd0};
+		4'd12: n_pro_wdata = {88'd0, proposal_cnt[res4_comp], 32'd0};
+		4'd13: n_pro_wdata = {96'd0, proposal_cnt[res4_comp], 24'd0};
+		4'd14: n_pro_wdata = {104'd0, proposal_cnt[res4_comp], 16'd0};
+		4'd15: n_pro_wdata = {112'd0, proposal_cnt[res4_comp], 8'd0};
+		4'd0: n_pro_wdata = {120'd0, proposal_cnt[res4_comp]};
 		default: n_pro_wdata = 128'd0;
 	endcase
 end
@@ -5407,22 +5407,22 @@ end
 always@* begin
 	if(wen) begin
 		case(batch_num_reg[3:0])
-			4'd1: n_pro_bytemask = 16'b1111_1111_1111_1110;
-			4'd2: n_pro_bytemask = 16'b1111_1111_1111_1101;
-			4'd3: n_pro_bytemask = 16'b1111_1111_1111_1011;
-			4'd4: n_pro_bytemask = 16'b1111_1111_1111_0111;
-			4'd5: n_pro_bytemask = 16'b1111_1111_1110_1111;
-			4'd6: n_pro_bytemask = 16'b1111_1111_1101_1111;
-			4'd7: n_pro_bytemask = 16'b1111_1111_1011_1111;
-			4'd8: n_pro_bytemask = 16'b1111_1111_0111_1111;
-			4'd9: n_pro_bytemask = 16'b1111_1110_1111_1111;
-			4'd10: n_pro_bytemask = 16'b1111_1101_1111_1111;
-			4'd11: n_pro_bytemask = 16'b1111_1011_1111_1111;
-			4'd12: n_pro_bytemask = 16'b1111_0111_1111_1111;
-			4'd13: n_pro_bytemask = 16'b1110_1111_1111_1111;
-			4'd14: n_pro_bytemask = 16'b1101_1111_1111_1111;
-			4'd15: n_pro_bytemask = 16'b1011_1111_1111_1111;
-			4'd0: n_pro_bytemask = 16'b0111_1111_1111_1111;
+			4'd1: n_pro_bytemask = 16'b0111_1111_1111_1111;
+			4'd2: n_pro_bytemask = 16'b1011_1111_1111_1111;
+			4'd3: n_pro_bytemask = 16'b1101_1111_1111_1111;
+			4'd4: n_pro_bytemask = 16'b1110_1111_1111_1111;
+			4'd5: n_pro_bytemask = 16'b1111_0111_1111_1111;
+			4'd6: n_pro_bytemask = 16'b1111_1011_1111_1111;
+			4'd7: n_pro_bytemask = 16'b1111_1101_1111_1111;
+			4'd8: n_pro_bytemask = 16'b1111_1110_1111_1111;
+			4'd9: n_pro_bytemask = 16'b1111_1111_0111_1111;
+			4'd10: n_pro_bytemask = 16'b1111_1111_1011_1111;
+			4'd11: n_pro_bytemask = 16'b1111_1111_1101_1111;
+			4'd12: n_pro_bytemask = 16'b1111_1111_1110_1111;
+			4'd13: n_pro_bytemask = 16'b1111_1111_1111_0111;
+			4'd14: n_pro_bytemask = 16'b1111_1111_1111_1011;
+			4'd15: n_pro_bytemask = 16'b1111_1111_1111_1101;
+			4'd0: n_pro_bytemask = 16'b1111_1111_1111_1110;
 			default: n_pro_bytemask = 16'b1111_1111_1111_1111;
 		endcase
 			n_pro_waddr = (batch_num_reg - 1) >> 4;
